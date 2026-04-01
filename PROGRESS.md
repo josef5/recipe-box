@@ -69,6 +69,12 @@
 
 ### Forms
 
+### Delete recipe
+
+- `components/delete-recipe-button.tsx` — client component; wraps `deleteRecipeFromForm` in a `<form>` with a `confirm()` guard; uses `useFormStatus` for pending state
+- `deleteRecipeFromForm(id)` server action — calls `deleteRecipe(id)` then redirects to `/`
+- Delete button rendered on the recipe detail page
+
 - New and edit pages share `RecipeForm`
 - Submit calls `createRecipeFromForm` or `updateRecipeFromForm` (via `.bind`) as server actions
 - `parseRecipeFormData` handles FormData → `RecipeFormData` conversion including `getOrCreateIngredient` for unknown ingredient names
@@ -79,11 +85,10 @@
 
 ### Next up
 
-- [ ] **Delete recipe** — button on detail page, calls `deleteRecipe(id)`, redirects to `/`
+- [ ] **Search** — filter on the list page (search params + server-side query)
 
 ### Remaining backlog
 
-- [ ] **Search** — filter on the list page (search params + server-side query)
 - [ ] **Styling pass** — consistent layout, typography, spacing across all pages
 - [ ] **Image uploads** — Vercel Blob integration, image field on recipe form
 - [ ] **Expanded auth** — confirm email/password + Google OAuth work end-to-end in prod

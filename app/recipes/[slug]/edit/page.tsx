@@ -4,6 +4,7 @@ import {
   updateRecipeFromForm,
 } from "@/actions/recipes";
 import { AppMenu } from "@/components/app-menu";
+import { DeleteRecipeButton } from "@/components/delete-recipe-button";
 import { RecipeForm } from "@/components/recipe-form";
 import { notFound } from "next/navigation";
 
@@ -26,8 +27,11 @@ export default async function EditRecipePage({
     <main>
       <AppMenu variant="recipe" backHref={`/recipes/${recipe.slug}`} />
       <div className="flex flex-col gap-8">
-        <div>
+        <div className="flex items-start justify-between gap-4">
           <h1 className="text-2xl font-bold">Edit recipe</h1>
+          <DeleteRecipeButton id={recipe.id} />
+        </div>
+        <div>
           <p className="text-sm text-gray-600">
             Update details, ingredients, and steps.
           </p>

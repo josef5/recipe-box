@@ -372,3 +372,12 @@ export async function deleteRecipe(id: string) {
   await db.delete(recipes).where(eq(recipes.id, id));
   revalidatePath("/");
 }
+
+/**
+ * Deletes a recipe via form submission and redirects to the home page.
+ * @param id The ID of the recipe to delete.
+ */
+export async function deleteRecipeFromForm(id: string) {
+  await deleteRecipe(id);
+  redirect("/");
+}
