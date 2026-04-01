@@ -1,4 +1,5 @@
 import { getRecipes } from "@/actions/recipes";
+import { AppMenu } from "@/components/app-menu";
 import Link from "next/link";
 
 export default async function Home() {
@@ -6,7 +7,7 @@ export default async function Home() {
 
   return (
     <main>
-      <h1>Recipe Box</h1>
+      <AppMenu variant="home" />
       {recipes.length === 0 ? (
         <p>No recipes yet.</p>
       ) : (

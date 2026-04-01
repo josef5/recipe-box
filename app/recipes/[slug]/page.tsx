@@ -1,6 +1,7 @@
 import { getRecipeBySlug } from "@/actions/recipes";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { AppMenu } from "@/components/app-menu";
 
 export default async function RecipePage({
   params,
@@ -14,10 +15,7 @@ export default async function RecipePage({
 
   return (
     <main>
-      <div>
-        <Link href="/">← Back</Link>
-        <Link href={`/recipes/${slug}/edit`}>Edit</Link>
-      </div>
+      <AppMenu variant="recipe" editHref={`/recipes/${slug}/edit`} />
 
       <h1>{recipe.title}</h1>
 
