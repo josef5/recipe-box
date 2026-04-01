@@ -8,6 +8,13 @@
       "when": 1774726948851,
       "tag": "0000_lovely_bishop",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1774726948852,
+      "tag": "0001_recipe_slug",
+      "breakpoints": true
     }
   ]
 }

@@ -1,9 +1,10 @@
 "use server";
 
 import { db } from "@/db";
-import { recipes, recipeIngredients, steps, ingredients } from "@/db/schema";
+import { recipes, recipeIngredients, steps } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
+import { generateSlug } from "@/lib/slug";
 
 export type RecipeFormData = {
   title: string;
@@ -47,10 +48,28 @@ export async function getRecipe(id: string) {
   });
 }
 
+export async function getRecipeBySlug(slug: string) {
+  return db.query.recipes.findFirst({
+    where: eq(recipes.slug, slug),
+    with: {
+      recipeIngredients: {
+        with: { ingredient: true },
+        orderBy: (ri, { asc }) => [asc(ri.sortOrder)],
+      },
+      steps: {
+        orderBy: (s, { asc }) => [asc(s.stepNumber)],
+      },
+    },
+  });
+}
+
 export async function createRecipe(data: RecipeFormData) {
+  const slug = await generateSlug(data.title);
+
   const [recipe] = await db
     .insert(recipes)
     .values({
+      slug,
       title: data.title,
       description: data.description,
       servings: data.servings,
@@ -86,9 +105,21 @@ export async function createRecipe(data: RecipeFormData) {
 }
 
 export async function updateRecipe(id: string, data: RecipeFormData) {
+  const existingRecipe = await getRecipe(id);
+
+  if (!existingRecipe) {
+    throw new Error("Recipe not found");
+  }
+
+  const slug =
+    existingRecipe.title !== data.title
+      ? await generateSlug(data.title)
+      : existingRecipe.slug;
+
   const [recipe] = await db
     .update(recipes)
     .set({
+      slug,
       title: data.title,
       description: data.description,
       servings: data.servings,
@@ -130,7 +161,7 @@ export async function updateRecipe(id: string, data: RecipeFormData) {
   }
 
   revalidatePath("/");
-  revalidatePath(`/recipes/${id}`);
+  revalidatePath(`/recipes/${recipe.slug}`);
   return recipe;
 }
 

@@ -1,5 +1,6 @@
 import { db } from "../db";
 import { recipes, ingredients, recipeIngredients, steps } from "../db/schema";
+import { generateSlug } from "../lib/slug";
 
 const ingredientData = [
   { name: "Plain flour", defaultUnit: "g" },
@@ -109,9 +110,12 @@ async function seed() {
 
   // Insert recipes
   for (const recipe of recipeData) {
+    const slug = await generateSlug(recipe.title);
+
     const [inserted] = await db
       .insert(recipes)
       .values({
+        slug,
         title: recipe.title,
         description: recipe.description,
         servings: recipe.servings,

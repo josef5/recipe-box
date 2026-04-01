@@ -13,7 +13,7 @@ export default async function Home() {
         <ul>
           {recipes.map((recipe) => (
             <li key={recipe.id}>
-              <Link href={`/recipes/${recipe.id}`}>
+              <Link href={`/recipes/${recipe.slug}`}>
                 <h2>{recipe.title}</h2>
                 {recipe.description && <p>{recipe.description}</p>}
                 <div>
