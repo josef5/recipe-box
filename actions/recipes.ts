@@ -28,6 +28,13 @@ export type RecipeFormData = {
   }[];
 };
 
+/**
+ * Retrieves an optional string value from the form data.
+ * If the value is not a string or is empty after trimming, it returns undefined.
+ * @param formData The FormData object from the recipe form.
+ * @param key The key of the form field to retrieve.
+ * @returns The trimmed string value or undefined.
+ */
 function getOptionalString(formData: FormData, key: string) {
   const value = formData.get(key);
 
@@ -39,6 +46,13 @@ function getOptionalString(formData: FormData, key: string) {
   return trimmed.length > 0 ? trimmed : undefined;
 }
 
+/**
+ * Retrieves an optional numeric value from the form data.
+ * If the value is not a valid number, it returns undefined.
+ * @param formData The FormData object from the recipe form.
+ * @param key The key of the form field to retrieve.
+ * @returns The numeric value or undefined.
+ */
 function getOptionalNumber(formData: FormData, key: string) {
   const value = getOptionalString(formData, key);
 
@@ -50,6 +64,12 @@ function getOptionalNumber(formData: FormData, key: string) {
   return Number.isFinite(parsed) ? parsed : undefined;
 }
 
+/**
+ * Retrieves the ID of an ingredient by name. If the ingredient does not exist, it creates a new one.
+ * @param name The name of the ingredient.
+ * @param defaultUnit The default unit for the ingredient, if creating a new one.
+ * @returns The ID of the existing or newly created ingredient.
+ */
 async function getOrCreateIngredientId(name: string, defaultUnit?: string) {
   const normalizedName = name.trim();
 
@@ -85,6 +105,12 @@ async function getOrCreateIngredientId(name: string, defaultUnit?: string) {
   return ingredient.id;
 }
 
+/**
+ * Parses the form data from a recipe form and returns a structured RecipeFormData object.
+ * This function handles optional fields, type conversions, and ingredient creation.
+ * @param formData The FormData object from the recipe form.
+ * @returns A Promise that resolves to a RecipeFormData object.
+ */
 async function parseRecipeFormData(
   formData: FormData,
 ): Promise<RecipeFormData> {
@@ -142,18 +168,31 @@ async function parseRecipeFormData(
   };
 }
 
+/**
+ * Retrieves all ingredients from the database, ordered by name.
+ * @returns A Promise that resolves to an array of ingredients.
+ */
 export async function getIngredients() {
   return db.query.ingredients.findMany({
     orderBy: (ingredients, { asc }) => [asc(ingredients.name)],
   });
 }
 
+/**
+ * Retrieves all recipes from the database, ordered by creation date.
+ * @returns A Promise that resolves to an array of recipes.
+ */
 export async function getRecipes() {
   return db.query.recipes.findMany({
     orderBy: (recipes, { desc }) => [desc(recipes.createdAt)],
   });
 }
 
+/**
+ * Retrieves a recipe by its ID, including its ingredients and steps.
+ * @param id The ID of the recipe.
+ * @returns A Promise that resolves to the recipe or null if not found.
+ */
 export async function getRecipe(id: string) {
   return db.query.recipes.findFirst({
     where: eq(recipes.id, id),
@@ -169,6 +208,11 @@ export async function getRecipe(id: string) {
   });
 }
 
+/**
+ * Retrieves a recipe by its slug, including its ingredients and steps.
+ * @param slug The slug of the recipe.
+ * @returns A Promise that resolves to the recipe or null if not found.
+ */
 export async function getRecipeBySlug(slug: string) {
   return db.query.recipes.findFirst({
     where: eq(recipes.slug, slug),
@@ -184,6 +228,11 @@ export async function getRecipeBySlug(slug: string) {
   });
 }
 
+/**
+ * Creates a new recipe in the database.
+ * @param data The data for the new recipe.
+ * @returns A Promise that resolves to the newly created recipe.
+ */
 export async function createRecipe(data: RecipeFormData) {
   const slug = await generateSlug(data.title);
 
@@ -235,6 +284,12 @@ export async function createRecipeFromForm(formData: FormData) {
   redirect(`/recipes/${recipe.slug}`);
 }
 
+/**
+ * Updates an existing recipe in the database.
+ * @param id The ID of the recipe to update.
+ * @param data The updated data for the recipe.
+ * @returns A Promise that resolves to the updated recipe.
+ */
 export async function updateRecipe(id: string, data: RecipeFormData) {
   const existingRecipe = await getRecipe(id);
 
@@ -296,12 +351,23 @@ export async function updateRecipe(id: string, data: RecipeFormData) {
   return recipe;
 }
 
+/**
+ * Updates an existing recipe in the database from form data.
+ * @param id The ID of the recipe to update.
+ * @param formData The form data containing the updated recipe information.
+ * @returns A Promise that resolves to the updated recipe.
+ */
 export async function updateRecipeFromForm(id: string, formData: FormData) {
   const recipe = await updateRecipe(id, await parseRecipeFormData(formData));
 
   redirect(`/recipes/${recipe.slug}`);
 }
 
+/**
+ * Deletes a recipe from the database.
+ * @param id The ID of the recipe to delete.
+ * @returns A Promise that resolves when the recipe is deleted.
+ */
 export async function deleteRecipe(id: string) {
   await db.delete(recipes).where(eq(recipes.id, id));
   revalidatePath("/");
