@@ -1,14 +1,14 @@
-import { getRecipe } from "@/actions/recipes";
+import { getRecipeBySlug } from "@/actions/recipes";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
 export default async function RecipePage({
   params,
 }: {
-  params: Promise<{ id: string }>;
+  params: Promise<{ slug: string }>;
 }) {
-  const { id } = await params;
-  const recipe = await getRecipe(id);
+  const { slug } = await params;
+  const recipe = await getRecipeBySlug(slug);
 
   if (!recipe) notFound();
 
@@ -16,7 +16,7 @@ export default async function RecipePage({
     <main>
       <div>
         <Link href="/">← Back</Link>
-        <Link href={`/recipes/${id}/edit`}>Edit</Link>
+        <Link href={`/recipes/${slug}/edit`}>Edit</Link>
       </div>
 
       <h1>{recipe.title}</h1>
