@@ -7,7 +7,7 @@ export default async function Home() {
 
   return (
     <main>
-      <AppMenu variant="home" />
+      <AppMenu variant="home" newHref="/recipes/new" />
       {recipes.length === 0 ? (
         <p>No recipes yet.</p>
       ) : (

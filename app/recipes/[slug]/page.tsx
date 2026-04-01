@@ -1,5 +1,4 @@
 import { getRecipeBySlug } from "@/actions/recipes";
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import { AppMenu } from "@/components/app-menu";
 
