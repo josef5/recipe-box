@@ -53,12 +53,14 @@ export function RecipeForm({
   cancelHref,
   ingredientSuggestions,
   initialValues,
+  deleteAction,
 }: {
   action: (formData: FormData) => void | Promise<void>;
   submitLabel: string;
   cancelHref: string;
   ingredientSuggestions: IngredientSuggestion[];
   initialValues?: RecipeFormValues;
+  deleteAction?: () => void | Promise<void>;
 }) {
   const [ingredients, setIngredients] = useState<IngredientField[]>(
     initialValues?.ingredients.length
@@ -376,6 +378,23 @@ export function RecipeForm({
         <Link href={cancelHref} className="rounded-md border px-4 py-2 text-sm">
           Cancel
         </Link>
+        {deleteAction ? (
+          <button
+            type="submit"
+            formAction={deleteAction}
+            formNoValidate
+            onClick={(event) => {
+              if (
+                !window.confirm("Delete this recipe? This cannot be undone.")
+              ) {
+                event.preventDefault();
+              }
+            }}
+            className="rounded-md border border-red-300 px-4 py-2 text-sm text-red-700"
+          >
+            Delete
+          </button>
+        ) : null}
       </div>
     </form>
   );
