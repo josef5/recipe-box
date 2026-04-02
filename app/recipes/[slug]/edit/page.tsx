@@ -1,4 +1,5 @@
 import {
+  deleteRecipeFromForm,
   getIngredients,
   getRecipeBySlug,
   updateRecipeFromForm,
@@ -21,6 +22,7 @@ export default async function EditRecipePage({
 
   const ingredients = await getIngredients();
   const updateRecipeAction = updateRecipeFromForm.bind(null, recipe.id);
+  const deleteAction = deleteRecipeFromForm.bind(null, recipe.id);
 
   return (
     <main>
@@ -59,6 +61,7 @@ export default async function EditRecipePage({
               instruction: step.instruction,
             })),
           }}
+          deleteAction={deleteAction}
         />
       </div>
     </main>
