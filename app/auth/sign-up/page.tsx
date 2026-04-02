@@ -12,13 +12,11 @@ export default function SignUpPage() {
     const name = formData.get("name");
     const email = formData.get("email");
     const password = formData.get("password");
-    const confirmPassword = formData.get("confirmPassword");
 
     if (
       typeof name !== "string" ||
       typeof email !== "string" ||
-      typeof password !== "string" ||
-      typeof confirmPassword !== "string"
+      typeof password !== "string"
     ) {
       setError("Invalid form submission.");
       return;
@@ -26,11 +24,6 @@ export default function SignUpPage() {
 
     if (!name.trim()) {
       setError("Name is required.");
-      return;
-    }
-
-    if (password !== confirmPassword) {
-      setError("Passwords do not match.");
       return;
     }
 
@@ -93,20 +86,6 @@ export default function SignUpPage() {
         <input
           id="password"
           name="password"
-          type="password"
-          required
-          placeholder="*****"
-          className="rounded-md border px-3 py-2 text-sm"
-        />
-      </div>
-
-      <div className="flex w-80 flex-col gap-1.5">
-        <label htmlFor="confirmPassword" className="text-sm font-medium">
-          Confirm password
-        </label>
-        <input
-          id="confirmPassword"
-          name="confirmPassword"
           type="password"
           required
           placeholder="*****"
