@@ -65,19 +65,18 @@
 ### UI components
 
 - `components/app-menu.tsx` — shared nav bar with `variant="home"` and `variant="recipe"` modes; supports `backHref`, `editHref`, `newHref` props
-- `components/recipe-form.tsx` — shared add/edit form; static fields are uncontrolled, dynamic ingredient/step lists are controlled via `useState`; ingredient autocomplete via `<datalist>`
+- `components/recipe-form.tsx` — shared add/edit form; static fields are uncontrolled, dynamic ingredient/step lists are controlled via `useState`; ingredient autocomplete via `<datalist>`; delete action now lives beside save/cancel on the edit screen only
 
 ### Forms
-
-### Delete recipe
-
-- `components/delete-recipe-button.tsx` — client component; wraps `deleteRecipeFromForm` in a `<form>` with a `confirm()` guard; uses `useFormStatus` for pending state
-- `deleteRecipeFromForm(id)` server action — calls `deleteRecipe(id)` then redirects to `/`
-- Delete button rendered on the recipe detail page
 
 - New and edit pages share `RecipeForm`
 - Submit calls `createRecipeFromForm` or `updateRecipeFromForm` (via `.bind`) as server actions
 - `parseRecipeFormData` handles FormData → `RecipeFormData` conversion including `getOrCreateIngredient` for unknown ingredient names
+
+### Delete recipe
+
+- `deleteRecipeFromForm(id)` server action — calls `deleteRecipe(id)` then redirects to `/`
+- Delete action is available from the edit page only and is rendered alongside Save / Cancel in `RecipeForm`
 
 ---
 
