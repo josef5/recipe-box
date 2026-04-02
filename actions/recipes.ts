@@ -6,6 +6,7 @@ import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { generateSlug } from "@/lib/slug";
 import { redirect } from "next/navigation";
+import { desc, ilike, or } from "drizzle-orm";
 
 export type RecipeFormData = {
   title: string;
@@ -179,12 +180,25 @@ export async function getIngredients() {
 }
 
 /**
- * Retrieves all recipes from the database, ordered by creation date.
+ * Retrieves recipes from the database, optionally filtered by a search query.
+ * @param query The search query to filter recipes by title or description.
  * @returns A Promise that resolves to an array of recipes.
  */
-export async function getRecipes() {
+export async function getRecipes(query?: string) {
+  const trimmedQuery = query?.trim();
+
+  if (!trimmedQuery) {
+    return db.query.recipes.findMany({
+      orderBy: desc(recipes.createdAt),
+    });
+  }
+
   return db.query.recipes.findMany({
-    orderBy: (recipes, { desc }) => [desc(recipes.createdAt)],
+    where: or(
+      ilike(recipes.title, `%${trimmedQuery}%`),
+      ilike(recipes.description, `%${trimmedQuery}%`),
+    ),
+    orderBy: desc(recipes.createdAt),
   });
 }
 
