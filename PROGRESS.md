@@ -54,6 +54,7 @@
 ### Routing
 
 - `app/page.tsx` — recipe list (server component)
+- `app/account/page.tsx` — protected account page with profile summary and basic account actions
 - `app/recipes/[slug]/page.tsx` — recipe detail
 - `app/recipes/[slug]/edit/page.tsx` — edit recipe form; owner only
 - `app/recipes/new/page.tsx` — new recipe form; sign-in required
@@ -71,10 +72,11 @@
 - Google OAuth works with Neon shared credentials in dev; needs custom credentials in prod
 - Email/password sign-in/sign-up implemented
 - Current signed-in user is used to gate create/edit/delete access and menu links
+- Signed-in users have a protected `/account` page for profile details and sign-out
 
 ### UI components
 
-- `components/app-menu.tsx` — shared nav bar with `variant="home"` and `variant="recipe"` modes; supports `backHref`, `editHref`, `newHref`, `authHref`, and `authLabel` props
+- `components/app-menu.tsx` — shared nav bar with `variant="home"` and `variant="recipe"` modes; reads auth state client-side, shows the signed-in user's name as a link to `/account`, and shows sign-in only when signed out
 - `components/recipe-form.tsx` — shared add/edit form; static fields are uncontrolled, dynamic ingredient/step lists are controlled via `useState`; ingredient autocomplete via `<datalist>`; delete action now lives beside save/cancel on the edit screen only
 
 ### Forms
@@ -111,6 +113,7 @@
 - [ ] **Styling pass** — consistent layout, typography, spacing across all pages
 - [ ] **Image uploads** — Vercel Blob integration, image field on recipe form
 - [ ] **Expanded auth** — confirm email/password + Google OAuth work end-to-end in prod
+- [ ] **Account UX polish** — refine the account page layout and decide which settings should be promoted into first-class app flows
 - [ ] **Deployment** — Vercel, production environment variables, custom Google OAuth credentials
 
 ---
@@ -142,7 +145,7 @@ pnpm db:seed        # seed database with placeholder recipes
 
 - Writes use UUID `id` internally; all user-facing navigation uses `slug`
 - Recipes are publicly viewable; only signed-in users can create recipes, and only the owner can edit or delete them
-- The home menu hides the sign-in link whenever `getCurrentUserId()` returns a user ID from the current auth session
+- The menu now reads auth state client-side, shows the signed-in user's name as an account link, and shows sign-in only when signed out
 - No legacy `/recipes/:id` redirect — old ID links will 404
 - `RecipeForm` uses a hybrid controlled/uncontrolled approach: static fields use `defaultValue` (uncontrolled), dynamic ingredient and step lists use `useState` (controlled). This is intentional — server actions receive `FormData` natively so uncontrolled is the natural fit for stable fields, but dynamic list rows need React state to add/remove entries
 - Unknown ingredient names typed into the form are automatically created as global ingredients on submit
