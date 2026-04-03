@@ -17,6 +17,7 @@
 
 - Four tables: `recipes`, `ingredients`, `recipe_ingredients` (join), `steps`
 - `recipes` has a `slug` column — unique, non-null, derived from title
+- `recipes` has an optional `userId` owner field for authorization
 - `recipe_ingredients` stores per-recipe amount, unit, notes, sort_order
 - `steps` ordered by `step_number`
 - Migrations in `/drizzle`; run with `pnpm db:migrate`
@@ -32,25 +33,31 @@
 - Uses `slugify` for base slug from title
 - Appends a random 4-char suffix if slug already taken
 
+### Search
+
+- Home page supports basic search via `q` query param
+- Search filters recipes by `title` and `description`
+
 ### Server actions (`actions/recipes.ts`)
 
 - `getRecipes()` — all recipes ordered by created date
 - `getRecipe(id)` — single recipe by id (used internally by writes)
 - `getRecipeBySlug(slug)` — single recipe by slug with ingredients and steps
 - `getIngredients()` — all global ingredients ordered alphabetically
-- `createRecipe(data)` — inserts recipe + ingredients + steps; generates slug
+- `createRecipe(data)` — requires sign-in; inserts recipe + ingredients + steps; generates slug; stores owner
 - `createRecipeFromForm(formData)` — parses FormData, calls createRecipe, redirects to slug page
-- `updateRecipe(id, data)` — updates recipe; regenerates slug if title changes; deletes and re-inserts ingredients and steps
+- `updateRecipe(id, data)` — only owner can update; regenerates slug if title changes; deletes and re-inserts ingredients and steps
 - `updateRecipeFromForm(id, formData)` — parses FormData, calls updateRecipe, redirects to slug page
-- `deleteRecipe(id)` — deletes recipe
+- `deleteRecipe(id)` — only owner can delete
 
 ### Routing
 
 - `app/page.tsx` — recipe list (server component)
 - `app/recipes/[slug]/page.tsx` — recipe detail
-- `app/recipes/[slug]/edit/page.tsx` — edit recipe form
-- `app/recipes/new/page.tsx` — new recipe form
+- `app/recipes/[slug]/edit/page.tsx` — edit recipe form; owner only
+- `app/recipes/new/page.tsx` — new recipe form; sign-in required
 - `app/auth/sign-in/page.tsx` — sign in (email/password + Google OAuth)
+- `app/auth/sign-up/page.tsx` — sign up (name, email/password + Google OAuth)
 - `app/api/auth/[...path]/route.ts` — auth handler proxy
 - Old `[id]` route removed; no backward compatibility redirect
 
@@ -58,13 +65,15 @@
 
 - `server.ts` — `createNeonAuth()` with `NEON_AUTH_BASE_URL` and `NEON_AUTH_COOKIE_SECRET`
 - `client.ts` — `createAuthClient()`
+- `session.ts` — helpers to read the current signed-in user in server components and actions
 - `proxy.ts` (project root) — protects routes via `auth.middleware()`, redirects to `/auth/sign-in`
 - Google OAuth works with Neon shared credentials in dev; needs custom credentials in prod
-- Email/password sign-in implemented
+- Email/password sign-in/sign-up implemented
+- Current signed-in user is used to gate create/edit/delete access and menu links
 
 ### UI components
 
-- `components/app-menu.tsx` — shared nav bar with `variant="home"` and `variant="recipe"` modes; supports `backHref`, `editHref`, `newHref` props
+- `components/app-menu.tsx` — shared nav bar with `variant="home"` and `variant="recipe"` modes; supports `backHref`, `editHref`, `newHref`, `authHref`, and `authLabel` props
 - `components/recipe-form.tsx` — shared add/edit form; static fields are uncontrolled, dynamic ingredient/step lists are controlled via `useState`; ingredient autocomplete via `<datalist>`; delete action now lives beside save/cancel on the edit screen only
 
 ### Forms
@@ -78,13 +87,23 @@
 - `deleteRecipeFromForm(id)` server action — calls `deleteRecipe(id)` then redirects to `/`
 - Delete action is available from the edit page only and is rendered alongside Save / Cancel in `RecipeForm`
 
+### Ownership & authorization
+
+- Recipes are publicly viewable
+- New recipe creation requires a signed-in user
+- Only the recipe owner can edit or delete a recipe
+- Home page only shows `New Recipe` when a current user is present
+- Detail page only shows `Edit` for the owner
+- Existing older recipes may remain unowned until recreated or backfilled
+- Live database schema was repaired to ensure `recipes.user_id` exists after migration drift
+
 ---
 
 ## Todo
 
 ### Next up
 
-- [ ] **Search** — filter on the list page (search params + server-side query)
+- [ ] **Auth/ownership verification** — verify sign-in/sign-up flows and confirm create/edit/delete ownership behavior end-to-end
 
 ### Remaining backlog
 
@@ -120,6 +139,8 @@ pnpm db:seed        # seed database with placeholder recipes
 ## Notes / decisions
 
 - Writes use UUID `id` internally; all user-facing navigation uses `slug`
+- Recipes are publicly viewable; only signed-in users can create recipes, and only the owner can edit or delete them
+- The home menu hides the sign-in link whenever `getCurrentUserId()` returns a user ID from the current auth session
 - No legacy `/recipes/:id` redirect — old ID links will 404
 - `RecipeForm` uses a hybrid controlled/uncontrolled approach: static fields use `defaultValue` (uncontrolled), dynamic ingredient and step lists use `useState` (controlled). This is intentional — server actions receive `FormData` natively so uncontrolled is the natural fit for stable fields, but dynamic list rows need React state to add/remove entries
 - Unknown ingredient names typed into the form are automatically created as global ingredients on submit
