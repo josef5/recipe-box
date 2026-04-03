@@ -1,12 +1,20 @@
 import { auth } from "@/lib/auth/server";
 import { redirect } from "next/navigation";
 
+type GetSessionOptions = Parameters<typeof auth.getSession>[0];
+
+const freshSessionOptions = {
+  query: {
+    disableCookieCache: "true",
+  },
+} as GetSessionOptions;
+
 /**
  * Retrieves the current signed-in user from Neon Auth.
  * @returns The current user or null if no session exists.
  */
 export async function getCurrentUser() {
-  const { data: session } = await auth.getSession();
+  const { data: session } = await auth.getSession(freshSessionOptions);
   return session?.user ?? null;
 }
 
