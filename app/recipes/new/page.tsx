@@ -3,6 +3,8 @@ import { AppMenu } from "@/components/app-menu";
 import { RecipeForm } from "@/components/recipe-form";
 import { requireCurrentUserId } from "@/lib/auth/session";
 
+export const dynamic = "force-dynamic";
+
 export default async function NewRecipePage() {
   await requireCurrentUserId();
   const ingredients = await getIngredients();

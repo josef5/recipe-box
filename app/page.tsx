@@ -3,6 +3,8 @@ import { AppMenu } from "@/components/app-menu";
 import { getCurrentUserId } from "@/lib/auth/session";
 import Link from "next/link";
 
+export const dynamic = "force-dynamic";
+
 export default async function Home({
   searchParams,
 }: {
