@@ -19,6 +19,8 @@ export function AppMenu({
 }) {
   const { data: session, isPending } = authClient.useSession();
   const isSignedIn = Boolean(session?.user?.id);
+  const accountLabel =
+    session?.user?.name?.trim() || session?.user?.email || "Account";
   const showNewRecipe = isPending ? Boolean(newHref) : isSignedIn;
   const showSignIn = isPending ? false : !isSignedIn;
   const showLiveSignOut = isPending ? false : isSignedIn;
@@ -34,6 +36,7 @@ export function AppMenu({
           {showNewRecipe && (
             <Link href={newHref ?? "/recipes/new"}>New Recipe</Link>
           )}
+          {showLiveSignOut && <Link href="/account">{accountLabel}</Link>}
           {showSignIn && <Link href="/auth/sign-in">Sign In</Link>}
           {showLiveSignOut && <SignOutButton />}
         </div>
@@ -46,6 +49,7 @@ export function AppMenu({
         <div className="flex items-center space-x-4">
           <Link href={backHref}>Back</Link>
           {canShowEdit && editHref && <Link href={editHref}>Edit</Link>}
+          {showLiveSignOut && <Link href="/account">{accountLabel}</Link>}
           {showLiveSignOut && <SignOutButton />}
         </div>
       </div>
