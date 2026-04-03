@@ -1,8 +1,10 @@
 import { createRecipeFromForm, getIngredients } from "@/actions/recipes";
 import { AppMenu } from "@/components/app-menu";
 import { RecipeForm } from "@/components/recipe-form";
+import { requireCurrentUserId } from "@/lib/auth/session";
 
 export default async function NewRecipePage() {
+  await requireCurrentUserId();
   const ingredients = await getIngredients();
 
   return (

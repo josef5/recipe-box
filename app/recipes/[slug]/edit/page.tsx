@@ -6,6 +6,7 @@ import {
 } from "@/actions/recipes";
 import { AppMenu } from "@/components/app-menu";
 import { RecipeForm } from "@/components/recipe-form";
+import { requireCurrentUserId } from "@/lib/auth/session";
 import { notFound } from "next/navigation";
 
 export default async function EditRecipePage({
@@ -14,9 +15,10 @@ export default async function EditRecipePage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
+  const currentUserId = await requireCurrentUserId();
   const recipe = await getRecipeBySlug(slug);
 
-  if (!recipe) {
+  if (!recipe || recipe.userId !== currentUserId) {
     notFound();
   }
 

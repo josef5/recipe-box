@@ -1,5 +1,6 @@
 import { getRecipes } from "@/actions/recipes";
 import { AppMenu } from "@/components/app-menu";
+import { getCurrentUserId } from "@/lib/auth/session";
 import Link from "next/link";
 
 export default async function Home({
@@ -9,11 +10,17 @@ export default async function Home({
 }) {
   const params = searchParams ? await searchParams : undefined;
   const query = params?.q?.trim() ?? "";
+  const currentUserId = await getCurrentUserId();
   const recipes = await getRecipes(query);
 
   return (
     <main>
-      <AppMenu variant="home" newHref="/recipes/new" />
+      <AppMenu
+        variant="home"
+        newHref={currentUserId ? "/recipes/new" : undefined}
+        authHref={currentUserId ? undefined : "/auth/sign-in"}
+        authLabel={currentUserId ? undefined : "Sign In"}
+      />
       <div className="flex flex-col gap-4">
         <h1 className="">Recipes</h1>
 
