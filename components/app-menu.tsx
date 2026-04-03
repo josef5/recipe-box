@@ -11,7 +11,7 @@ export function AppMenu({
   editOwnerUserId,
   newHref,
 }: {
-  variant: "home" | "recipe";
+  variant: "home" | "recipe" | "account" | "modal";
   backHref?: string;
   editHref?: string;
   editOwnerUserId?: string | null;
@@ -19,8 +19,8 @@ export function AppMenu({
 }) {
   const { data: session, isPending } = authClient.useSession();
   const isSignedIn = Boolean(session?.user?.id);
-  const accountLabel =
-    session?.user?.name?.trim() || session?.user?.email || "Account";
+  // const accountLabel =
+  //   session?.user?.name?.trim() || session?.user?.email || "Account";
   const showNewRecipe = isPending ? Boolean(newHref) : isSignedIn;
   const showSignIn = isPending ? false : !isSignedIn;
   const showLiveSignOut = isPending ? false : isSignedIn;
@@ -36,7 +36,7 @@ export function AppMenu({
           {showNewRecipe && (
             <Link href={newHref ?? "/recipes/new"}>New Recipe</Link>
           )}
-          {showLiveSignOut && <Link href="/account">{accountLabel}</Link>}
+          {showLiveSignOut && <Link href="/account">Account</Link>}
           {showSignIn && <Link href="/auth/sign-in">Sign In</Link>}
           {showLiveSignOut && <SignOutButton />}
         </div>
@@ -47,10 +47,30 @@ export function AppMenu({
       <div className="flex items-center justify-between mb-8">
         <h1>Recipe Box</h1>
         <div className="flex items-center space-x-4">
-          <Link href={backHref}>Back</Link>
+          <Link href={"/"}>Home</Link>
           {canShowEdit && editHref && <Link href={editHref}>Edit</Link>}
-          {showLiveSignOut && <Link href="/account">{accountLabel}</Link>}
+          {showLiveSignOut && <Link href="/account">Account</Link>}
           {showLiveSignOut && <SignOutButton />}
+        </div>
+      </div>
+    );
+  } else if (variant === "account") {
+    return (
+      <div className="flex items-center justify-between mb-8">
+        <h1>Recipe Box</h1>
+        <div className="flex items-center space-x-4">
+          <Link href={"/"}>Home</Link>
+          {showLiveSignOut && <SignOutButton />}
+        </div>
+      </div>
+    );
+  } else if (variant === "modal") {
+    return (
+      <div className="flex items-center justify-between mb-8">
+        <h1>Recipe Box</h1>
+        <div className="flex items-center space-x-4">
+          <Link href={backHref}>Back</Link>
+          {/* {showLiveSignOut && <SignOutButton />} */}
         </div>
       </div>
     );

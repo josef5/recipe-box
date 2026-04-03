@@ -30,7 +30,7 @@ export default async function EditRecipePage({
 
   return (
     <main>
-      <AppMenu variant="recipe" backHref={`/recipes/${recipe.slug}`} />
+      <AppMenu variant="modal" backHref={`/recipes/${recipe.slug}`} />
       <div className="flex flex-col gap-8">
         <div className="flex items-start justify-between gap-4">
           <h1 className="text-2xl font-bold">Edit recipe</h1>

@@ -9,7 +9,7 @@ export default async function AccountPage() {
 
   return (
     <main>
-      <AppMenu variant="recipe" backHref="/" />
+      <AppMenu variant="account" backHref="/" />
 
       <div className="mx-auto flex w-full max-w-3xl flex-col gap-8">
         <header className="flex flex-col gap-2">
