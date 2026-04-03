@@ -1,5 +1,7 @@
+"use client";
+
+import { authClient } from "@/lib/auth/client";
 import Link from "next/link";
-import React from "react";
 import { SignOutButton } from "@/components/sign-out-button";
 
 export function AppMenu({
@@ -19,14 +21,24 @@ export function AppMenu({
   authLabel?: string;
   showSignOut?: boolean;
 }) {
+  const { data: session, isPending } = authClient.useSession();
+  const isSignedIn = Boolean(session?.user?.id);
+  const showNewRecipe = isPending ? Boolean(newHref) : isSignedIn;
+  const showSignIn = isPending ? Boolean(authHref && authLabel) : !isSignedIn;
+  const showLiveSignOut = isPending ? Boolean(showSignOut) : isSignedIn;
+
   if (variant === "home") {
     return (
       <div className="flex items-center justify-between mb-8">
         <h1>Recipe Box</h1>
         <div className="flex items-center space-x-4">
-          {newHref && <Link href={newHref}>New Recipe</Link>}
-          {authHref && authLabel && <Link href={authHref}>{authLabel}</Link>}
-          {showSignOut && <SignOutButton />}
+          {showNewRecipe && (
+            <Link href={newHref ?? "/recipes/new"}>New Recipe</Link>
+          )}
+          {showSignIn && authLabel && (
+            <Link href={authHref ?? "/auth/sign-in"}>{authLabel}</Link>
+          )}
+          {showLiveSignOut && <SignOutButton />}
         </div>
       </div>
     );
@@ -37,7 +49,7 @@ export function AppMenu({
         <div className="flex items-center space-x-4">
           <Link href={backHref}>Back</Link>
           {editHref && <Link href={editHref}>Edit</Link>}
-          {showSignOut && <SignOutButton />}
+          {showLiveSignOut && <SignOutButton />}
         </div>
       </div>
     );
