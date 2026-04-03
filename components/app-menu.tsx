@@ -28,10 +28,12 @@ export function AppMenu({
     Boolean(editHref) &&
     (editOwnerUserId ? session?.user?.id === editOwnerUserId : true);
 
-  if (variant === "home") {
-    return (
-      <div className="flex items-center justify-between mb-8">
+  return (
+    <div className="flex items-center justify-between mb-8">
+      <Link href={"/"}>
         <h1>Recipe Box</h1>
+      </Link>
+      {variant === "home" ? (
         <div className="flex items-center space-x-4">
           {showNewRecipe && (
             <Link href={newHref ?? "/recipes/new"}>New Recipe</Link>
@@ -40,41 +42,23 @@ export function AppMenu({
           {showSignIn && <Link href="/auth/sign-in">Sign In</Link>}
           {showLiveSignOut && <SignOutButton />}
         </div>
-      </div>
-    );
-  } else if (variant === "recipe") {
-    return (
-      <div className="flex items-center justify-between mb-8">
-        <h1>Recipe Box</h1>
+      ) : variant === "recipe" ? (
         <div className="flex items-center space-x-4">
           <Link href={"/"}>Home</Link>
           {canShowEdit && editHref && <Link href={editHref}>Edit</Link>}
           {showLiveSignOut && <Link href="/account">Account</Link>}
           {showLiveSignOut && <SignOutButton />}
         </div>
-      </div>
-    );
-  } else if (variant === "account") {
-    return (
-      <div className="flex items-center justify-between mb-8">
-        <h1>Recipe Box</h1>
+      ) : variant === "account" ? (
         <div className="flex items-center space-x-4">
           <Link href={"/"}>Home</Link>
           {showLiveSignOut && <SignOutButton />}
         </div>
-      </div>
-    );
-  } else if (variant === "modal") {
-    return (
-      <div className="flex items-center justify-between mb-8">
-        <h1>Recipe Box</h1>
+      ) : variant === "modal" ? (
         <div className="flex items-center space-x-4">
           <Link href={backHref}>Back</Link>
-          {/* {showLiveSignOut && <SignOutButton />} */}
         </div>
-      </div>
-    );
-  }
-
-  return null;
+      ) : null}
+    </div>
+  );
 }
