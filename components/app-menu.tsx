@@ -6,11 +6,15 @@ export function AppMenu({
   backHref = "/",
   editHref,
   newHref,
+  authHref,
+  authLabel,
 }: {
   variant: "home" | "recipe";
   backHref?: string;
   editHref?: string;
   newHref?: string;
+  authHref?: string;
+  authLabel?: string;
 }) {
   if (variant === "home") {
     return (
@@ -18,7 +22,7 @@ export function AppMenu({
         <h1>Recipe Box</h1>
         <div className="flex items-center space-x-4">
           {newHref && <Link href={newHref}>New Recipe</Link>}
-          <Link href="/auth/sign-in">Sign In</Link>
+          {authHref && authLabel && <Link href={authHref}>{authLabel}</Link>}
         </div>
       </div>
     );
