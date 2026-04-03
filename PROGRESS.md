@@ -27,6 +27,7 @@
 - Added `slug` to schema (`db/schema.ts`)
 - Migration `0001_recipe_slug.sql` backfills existing rows using title → slug transformation, handles duplicates, then enforces `NOT NULL` + `UNIQUE`
 - Seed script (`scripts/seed.ts`) generates slugs via `generateSlug()` on insert
+- Seed script supports optional `SEED_USER_ID` to assign ownership to dummy recipes without deleting them
 
 ### Slug helper (`lib/slug.ts`)
 
@@ -120,6 +121,7 @@
 DATABASE_URL=
 NEON_AUTH_BASE_URL=
 NEON_AUTH_COOKIE_SECRET=
+SEED_USER_ID=    # optional, used only when seeding owned dummy recipes
 ```
 
 ## Package scripts

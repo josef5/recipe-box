@@ -1,6 +1,7 @@
 import { db } from "../db";
 import { recipes, ingredients, recipeIngredients, steps } from "../db/schema";
 import { generateSlug } from "../lib/slug";
+import { eq, inArray, isNull } from "drizzle-orm";
 
 const ingredientData = [
   { name: "Plain flour", defaultUnit: "g" },
@@ -95,6 +96,22 @@ const recipeData = [
 async function seed() {
   console.log("Seeding database...");
 
+  const seedUserId = process.env.SEED_USER_ID?.trim() || undefined;
+
+  if (seedUserId) {
+    const backfilledRecipes = await db
+      .update(recipes)
+      .set({ userId: seedUserId })
+      .where(isNull(recipes.userId))
+      .returning({ id: recipes.id });
+
+    console.log(
+      `Assigned owner to ${backfilledRecipes.length} existing unowned recipes`,
+    );
+  } else {
+    console.log("No SEED_USER_ID provided; recipes will remain unowned.");
+  }
+
   // Insert ingredients
   const insertedIngredients = await db
     .insert(ingredients)
@@ -108,13 +125,47 @@ async function seed() {
   const allIngredients = await db.query.ingredients.findMany();
   const ingredientMap = new Map(allIngredients.map((i) => [i.name, i.id]));
 
+  const existingRecipes = await db.query.recipes.findMany({
+    where: inArray(
+      recipes.title,
+      recipeData.map((recipe) => recipe.title),
+    ),
+    columns: {
+      id: true,
+      title: true,
+      userId: true,
+    },
+  });
+
+  const existingRecipeMap = new Map(
+    existingRecipes.map((recipe) => [recipe.title, recipe]),
+  );
+
   // Insert recipes
   for (const recipe of recipeData) {
+    const existingRecipe = existingRecipeMap.get(recipe.title);
+
+    if (existingRecipe) {
+      if (seedUserId && !existingRecipe.userId) {
+        await db
+          .update(recipes)
+          .set({ userId: seedUserId })
+          .where(eq(recipes.id, existingRecipe.id));
+
+        console.log(`Assigned owner to existing recipe: ${recipe.title}`);
+      } else {
+        console.log(`Skipped existing recipe: ${recipe.title}`);
+      }
+
+      continue;
+    }
+
     const slug = await generateSlug(recipe.title);
 
     const [inserted] = await db
       .insert(recipes)
       .values({
+        userId: seedUserId,
         slug,
         title: recipe.title,
         description: recipe.description,
