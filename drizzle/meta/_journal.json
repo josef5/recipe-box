@@ -15,6 +15,13 @@
       "when": 1774726948852,
       "tag": "0001_recipe_slug",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1774726948853,
+      "tag": "0002_recipe_owner",
+      "breakpoints": true
     }
   ]
 }
