@@ -28,6 +28,21 @@ export async function getCurrentUserId() {
 }
 
 /**
+ * Ensures a user is signed in and returns the user object.
+ * Redirects to sign-in if no session exists.
+ * @returns The current signed-in user.
+ */
+export async function requireCurrentUser() {
+  const user = await getCurrentUser();
+
+  if (!user) {
+    redirect("/auth/sign-in");
+  }
+
+  return user;
+}
+
+/**
  * Ensures a user is signed in and returns their ID.
  * Redirects to sign-in if no session exists.
  * @returns The current signed-in user's ID.
