@@ -20,6 +20,7 @@ export default async function Home({
         newHref={currentUserId ? "/recipes/new" : undefined}
         authHref={currentUserId ? undefined : "/auth/sign-in"}
         authLabel={currentUserId ? undefined : "Sign In"}
+        showSignOut={Boolean(currentUserId)}
       />
       <div className="flex flex-col gap-4">
         <h1 className="">Recipes</h1>

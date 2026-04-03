@@ -1,5 +1,6 @@
 import Link from "next/link";
 import React from "react";
+import { SignOutButton } from "@/components/sign-out-button";
 
 export function AppMenu({
   variant,
@@ -8,6 +9,7 @@ export function AppMenu({
   newHref,
   authHref,
   authLabel,
+  showSignOut,
 }: {
   variant: "home" | "recipe";
   backHref?: string;
@@ -15,6 +17,7 @@ export function AppMenu({
   newHref?: string;
   authHref?: string;
   authLabel?: string;
+  showSignOut?: boolean;
 }) {
   if (variant === "home") {
     return (
@@ -23,6 +26,7 @@ export function AppMenu({
         <div className="flex items-center space-x-4">
           {newHref && <Link href={newHref}>New Recipe</Link>}
           {authHref && authLabel && <Link href={authHref}>{authLabel}</Link>}
+          {showSignOut && <SignOutButton />}
         </div>
       </div>
     );
@@ -33,6 +37,7 @@ export function AppMenu({
         <div className="flex items-center space-x-4">
           <Link href={backHref}>Back</Link>
           {editHref && <Link href={editHref}>Edit</Link>}
+          {showSignOut && <SignOutButton />}
         </div>
       </div>
     );

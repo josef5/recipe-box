@@ -23,6 +23,7 @@ export default async function RecipePage({
             ? `/recipes/${slug}/edit`
             : undefined
         }
+        showSignOut={Boolean(currentUserId)}
       />
 
       <h1>{recipe.title}</h1>
