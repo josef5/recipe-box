@@ -5,8 +5,9 @@ import { ingredients, recipes, recipeIngredients, steps } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { generateSlug } from "@/lib/slug";
-import { redirect } from "next/navigation";
+import { forbidden, redirect } from "next/navigation";
 import { desc, ilike, or } from "drizzle-orm";
+import { requireCurrentUserId } from "@/lib/auth/session";
 
 export type RecipeFormData = {
   title: string;
@@ -170,6 +171,26 @@ async function parseRecipeFormData(
 }
 
 /**
+ * Retrieves a recipe by ID and ensures the current user owns it.
+ * @param id The ID of the recipe.
+ * @returns The owned recipe.
+ */
+async function getOwnedRecipe(id: string) {
+  const userId = await requireCurrentUserId();
+  const recipe = await getRecipe(id);
+
+  if (!recipe) {
+    throw new Error("Recipe not found");
+  }
+
+  if (recipe.userId !== userId) {
+    forbidden();
+  }
+
+  return recipe;
+}
+
+/**
  * Retrieves all ingredients from the database, ordered by name.
  * @returns A Promise that resolves to an array of ingredients.
  */
@@ -248,11 +269,13 @@ export async function getRecipeBySlug(slug: string) {
  * @returns A Promise that resolves to the newly created recipe.
  */
 export async function createRecipe(data: RecipeFormData) {
+  const userId = await requireCurrentUserId();
   const slug = await generateSlug(data.title);
 
   const [recipe] = await db
     .insert(recipes)
     .values({
+      userId,
       slug,
       title: data.title,
       description: data.description,
@@ -305,11 +328,7 @@ export async function createRecipeFromForm(formData: FormData) {
  * @returns A Promise that resolves to the updated recipe.
  */
 export async function updateRecipe(id: string, data: RecipeFormData) {
-  const existingRecipe = await getRecipe(id);
-
-  if (!existingRecipe) {
-    throw new Error("Recipe not found");
-  }
+  const existingRecipe = await getOwnedRecipe(id);
 
   const slug =
     existingRecipe.title !== data.title
@@ -383,6 +402,7 @@ export async function updateRecipeFromForm(id: string, formData: FormData) {
  * @returns A Promise that resolves when the recipe is deleted.
  */
 export async function deleteRecipe(id: string) {
+  await getOwnedRecipe(id);
   await db.delete(recipes).where(eq(recipes.id, id));
   revalidatePath("/");
 }
