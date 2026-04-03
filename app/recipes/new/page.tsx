@@ -11,7 +11,7 @@ export default async function NewRecipePage() {
 
   return (
     <main>
-      <AppMenu variant="recipe" backHref="/" showSignOut />
+      <AppMenu variant="recipe" backHref="/" />
       <div className="flex flex-col gap-8">
         <div>
           <h1 className="text-2xl font-bold">Add recipe</h1>

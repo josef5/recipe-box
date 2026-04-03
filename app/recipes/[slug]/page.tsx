@@ -1,9 +1,6 @@
 import { getRecipeBySlug } from "@/actions/recipes";
 import { notFound } from "next/navigation";
 import { AppMenu } from "@/components/app-menu";
-import { getCurrentUserId } from "@/lib/auth/session";
-
-export const dynamic = "force-dynamic";
 
 export default async function RecipePage({
   params,
@@ -11,7 +8,6 @@ export default async function RecipePage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const currentUserId = await getCurrentUserId();
   const recipe = await getRecipeBySlug(slug);
 
   if (!recipe) notFound();
@@ -20,12 +16,8 @@ export default async function RecipePage({
     <main>
       <AppMenu
         variant="recipe"
-        editHref={
-          recipe.userId && recipe.userId === currentUserId
-            ? `/recipes/${slug}/edit`
-            : undefined
-        }
-        showSignOut={Boolean(currentUserId)}
+        editHref={recipe.userId ? `/recipes/${slug}/edit` : undefined}
+        editOwnerUserId={recipe.userId}
       />
 
       <h1>{recipe.title}</h1>
