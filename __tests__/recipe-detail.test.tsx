@@ -1,0 +1,99 @@
+import { RecipeDetail } from "@/components/recipe-detail";
+import { render, screen } from "@testing-library/react";
+import { describe, expect, it, vi } from "vitest";
+
+vi.mock("@/components/app-menu", () => ({
+  AppMenu: ({ variant }: { variant: string }) => (
+    <div data-testid="app-menu">{variant}</div>
+  ),
+}));
+
+describe("RecipeDetail", () => {
+  it("renders recipe metadata, ingredients, and steps", () => {
+    render(
+      <RecipeDetail
+        actions={<button type="button">Favorite</button>}
+        recipe={{
+          title: "Chocolate Cake",
+          description: "A rich cake for celebrations.",
+          prepTimeMins: 25,
+          cookTimeMins: 35,
+          servings: 8,
+          sourceName: "Grandma's Notes",
+          sourceUrl: "https://example.com/chocolate-cake",
+          recipeIngredients: [
+            {
+              id: "ingredient-1",
+              amount: "2",
+              unit: "cups",
+              notes: "sifted",
+              ingredient: {
+                name: "Flour",
+              },
+            },
+            {
+              id: "ingredient-2",
+              amount: "1",
+              unit: "cup",
+              notes: null,
+              ingredient: {
+                name: "Sugar",
+              },
+            },
+          ],
+          steps: [
+            {
+              id: "step-1",
+              instruction: "Mix the dry ingredients.",
+            },
+            {
+              id: "step-2",
+              instruction: "Bake until set.",
+            },
+          ],
+        }}
+      />,
+    );
+
+    expect(screen.getByTestId("app-menu")).toHaveTextContent("recipe");
+    expect(
+      screen.getByRole("heading", { name: "Chocolate Cake" }),
+    ).toBeVisible();
+    expect(screen.getByRole("button", { name: "Favorite" })).toBeVisible();
+    expect(screen.getByText("A rich cake for celebrations.")).toBeVisible();
+    expect(screen.getByText("Prep: 25m")).toBeVisible();
+    expect(screen.getByText("Cook: 35m")).toBeVisible();
+    expect(screen.getByText("Serves: 8")).toBeVisible();
+    expect(
+      screen.getByRole("link", { name: "Grandma's Notes" }),
+    ).toHaveAttribute("href", "https://example.com/chocolate-cake");
+    expect(screen.getByText("Flour")).toBeVisible();
+    expect(screen.getByText("Sugar")).toBeVisible();
+    expect(screen.getByText("(sifted)")).toBeVisible();
+    expect(screen.getByText("Mix the dry ingredients.")).toBeVisible();
+    expect(screen.getByText("Bake until set.")).toBeVisible();
+  });
+
+  it("omits optional metadata when it is not provided", () => {
+    render(
+      <RecipeDetail
+        recipe={{
+          title: "Plain Rice",
+          description: null,
+          prepTimeMins: null,
+          cookTimeMins: null,
+          servings: null,
+          sourceName: null,
+          sourceUrl: null,
+          recipeIngredients: [],
+          steps: [],
+        }}
+      />,
+    );
+
+    expect(screen.queryByText(/^Prep:/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/^Cook:/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/^Serves:/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/^Source:/)).not.toBeInTheDocument();
+  });
+});
