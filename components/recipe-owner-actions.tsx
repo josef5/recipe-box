@@ -20,6 +20,7 @@ export function RecipeOwnerActions({
     <div className="flex items-center gap-3">
       <Link
         href={editHref}
+        scroll={false} // prevent scroll to top on navigation since the form is above the fold
         className="rounded-md border px-4 py-2 text-sm font-medium"
       >
         Edit Recipe
