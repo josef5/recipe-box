@@ -63,18 +63,4 @@ describe("AppMenu", () => {
     );
     expect(screen.getByRole("button", { name: "Sign Out" })).toBeVisible();
   });
-
-  it("renders a modal back link when used in modal mode", () => {
-    authMocks.useSession.mockReturnValue({
-      data: null,
-      isPending: false,
-    });
-
-    render(<AppMenu variant="modal" backHref="/recipes/chocolate-cake" />);
-
-    expect(screen.getByRole("link", { name: "Back" })).toHaveAttribute(
-      "href",
-      "/recipes/chocolate-cake",
-    );
-  });
 });
