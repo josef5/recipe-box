@@ -24,6 +24,17 @@ describe("HomeActions", () => {
     expect(container).toBeEmptyDOMElement();
   });
 
+  it("renders nothing for signed-out users", () => {
+    authMocks.useSession.mockReturnValue({
+      data: null,
+      isPending: false,
+    });
+
+    const { container } = render(<HomeActions />);
+
+    expect(container).toBeEmptyDOMElement();
+  });
+
   it("renders the new recipe link for signed-in users", () => {
     authMocks.useSession.mockReturnValue({
       data: {

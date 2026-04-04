@@ -13,6 +13,22 @@ vi.mock("@/lib/auth/client", () => ({
 }));
 
 describe("RecipeOwnerActions", () => {
+  it("renders nothing for signed-out users", () => {
+    authMocks.useSession.mockReturnValue({
+      data: null,
+      isPending: false,
+    });
+
+    const { container } = render(
+      <RecipeOwnerActions
+        recipeUserId="user-1"
+        editHref="/recipes/chocolate-cake/edit"
+      />,
+    );
+
+    expect(container).toBeEmptyDOMElement();
+  });
+
   it("renders nothing for non-owners", () => {
     authMocks.useSession.mockReturnValue({
       data: {
