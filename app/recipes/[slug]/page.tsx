@@ -1,6 +1,16 @@
-import { getRecipeBySlug } from "@/actions/recipes";
-import { notFound } from "next/navigation";
 import { AppMenu } from "@/components/app-menu";
+import { RecipeOwnerActions } from "@/components/recipe-owner-actions";
+import { getPublicRecipeBySlug, getRecipeSlugs } from "@/lib/recipes";
+import { notFound } from "next/navigation";
+
+export const dynamic = "force-static";
+export const revalidate = 300;
+
+export async function generateStaticParams() {
+  const recipes = await getRecipeSlugs();
+
+  return recipes.map((recipe) => ({ slug: recipe.slug }));
+}
 
 export default async function RecipePage({
   params,
@@ -8,7 +18,7 @@ export default async function RecipePage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const recipe = await getRecipeBySlug(slug);
+  const recipe = await getPublicRecipeBySlug(slug);
 
   if (!recipe) notFound();
 
@@ -17,7 +27,7 @@ export default async function RecipePage({
       <AppMenu variant="recipe" />
 
       <div className="flex items-start justify-between gap-4">
-      <h1>{recipe.title}</h1>
+        <h1>{recipe.title}</h1>
         <RecipeOwnerActions
           recipeUserId={recipe.userId}
           editHref={`/recipes/${slug}/edit`}

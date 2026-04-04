@@ -1,4 +1,3 @@
-import { getRecipes } from "@/actions/recipes";
 import { AppMenu } from "@/components/app-menu";
 import { HomeActions } from "@/components/home-actions";
 import { getPublicRecipes } from "@/lib/recipes";
@@ -11,11 +10,11 @@ export default async function Home({
 }) {
   const params = searchParams ? await searchParams : undefined;
   const query = params?.q?.trim() ?? "";
-  const recipes = await getRecipes(query);
+  const recipes = await getPublicRecipes(query);
 
   return (
     <main>
-      <AppMenu variant="home" newHref="/recipes/new" />
+      <AppMenu variant="home" />
       <div className="flex flex-col gap-4">
         <div className="flex items-start justify-between gap-4">
           <h1>Recipes</h1>
