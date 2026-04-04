@@ -4,7 +4,8 @@ import {
   getRecipeBySlug,
   updateRecipeFromForm,
 } from "@/actions/recipes";
-import { AppMenu } from "@/components/app-menu";
+import { ModalShell } from "@/components/modal-shell";
+import { RecipeDetail } from "@/components/recipe-detail";
 import { RecipeForm } from "@/components/recipe-form";
 import { requireCurrentUserId } from "@/lib/auth/session";
 import { notFound } from "next/navigation";
@@ -29,18 +30,19 @@ export default async function EditRecipePage({
   const deleteAction = deleteRecipeFromForm.bind(null, recipe.id);
 
   return (
-    <main>
-      <AppMenu variant="modal" backHref={`/recipes/${recipe.slug}`} />
-      <div className="flex flex-col gap-8">
-        <div className="flex items-start justify-between gap-4">
-          <h1 className="text-2xl font-bold">Edit recipe</h1>
-        </div>
-        <div>
-          <p className="text-sm text-gray-600">
-            Update details, ingredients, and steps.
-          </p>
-        </div>
+    <main className="relative min-h-screen">
+      <div
+        aria-hidden="true"
+        className="pointer-events-none select-none opacity-40 blur-[1px]"
+      >
+        <RecipeDetail recipe={recipe} />
+      </div>
 
+      <ModalShell
+        title="Edit recipe"
+        description="Update details, ingredients, and steps."
+        fallbackHref={`/recipes/${recipe.slug}`}
+      >
         <RecipeForm
           action={updateRecipeAction}
           submitLabel="Save recipe"
@@ -67,7 +69,7 @@ export default async function EditRecipePage({
           }}
           deleteAction={deleteAction}
         />
-      </div>
+      </ModalShell>
     </main>
   );
 }
