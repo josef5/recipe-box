@@ -3,7 +3,7 @@
 import { db } from "@/db";
 import { ingredients, recipes, recipeIngredients, steps } from "@/db/schema";
 import { eq } from "drizzle-orm";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { generateSlug } from "@/lib/slug";
 import { forbidden, redirect } from "next/navigation";
 import { desc, ilike, or } from "drizzle-orm";
@@ -312,6 +312,8 @@ export async function createRecipe(data: RecipeFormData) {
   }
 
   revalidatePath("/");
+  revalidatePath(`/recipes/${recipe.slug}`);
+  revalidateTag("recipes", "max");
   return recipe;
 }
 
@@ -329,6 +331,7 @@ export async function createRecipeFromForm(formData: FormData) {
  */
 export async function updateRecipe(id: string, data: RecipeFormData) {
   const existingRecipe = await getOwnedRecipe(id);
+  const previousSlug = existingRecipe.slug;
 
   const slug =
     existingRecipe.title !== data.title
@@ -380,7 +383,9 @@ export async function updateRecipe(id: string, data: RecipeFormData) {
   }
 
   revalidatePath("/");
+  revalidatePath(`/recipes/${previousSlug}`);
   revalidatePath(`/recipes/${recipe.slug}`);
+  revalidateTag("recipes", "max");
   return recipe;
 }
 
@@ -402,9 +407,11 @@ export async function updateRecipeFromForm(id: string, formData: FormData) {
  * @returns A Promise that resolves when the recipe is deleted.
  */
 export async function deleteRecipe(id: string) {
-  await getOwnedRecipe(id);
+  const recipe = await getOwnedRecipe(id);
   await db.delete(recipes).where(eq(recipes.id, id));
   revalidatePath("/");
+  revalidatePath(`/recipes/${recipe.slug}`);
+  revalidateTag("recipes", "max");
 }
 
 /**
