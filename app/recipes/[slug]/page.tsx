@@ -14,13 +14,15 @@ export default async function RecipePage({
 
   return (
     <main>
-      <AppMenu
-        variant="recipe"
-        editHref={recipe.userId ? `/recipes/${slug}/edit` : undefined}
-        editOwnerUserId={recipe.userId}
-      />
+      <AppMenu variant="recipe" />
 
+      <div className="flex items-start justify-between gap-4">
       <h1>{recipe.title}</h1>
+        <RecipeOwnerActions
+          recipeUserId={recipe.userId}
+          editHref={`/recipes/${slug}/edit`}
+        />
+      </div>
 
       {recipe.description && <p>{recipe.description}</p>}
 

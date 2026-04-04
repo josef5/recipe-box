@@ -1,5 +1,7 @@
 import { getRecipes } from "@/actions/recipes";
 import { AppMenu } from "@/components/app-menu";
+import { HomeActions } from "@/components/home-actions";
+import { getPublicRecipes } from "@/lib/recipes";
 import Link from "next/link";
 
 export default async function Home({
@@ -15,7 +17,10 @@ export default async function Home({
     <main>
       <AppMenu variant="home" newHref="/recipes/new" />
       <div className="flex flex-col gap-4">
-        <h1 className="">Recipes</h1>
+        <div className="flex items-start justify-between gap-4">
+          <h1>Recipes</h1>
+          <HomeActions />
+        </div>
 
         <form action="/" method="get" className="flex gap-2">
           <input
