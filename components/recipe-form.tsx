@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import { HistoryBackButton } from "@/components/history-back-button";
 import { useMemo, useState } from "react";
 import { useFormStatus } from "react-dom";
 
@@ -375,9 +375,12 @@ export function RecipeForm({
 
       <div className="flex items-center gap-3">
         <SubmitButton label={submitLabel} />
-        <Link href={cancelHref} className="rounded-md border px-4 py-2 text-sm">
+        <HistoryBackButton
+          fallbackHref={cancelHref}
+          className="rounded-md border px-4 py-2 text-sm"
+        >
           Cancel
-        </Link>
+        </HistoryBackButton>
         {deleteAction ? (
           <button
             type="submit"
