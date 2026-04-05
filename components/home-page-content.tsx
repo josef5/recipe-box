@@ -51,30 +51,28 @@ export function HomePageContent({
       ) : (
         <ul>
           {recipes.map((recipe) => (
-            <li key={recipe.id}>
-              <Link
-                href={`/recipes/${recipe.slug}`}
-                className="block rounded-md border px-4 py-3"
-              >
-                <h2>{recipe.title}</h2>
-                {recipe.description && <p>{recipe.description}</p>}
-                <div>
-                  <div>{recipe.title}</div>
-                  {recipe.description ? (
-                    <div className="text-sm text-gray-600">
-                      {recipe.description}
-                    </div>
-                  ) : null}
-                  <div className="text-sm text-gray-600">
-                    By {recipe.ownerDisplayName ?? "Unknown cook"}
-                  </div>
-                </div>
-                <p></p>
-              </Link>
-            </li>
+            <RecipeCard key={recipe.id} recipe={recipe} />
           ))}
         </ul>
       )}
     </>
+  );
+}
+
+function RecipeCard({ recipe }: { recipe: HomeRecipe }) {
+  return (
+    <li key={recipe.id}>
+      <Link
+        href={`/recipes/${recipe.slug}`}
+        className="block rounded-md border px-4 py-3"
+      >
+        <h2>{recipe.title}</h2>
+        {recipe.description ? (
+          <div className="">{recipe.description}</div>
+        ) : null}
+        <div className="">By {recipe.ownerDisplayName ?? "Unknown cook"}</div>
+        <p></p>
+      </Link>
+    </li>
   );
 }
