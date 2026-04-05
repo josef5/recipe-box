@@ -37,12 +37,14 @@ describe("HomePageContent", () => {
             slug: "tomato-soup",
             title: "Tomato Soup",
             description: "Rich and cozy.",
+            ownerDisplayName: "Jamie Oliver",
           },
           {
             id: "recipe-2",
             slug: "toast",
             title: "Toast",
             description: null,
+            ownerDisplayName: null,
           },
         ]}
       />,
@@ -60,5 +62,7 @@ describe("HomePageContent", () => {
       "/recipes/toast",
     );
     expect(screen.getAllByText("Rich and cozy.")).toHaveLength(2);
+    expect(screen.getByText("By Jamie Oliver")).toBeVisible();
+    expect(screen.getByText("By Unknown cook")).toBeVisible();
   });
 });

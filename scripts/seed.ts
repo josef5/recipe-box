@@ -97,11 +97,15 @@ async function seed() {
   console.log("Seeding database...");
 
   const seedUserId = process.env.SEED_USER_ID?.trim() || undefined;
+  const seedOwnerDisplayName = seedUserId ? "Seed User" : undefined;
 
   if (seedUserId) {
     const backfilledRecipes = await db
       .update(recipes)
-      .set({ userId: seedUserId })
+      .set({
+        userId: seedUserId,
+        ownerDisplayName: seedOwnerDisplayName,
+      })
       .where(isNull(recipes.userId))
       .returning({ id: recipes.id });
 
@@ -149,7 +153,10 @@ async function seed() {
       if (seedUserId && !existingRecipe.userId) {
         await db
           .update(recipes)
-          .set({ userId: seedUserId })
+          .set({
+            userId: seedUserId,
+            ownerDisplayName: seedOwnerDisplayName,
+          })
           .where(eq(recipes.id, existingRecipe.id));
 
         console.log(`Assigned owner to existing recipe: ${recipe.title}`);
@@ -166,6 +173,7 @@ async function seed() {
       .insert(recipes)
       .values({
         userId: seedUserId,
+        ownerDisplayName: seedOwnerDisplayName,
         slug,
         title: recipe.title,
         description: recipe.description,

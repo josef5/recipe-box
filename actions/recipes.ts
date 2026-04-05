@@ -7,7 +7,11 @@ import { revalidatePath, revalidateTag } from "next/cache";
 import { generateSlug } from "@/lib/slug";
 import { forbidden, redirect } from "next/navigation";
 import { desc, ilike, or } from "drizzle-orm";
-import { requireCurrentUserId } from "@/lib/auth/session";
+import {
+  getUserDisplayName,
+  requireCurrentUser,
+  requireCurrentUserId,
+} from "@/lib/auth/session";
 
 export type RecipeFormData = {
   title: string;
@@ -269,13 +273,15 @@ export async function getRecipeBySlug(slug: string) {
  * @returns A Promise that resolves to the newly created recipe.
  */
 export async function createRecipe(data: RecipeFormData) {
-  const userId = await requireCurrentUserId();
+  const user = await requireCurrentUser();
+  const userId = user.id;
   const slug = await generateSlug(data.title);
 
   const [recipe] = await db
     .insert(recipes)
     .values({
       userId,
+      ownerDisplayName: getUserDisplayName(user),
       slug,
       title: data.title,
       description: data.description,
@@ -331,6 +337,7 @@ export async function createRecipeFromForm(formData: FormData) {
  */
 export async function updateRecipe(id: string, data: RecipeFormData) {
   const existingRecipe = await getOwnedRecipe(id);
+  const user = await requireCurrentUser();
   const previousSlug = existingRecipe.slug;
 
   const slug =
@@ -342,6 +349,7 @@ export async function updateRecipe(id: string, data: RecipeFormData) {
     .update(recipes)
     .set({
       slug,
+      ownerDisplayName: getUserDisplayName(user),
       title: data.title,
       description: data.description,
       servings: data.servings,

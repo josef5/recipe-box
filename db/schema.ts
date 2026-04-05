@@ -18,6 +18,7 @@ export const ingredients = pgTable("ingredients", {
 export const recipes = pgTable("recipes", {
   id: uuid("id").primaryKey().defaultRandom(),
   userId: text("user_id"),
+  ownerDisplayName: text("owner_display_name"),
   slug: text("slug").notNull().unique(),
   title: text("title").notNull(),
   description: text("description"),

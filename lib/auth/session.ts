@@ -2,6 +2,10 @@ import { auth } from "@/lib/auth/server";
 import { redirect } from "next/navigation";
 
 type GetSessionOptions = Parameters<typeof auth.getSession>[0];
+type UserDisplaySource = {
+  name?: string | null;
+  email?: string | null;
+};
 
 const freshSessionOptions = {
   query: {
@@ -16,6 +20,27 @@ const freshSessionOptions = {
 export async function getCurrentUser() {
   const { data: session } = await auth.getSession(freshSessionOptions);
   return session?.user ?? null;
+}
+
+/**
+ * Derives a friendly display name for a user.
+ * @param user The auth user or partial user data.
+ * @returns A stable display label suitable for recipe ownership UI.
+ */
+export function getUserDisplayName(user: UserDisplaySource | null | undefined) {
+  const trimmedName = user?.name?.trim();
+
+  if (trimmedName) {
+    return trimmedName;
+  }
+
+  const trimmedEmail = user?.email?.trim();
+
+  if (trimmedEmail) {
+    return trimmedEmail;
+  }
+
+  return "Unknown cook";
 }
 
 /**

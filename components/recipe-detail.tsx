@@ -4,6 +4,7 @@ import type { ReactNode } from "react";
 type RecipeDetailData = {
   title: string;
   description: string | null;
+  ownerDisplayName: string | null;
   prepTimeMins: number | null;
   cookTimeMins: number | null;
   servings: number | null;
@@ -41,6 +42,8 @@ export function RecipeDetail({
       </div>
 
       {recipe.description && <p>{recipe.description}</p>}
+
+      <p>By {recipe.ownerDisplayName ?? "Unknown cook"}</p>
 
       <div>
         {recipe.prepTimeMins && <span>Prep: {recipe.prepTimeMins}m</span>}

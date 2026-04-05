@@ -7,6 +7,7 @@ type HomeRecipe = {
   slug: string;
   title: string;
   description: string | null;
+  ownerDisplayName: string | null;
 };
 
 export function HomePageContent({
@@ -64,7 +65,11 @@ export function HomePageContent({
                       {recipe.description}
                     </div>
                   ) : null}
+                  <div className="text-sm text-gray-600">
+                    By {recipe.ownerDisplayName ?? "Unknown cook"}
+                  </div>
                 </div>
+                <p></p>
               </Link>
             </li>
           ))}

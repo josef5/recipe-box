@@ -5,7 +5,7 @@ import { unstable_cache } from "next/cache";
 
 export const RECIPE_PAGE_REVALIDATE_SECONDS = 300;
 
-/* These functions are used in multiple places, so we put them here. They use caching to avoid hitting the database too much, especially on the home page which lists all recipes. The cache is tagged with "recipes" so that when we create/update/delete a recipe, we can invalidate the cache and ensure fresh data is shown. */
+/* These functions use caching to avoid hitting the database too much, especially on the home page which lists all recipes. The cache is tagged with "recipes" so that when we create/update/delete a recipe, we can invalidate the cache and ensure fresh data is shown. */
 
 /**
  * Gets all public recipes, optionally filtered by a search query. The search looks for matches in the title and description.

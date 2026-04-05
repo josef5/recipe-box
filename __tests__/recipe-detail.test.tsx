@@ -16,6 +16,7 @@ describe("RecipeDetail", () => {
         recipe={{
           title: "Chocolate Cake",
           description: "A rich cake for celebrations.",
+          ownerDisplayName: "Grandma Rose",
           prepTimeMins: 25,
           cookTimeMins: 35,
           servings: 8,
@@ -61,6 +62,7 @@ describe("RecipeDetail", () => {
     ).toBeVisible();
     expect(screen.getByRole("button", { name: "Favorite" })).toBeVisible();
     expect(screen.getByText("A rich cake for celebrations.")).toBeVisible();
+    expect(screen.getByText("By Grandma Rose")).toBeVisible();
     expect(screen.getByText("Prep: 25m")).toBeVisible();
     expect(screen.getByText("Cook: 35m")).toBeVisible();
     expect(screen.getByText("Serves: 8")).toBeVisible();
@@ -80,6 +82,7 @@ describe("RecipeDetail", () => {
         recipe={{
           title: "Plain Rice",
           description: null,
+          ownerDisplayName: null,
           prepTimeMins: null,
           cookTimeMins: null,
           servings: null,
@@ -95,5 +98,6 @@ describe("RecipeDetail", () => {
     expect(screen.queryByText(/^Cook:/)).not.toBeInTheDocument();
     expect(screen.queryByText(/^Serves:/)).not.toBeInTheDocument();
     expect(screen.queryByText(/^Source:/)).not.toBeInTheDocument();
+    expect(screen.getByText("By Unknown cook")).toBeVisible();
   });
 });

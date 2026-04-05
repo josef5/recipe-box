@@ -18,6 +18,7 @@
 - Four tables: `recipes`, `ingredients`, `recipe_ingredients` (join), `steps`
 - `recipes` has a `slug` column — unique, non-null, derived from title
 - `recipes` has an optional `userId` owner field for authorization
+- `recipes` stores optional `ownerDisplayName` for public owner display without auth lookups
 - `recipe_ingredients` stores per-recipe amount, unit, notes, sort_order
 - `steps` ordered by `step_number`
 - Migrations in `/drizzle`; run with `pnpm db:migrate`
@@ -79,6 +80,7 @@
 - Google OAuth works with Neon shared credentials in dev; needs custom credentials in prod
 - Email/password sign-in/sign-up implemented
 - Current signed-in user is used to gate create/edit/delete access and menu links
+- Recipe owner names are denormalized onto recipes for public cached/static display
 - Signed-in users have a protected `/account` page for profile details and sign-out
 
 ### UI components
