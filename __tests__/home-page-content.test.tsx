@@ -38,6 +38,8 @@ describe("HomePageContent", () => {
             title: "Tomato Soup",
             description: "Rich and cozy.",
             ownerDisplayName: "Jamie Oliver",
+            createdAt: new Date("2026-01-01T00:00:00.000Z"),
+            updatedAt: new Date("2026-01-02T00:00:00.000Z"),
           },
           {
             id: "recipe-2",
@@ -45,6 +47,8 @@ describe("HomePageContent", () => {
             title: "Toast",
             description: null,
             ownerDisplayName: null,
+            createdAt: new Date("2026-01-03T00:00:00.000Z"),
+            updatedAt: new Date("2026-01-04T00:00:00.000Z"),
           },
         ]}
       />,
@@ -61,7 +65,7 @@ describe("HomePageContent", () => {
       "href",
       "/recipes/toast",
     );
-    expect(screen.getAllByText("Rich and cozy.")).toHaveLength(2);
+    expect(screen.getByText("Rich and cozy.")).toBeVisible();
     expect(screen.getByText("By Jamie Oliver")).toBeVisible();
     expect(screen.getByText("By Unknown cook")).toBeVisible();
   });

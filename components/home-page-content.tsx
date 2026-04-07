@@ -8,6 +8,8 @@ type HomeRecipe = {
   title: string;
   description: string | null;
   ownerDisplayName: string | null;
+  createdAt: Date;
+  updatedAt: Date;
 };
 
 export function HomePageContent({
@@ -55,6 +57,7 @@ export function HomePageContent({
           ))}
         </ul>
       )}
+      <pre>{JSON.stringify(recipes, null, 2)}</pre>
     </>
   );
 }
@@ -64,14 +67,14 @@ function RecipeCard({ recipe }: { recipe: HomeRecipe }) {
     <li key={recipe.id}>
       <Link
         href={`/recipes/${recipe.slug}`}
-        className="block rounded-md border px-4 py-3"
+        className="block rounded-md px-4 py-3"
       >
         <h2>{recipe.title}</h2>
         {recipe.description ? (
           <div className="">{recipe.description}</div>
         ) : null}
         <div className="">By {recipe.ownerDisplayName ?? "Unknown cook"}</div>
-        <p></p>
+        <div>Created: {recipe.createdAt.toLocaleDateString()}</div>
       </Link>
     </li>
   );
