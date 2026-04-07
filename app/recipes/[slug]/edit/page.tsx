@@ -4,8 +4,7 @@ import {
   getRecipeBySlug,
   updateRecipeFromForm,
 } from "@/actions/recipes";
-import { ModalShell } from "@/components/modal-shell";
-import { RecipeDetail } from "@/components/recipe-detail";
+import { AppMenu } from "@/components/app-menu";
 import { RecipeForm } from "@/components/recipe-form";
 import { requireCurrentUserId } from "@/lib/auth/session";
 import { notFound } from "next/navigation";
@@ -30,46 +29,42 @@ export default async function EditRecipePage({
   const deleteAction = deleteRecipeFromForm.bind(null, recipe.id);
 
   return (
-    <main className="relative min-h-screen">
-      <div
-        aria-hidden="true"
-        className="pointer-events-none select-none opacity-40 blur-[1px]"
-      >
-        <RecipeDetail recipe={recipe} />
+    <main className="mx-auto flex min-h-screen w-full max-w-4xl flex-col px-4 py-6 sm:px-6 sm:py-10">
+      <AppMenu variant="recipe" />
+
+      <div className="mb-8 space-y-2">
+        <h1 className="text-2xl font-bold">Edit recipe</h1>
+        <p className="text-sm text-gray-600">
+          Update details, ingredients, and steps.
+        </p>
       </div>
 
-      <ModalShell
-        title="Edit recipe"
-        description="Update details, ingredients, and steps."
-        fallbackHref={`/recipes/${recipe.slug}`}
-      >
-        <RecipeForm
-          action={updateRecipeAction}
-          submitLabel="Save recipe"
-          cancelHref={`/recipes/${recipe.slug}`}
-          ingredientSuggestions={ingredients}
-          initialValues={{
-            title: recipe.title,
-            description: recipe.description,
-            servings: recipe.servings,
-            prepTimeMins: recipe.prepTimeMins,
-            cookTimeMins: recipe.cookTimeMins,
-            imageUrl: recipe.imageUrl,
-            sourceUrl: recipe.sourceUrl,
-            sourceName: recipe.sourceName,
-            ingredients: recipe.recipeIngredients.map((ingredient) => ({
-              name: ingredient.ingredient.name,
-              amount: ingredient.amount?.toString() ?? "",
-              unit: ingredient.unit ?? "",
-              notes: ingredient.notes ?? "",
-            })),
-            steps: recipe.steps.map((step) => ({
-              instruction: step.instruction,
-            })),
-          }}
-          deleteAction={deleteAction}
-        />
-      </ModalShell>
+      <RecipeForm
+        action={updateRecipeAction}
+        submitLabel="Save recipe"
+        cancelHref={`/recipes/${recipe.slug}`}
+        ingredientSuggestions={ingredients}
+        initialValues={{
+          title: recipe.title,
+          description: recipe.description,
+          servings: recipe.servings,
+          prepTimeMins: recipe.prepTimeMins,
+          cookTimeMins: recipe.cookTimeMins,
+          imageUrl: recipe.imageUrl,
+          sourceUrl: recipe.sourceUrl,
+          sourceName: recipe.sourceName,
+          ingredients: recipe.recipeIngredients.map((ingredient) => ({
+            name: ingredient.ingredient.name,
+            amount: ingredient.amount?.toString() ?? "",
+            unit: ingredient.unit ?? "",
+            notes: ingredient.notes ?? "",
+          })),
+          steps: recipe.steps.map((step) => ({
+            instruction: step.instruction,
+          })),
+        }}
+        deleteAction={deleteAction}
+      />
     </main>
   );
 }
