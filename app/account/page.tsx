@@ -1,4 +1,3 @@
-import { AppMenu } from "@/components/app-menu";
 import { SignOutButton } from "@/components/sign-out-button";
 import { requireCurrentUser } from "@/lib/auth/session";
 
@@ -9,7 +8,6 @@ export default async function AccountPage() {
 
   return (
     <main>
-      <AppMenu variant="account" />
       <div className="mx-auto flex w-full max-w-3xl flex-col gap-8">
         <header className="flex flex-col gap-2">
           <h1 className="text-2xl font-bold">Account</h1>
@@ -18,7 +16,6 @@ export default async function AccountPage() {
             {user.name || user.email || "your profile"}.
           </p>
         </header>
-
         <section className="rounded-lg border p-4">
           <dl className="grid gap-3 sm:grid-cols-[140px_1fr]">
             <dt className="font-medium">Name</dt>
@@ -29,7 +26,6 @@ export default async function AccountPage() {
             <dd className="break-all text-sm text-gray-600">{user.id}</dd>
           </dl>
         </section>
-
         <section className="rounded-lg border p-4">
           <div className="flex flex-col gap-3">
             <h2 className="text-lg font-semibold">Account actions</h2>

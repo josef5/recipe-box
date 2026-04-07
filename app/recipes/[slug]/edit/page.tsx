@@ -4,7 +4,6 @@ import {
   getRecipeBySlug,
   updateRecipeFromForm,
 } from "@/actions/recipes";
-import { AppMenu } from "@/components/app-menu";
 import { RecipeForm } from "@/components/recipe-form";
 import { requireCurrentUserId } from "@/lib/auth/session";
 import { notFound } from "next/navigation";
@@ -30,15 +29,12 @@ export default async function EditRecipePage({
 
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-4xl flex-col px-4 py-6 sm:px-6 sm:py-10">
-      <AppMenu variant="recipe" />
-
       <div className="mb-8 space-y-2">
         <h1 className="text-2xl font-bold">Edit recipe</h1>
         <p className="text-sm text-gray-600">
           Update details, ingredients, and steps.
         </p>
       </div>
-
       <RecipeForm
         action={updateRecipeAction}
         submitLabel="Save recipe"

@@ -1,4 +1,3 @@
-import { AppMenu } from "@/components/app-menu";
 import type { ReactNode } from "react";
 
 type RecipeDetailData = {
@@ -34,23 +33,17 @@ export function RecipeDetail({
 }) {
   return (
     <>
-      <AppMenu variant="recipe" />
-
       <div className="flex items-start justify-between gap-4">
         <h1>{recipe.title}</h1>
         {actions}
       </div>
-
       {recipe.description && <p>{recipe.description}</p>}
-
       <p>By {recipe.ownerDisplayName ?? "Unknown cook"}</p>
-
       <div>
         {recipe.prepTimeMins && <span>Prep: {recipe.prepTimeMins}m</span>}
         {recipe.cookTimeMins && <span>Cook: {recipe.cookTimeMins}m</span>}
         {recipe.servings && <span>Serves: {recipe.servings}</span>}
       </div>
-
       {recipe.sourceName && (
         <p>
           Source:{" "}
@@ -67,7 +60,6 @@ export function RecipeDetail({
           )}
         </p>
       )}
-
       <section>
         <h2>Ingredients</h2>
         <ul>
@@ -81,7 +73,6 @@ export function RecipeDetail({
           ))}
         </ul>
       </section>
-
       <section>
         <h2>Steps</h2>
         <ol>
