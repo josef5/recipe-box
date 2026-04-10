@@ -1,5 +1,4 @@
 import { createRecipeFromForm, getIngredients } from "@/actions/recipes";
-import { AppMenu } from "@/components/app-menu";
 import { RecipeForm } from "@/components/recipe-form";
 import { requireCurrentUserId } from "@/lib/auth/session";
 
@@ -10,7 +9,7 @@ export default async function NewRecipePage() {
   const ingredients = await getIngredients();
 
   return (
-    <main className="mx-auto flex min-h-screen w-full max-w-4xl flex-col px-4 py-6 sm:px-6 sm:py-10">
+    <main className="flex flex-col gap-8">
       <div className="mb-8 space-y-2">
         <h1 className="text-2xl font-bold">Add recipe</h1>
         <p className="text-sm text-gray-600">

@@ -28,7 +28,7 @@ export default async function EditRecipePage({
   const deleteAction = deleteRecipeFromForm.bind(null, recipe.id);
 
   return (
-    <main className="mx-auto flex min-h-screen w-full max-w-4xl flex-col px-4 py-6 sm:px-6 sm:py-10">
+    <main className="flex flex-col gap-8">
       <div className="mb-8 space-y-2">
         <h1 className="text-2xl font-bold">Edit recipe</h1>
         <p className="text-sm text-gray-600">
