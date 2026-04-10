@@ -71,7 +71,7 @@ function RecipeCard({ recipe }: { recipe: HomeRecipe }) {
           <div className="">{recipe.description}</div>
         ) : null}
         <div className="">By {recipe.ownerDisplayName ?? "Unknown cook"}</div>
-        <div>Created: {recipe.createdAt.toLocaleDateString()}</div>
+        <div>Created: {new Date(recipe.createdAt).toLocaleDateString()}</div>
       </Link>
     </li>
   );
