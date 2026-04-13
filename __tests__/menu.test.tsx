@@ -6,10 +6,18 @@ const authMocks = vi.hoisted(() => ({
   useSession: vi.fn(),
 }));
 
+const navigationMocks = vi.hoisted(() => ({
+  usePathname: vi.fn(),
+}));
+
 vi.mock("@/lib/auth/client", () => ({
   authClient: {
     useSession: authMocks.useSession,
   },
+}));
+
+vi.mock("next/navigation", () => ({
+  usePathname: navigationMocks.usePathname,
 }));
 
 vi.mock("@/components/sign-out-button", () => ({
@@ -22,6 +30,7 @@ describe("Menu", () => {
       data: null,
       isPending: false,
     });
+    navigationMocks.usePathname.mockReturnValue("/");
 
     render(<Menu />);
 
@@ -50,6 +59,7 @@ describe("Menu", () => {
       },
       isPending: false,
     });
+    navigationMocks.usePathname.mockReturnValue("/recipes/some-recipe");
 
     render(<Menu />);
 

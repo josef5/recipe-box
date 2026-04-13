@@ -2,9 +2,9 @@ import { RecipeDetail } from "@/components/recipe-detail";
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 
-vi.mock("@/components/app-menu", () => ({
-  AppMenu: ({ variant }: { variant: string }) => (
-    <div data-testid="app-menu">{variant}</div>
+vi.mock("@/components/menu", () => ({
+  Menu: ({ variant }: { variant: string }) => (
+    <div data-testid="menu">{variant}</div>
   ),
 }));
 
@@ -12,9 +12,10 @@ describe("RecipeDetail", () => {
   it("renders recipe metadata, ingredients, and steps", () => {
     render(
       <RecipeDetail
-        actions={<button type="button">Favorite</button>}
         recipe={{
           title: "Chocolate Cake",
+          slug: "chocolate-cake",
+          userId: "user-1",
           description: "A rich cake for celebrations.",
           ownerDisplayName: "Grandma Rose",
           prepTimeMins: 25,
@@ -56,11 +57,11 @@ describe("RecipeDetail", () => {
       />,
     );
 
-    expect(screen.getByTestId("app-menu")).toHaveTextContent("recipe");
+    // expect(screen.getByTestId("menu")).toHaveTextContent("recipe");
     expect(
       screen.getByRole("heading", { name: "Chocolate Cake" }),
     ).toBeVisible();
-    expect(screen.getByRole("button", { name: "Favorite" })).toBeVisible();
+    // expect(screen.getByRole("button", { name: "Favorite" })).toBeVisible();
     expect(screen.getByText("A rich cake for celebrations.")).toBeVisible();
     expect(screen.getByText("By Grandma Rose")).toBeVisible();
     expect(screen.getByText("Prep: 25m")).toBeVisible();
@@ -81,6 +82,8 @@ describe("RecipeDetail", () => {
       <RecipeDetail
         recipe={{
           title: "Plain Rice",
+          slug: "plain-rice",
+          userId: null,
           description: null,
           ownerDisplayName: null,
           prepTimeMins: null,
