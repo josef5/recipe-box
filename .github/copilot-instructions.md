@@ -3,9 +3,9 @@
 ## Stack and architecture
 
 - This app uses Next.js 16 App Router, React 19, TypeScript, Drizzle ORM, Neon Postgres, and Neon Auth. Treat Next 16 APIs as authoritative; read `node_modules/next/dist/docs/` before changing framework-level behavior.
-- Public reads live in `lib/recipes.ts`; writes and authenticated mutations live in `actions/recipes.ts` as server actions.
-- Route structure is intentional: `/` renders the recipe list, `/recipes/[slug]` is the canonical detail page, and `/recipes/new` plus `/recipes/[slug]/edit` are dedicated modal-style routes, not intercepted routes.
-- The modal routes re-render the underlying page content in a blurred background (`components/home-page-content.tsx`, `components/recipe-detail.tsx`) and place `RecipeForm` inside `ModalShell`.
+- Public cached reads live in `lib/recipes.ts`; writes, authenticated mutations, and uncached data-fetching for authenticated pages (`getRecipes`, `getRecipe`, `getRecipeBySlug`, `getIngredients`) live in `actions/recipes.ts` as server actions.
+- Route structure is intentional: `/` renders the recipe list, `/recipes/[slug]` is the canonical detail page, and `/recipes/new` plus `/recipes/[slug]/edit` are dedicated standalone full-page routes (not intercepted routes, not modal-style with a blurred background).
+- The create/edit pages render `RecipeForm` directly inside a `<main>` wrapper — there is no `ModalShell` component.
 
 ## Data model and ownership
 
@@ -24,14 +24,14 @@
 ## UI and form conventions
 
 - `components/recipe-form.tsx` is a hybrid form by design: stable scalar fields use uncontrolled inputs with `defaultValue`, while dynamic ingredient and step lists use client state.
-- Keep contextual actions near page content: `AppMenu` is for global navigation only, while `HomeActions` and `RecipeOwnerActions` render page-specific actions.
-- Preserve the current modal cancel/close behavior through `HistoryBackButton` and the fallback hrefs passed into `ModalShell`.
+- `RecipeForm` accepts an `ingredientSuggestions` prop (array of `{ name, defaultUnit }` from `getIngredients()`) for autocomplete. Ingredient fields are free-text name inputs; `getOrCreateIngredientId()` resolves names to IDs server-side on submit.
+- Cancel behavior is handled inside `RecipeForm` via `HistoryBackButton` using the `cancelHref` prop passed from the page. There is no `ModalShell` wrapper.
 
 ## Caching and rendering
 
 - `lib/recipes.ts` uses `unstable_cache` for public recipe list/detail/slug reads with the `recipes` tag.
 - Any write that changes public recipe data should continue to call `revalidatePath()` and `revalidateTag("recipes", "max")` as in `actions/recipes.ts`.
-- Recipe detail pages are intentionally static-ish (`app/recipes/[slug]/page.tsx` uses `generateStaticParams()` and `revalidate = 300`), while create/edit routes are dynamic.
+- Recipe detail pages are intentionally static (`app/recipes/[slug]/page.tsx` uses `dynamic = "force-static"`, `generateStaticParams()`, and `revalidate = 300`), while create/edit routes use `dynamic = "force-dynamic"`.
 
 ## Workflows
 
