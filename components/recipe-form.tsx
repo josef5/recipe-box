@@ -1,6 +1,6 @@
 "use client";
 
-import { HistoryBackButton } from "@/components/history-back-button";
+import { HistoryBackButton } from "@/components/ui/history-back-button";
 import { useMemo, useState } from "react";
 import { useFormStatus } from "react-dom";
 
