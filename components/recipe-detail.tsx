@@ -29,57 +29,59 @@ type RecipeDetailData = {
 export function RecipeDetail({ recipe }: { recipe: RecipeDetailData }) {
   return (
     <>
-      <div className="flex items-start justify-between gap-4">
-        <h1>{recipe.title}</h1>
+      <aside className="col-start-2 row-start-1">
         <EditRecipeButton
           recipeUserId={recipe.userId}
           editHref={`/recipes/${recipe.slug}/edit`}
         />
+        <p>By {recipe.ownerDisplayName ?? "Unknown cook"}</p>
+      </aside>
+      <div className="flex flex-col items-start justify-between col-start-1 row-start-1">
+        <h1>{recipe.title}</h1>
+        {recipe.description && <p>{recipe.description}</p>}
+        <div>
+          {recipe.prepTimeMins && <span>Prep: {recipe.prepTimeMins}m</span>}
+          {recipe.cookTimeMins && <span>Cook: {recipe.cookTimeMins}m</span>}
+          {recipe.servings && <span>Serves: {recipe.servings}</span>}
+        </div>
+        {recipe.sourceName && (
+          <p>
+            Source:{" "}
+            {recipe.sourceUrl ? (
+              <a
+                href={recipe.sourceUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {recipe.sourceName}
+              </a>
+            ) : (
+              recipe.sourceName
+            )}
+          </p>
+        )}
+        <section>
+          <h2>Ingredients</h2>
+          <ul>
+            {recipe.recipeIngredients.map((ri) => (
+              <li key={ri.id}>
+                {ri.amount && <span>{ri.amount}</span>}
+                {ri.unit && <span>{ri.unit}</span>}
+                <span>{ri.ingredient.name}</span>
+                {ri.notes && <span>({ri.notes})</span>}
+              </li>
+            ))}
+          </ul>
+        </section>
+        <section>
+          <h2>Steps</h2>
+          <ol>
+            {recipe.steps.map((step) => (
+              <li key={step.id}>{step.instruction}</li>
+            ))}
+          </ol>
+        </section>
       </div>
-      {recipe.description && <p>{recipe.description}</p>}
-      <p>By {recipe.ownerDisplayName ?? "Unknown cook"}</p>
-      <div>
-        {recipe.prepTimeMins && <span>Prep: {recipe.prepTimeMins}m</span>}
-        {recipe.cookTimeMins && <span>Cook: {recipe.cookTimeMins}m</span>}
-        {recipe.servings && <span>Serves: {recipe.servings}</span>}
-      </div>
-      {recipe.sourceName && (
-        <p>
-          Source:{" "}
-          {recipe.sourceUrl ? (
-            <a
-              href={recipe.sourceUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              {recipe.sourceName}
-            </a>
-          ) : (
-            recipe.sourceName
-          )}
-        </p>
-      )}
-      <section>
-        <h2>Ingredients</h2>
-        <ul>
-          {recipe.recipeIngredients.map((ri) => (
-            <li key={ri.id}>
-              {ri.amount && <span>{ri.amount}</span>}
-              {ri.unit && <span>{ri.unit}</span>}
-              <span>{ri.ingredient.name}</span>
-              {ri.notes && <span>({ri.notes})</span>}
-            </li>
-          ))}
-        </ul>
-      </section>
-      <section>
-        <h2>Steps</h2>
-        <ol>
-          {recipe.steps.map((step) => (
-            <li key={step.id}>{step.instruction}</li>
-          ))}
-        </ol>
-      </section>
     </>
   );
 }

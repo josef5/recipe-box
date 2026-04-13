@@ -20,11 +20,7 @@ export function HomePageContent({
 }) {
   return (
     <>
-      <div className="flex flex-col gap-4">
-        <div className="flex items-start justify-between gap-4">
-          <h1>Recipes</h1>
-          <NewRecipeButton />
-        </div>
+      <aside className="col-start-2 row-start-1">
         <form action="/" method="get" className="flex gap-2">
           <input
             type="search"
@@ -42,19 +38,25 @@ export function HomePageContent({
             </Link>
           ) : null}
         </form>
+        <NewRecipeButton />
+      </aside>
+      <div className="flex flex-col gap-4 col-start-1 row-start-1">
+        <div className="flex items-start justify-between gap-4">
+          <h1>Recipes</h1>
+        </div>
+        {recipes.length === 0 ? (
+          <p className="text-sm text-gray-600">
+            {query ? `No recipes found for "${query}".` : "No recipes yet."}
+          </p>
+        ) : (
+          <ul>
+            {recipes.map((recipe) => (
+              <RecipeCard key={recipe.id} recipe={recipe} />
+            ))}
+          </ul>
+        )}
       </div>
-      {recipes.length === 0 ? (
-        <p className="text-sm text-gray-600">
-          {query ? `No recipes found for "${query}".` : "No recipes yet."}
-        </p>
-      ) : (
-        <ul>
-          {recipes.map((recipe) => (
-            <RecipeCard key={recipe.id} recipe={recipe} />
-          ))}
-        </ul>
-      )}
-      <pre>{JSON.stringify(recipes, null, 2)}</pre>
+      {/* <pre>{JSON.stringify(recipes, null, 2)}</pre> */}
     </>
   );
 }
