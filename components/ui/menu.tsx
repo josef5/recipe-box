@@ -2,7 +2,7 @@
 
 import { authClient } from "@/lib/auth/client";
 import Link from "next/link";
-import { SignOutButton } from "@/components/sign-out-button";
+import { SignOutButton } from "@/components/ui/sign-out-button";
 import { usePathname } from "next/navigation";
 
 export function Menu() {

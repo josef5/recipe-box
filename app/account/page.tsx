@@ -1,4 +1,4 @@
-import { SignOutButton } from "@/components/sign-out-button";
+import { SignOutButton } from "@/components/ui/sign-out-button";
 import { requireCurrentUser } from "@/lib/auth/session";
 
 export const dynamic = "force-dynamic";
