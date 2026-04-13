@@ -1,5 +1,5 @@
-import { HomeActions } from "@/components/home-actions";
 import Link from "next/link";
+import { NewRecipeButton } from "./ui/new-recipe-button";
 
 type HomeRecipe = {
   id: string;
@@ -23,7 +23,7 @@ export function HomePageContent({
       <div className="flex flex-col gap-4">
         <div className="flex items-start justify-between gap-4">
           <h1>Recipes</h1>
-          <HomeActions />
+          <NewRecipeButton />
         </div>
         <form action="/" method="get" className="flex gap-2">
           <input
