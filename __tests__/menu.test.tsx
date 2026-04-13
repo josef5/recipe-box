@@ -1,4 +1,4 @@
-import { AppMenu } from "@/components/app-menu";
+import { Menu } from "@/components/ui/menu";
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 
@@ -16,14 +16,14 @@ vi.mock("@/components/sign-out-button", () => ({
   SignOutButton: () => <button type="button">Sign Out</button>,
 }));
 
-describe("AppMenu", () => {
+describe("Menu", () => {
   it("shows sign-in navigation on the home variant when signed out", () => {
     authMocks.useSession.mockReturnValue({
       data: null,
       isPending: false,
     });
 
-    render(<AppMenu variant="home" />);
+    render(<Menu />);
 
     expect(screen.getByRole("link", { name: "Recipe Box" })).toHaveAttribute(
       "href",
@@ -51,7 +51,7 @@ describe("AppMenu", () => {
       isPending: false,
     });
 
-    render(<AppMenu variant="recipe" />);
+    render(<Menu />);
 
     expect(screen.getByRole("link", { name: "Home" })).toHaveAttribute(
       "href",
