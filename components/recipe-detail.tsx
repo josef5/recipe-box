@@ -1,9 +1,11 @@
-import type { ReactNode } from "react";
+import { EditRecipeButton } from "./ui/edit-recipe-button";
 
 type RecipeDetailData = {
   title: string;
+  slug: string;
   description: string | null;
   ownerDisplayName: string | null;
+  userId: string | null;
   prepTimeMins: number | null;
   cookTimeMins: number | null;
   servings: number | null;
@@ -24,18 +26,15 @@ type RecipeDetailData = {
   }>;
 };
 
-export function RecipeDetail({
-  recipe,
-  actions,
-}: {
-  recipe: RecipeDetailData;
-  actions?: ReactNode;
-}) {
+export function RecipeDetail({ recipe }: { recipe: RecipeDetailData }) {
   return (
     <>
       <div className="flex items-start justify-between gap-4">
         <h1>{recipe.title}</h1>
-        {actions}
+        <EditRecipeButton
+          recipeUserId={recipe.userId}
+          editHref={`/recipes/${recipe.slug}/edit`}
+        />
       </div>
       {recipe.description && <p>{recipe.description}</p>}
       <p>By {recipe.ownerDisplayName ?? "Unknown cook"}</p>
