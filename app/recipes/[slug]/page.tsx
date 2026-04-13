@@ -1,5 +1,4 @@
 import { RecipeDetail } from "@/components/recipe-detail";
-import { RecipeOwnerActions } from "@/components/recipe-owner-actions";
 import { getPublicRecipeBySlug, getRecipeSlugs } from "@/lib/recipes";
 import { notFound } from "next/navigation";
 
@@ -24,15 +23,7 @@ export default async function RecipePage({
 
   return (
     <main>
-      <RecipeDetail
-        recipe={recipe}
-        actions={
-          <RecipeOwnerActions
-            recipeUserId={recipe.userId}
-            editHref={`/recipes/${slug}/edit`}
-          />
-        }
-      />
+      <RecipeDetail recipe={recipe} />
     </main>
   );
 }
