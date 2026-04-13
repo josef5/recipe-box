@@ -1,4 +1,4 @@
-import { Menu } from "@/components/menu";
+import { Menu } from "@/components/ui/menu";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
