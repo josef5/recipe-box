@@ -33,12 +33,13 @@ type RecipeFormValues = {
   steps: StepField[];
 };
 
-function SubmitButton({ label }: { label: string }) {
+function SubmitButton({ label, form }: { label: string; form?: string }) {
   const { pending } = useFormStatus();
 
   return (
     <button
       type="submit"
+      form={form}
       disabled={pending}
       className="rounded-md bg-indigo-500 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-400 disabled:cursor-not-allowed disabled:opacity-70"
     >
