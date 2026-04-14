@@ -62,7 +62,7 @@ export function RecipeForm({
   ingredientSuggestions: IngredientSuggestion[];
   initialValues?: RecipeFormValues;
   deleteAction?: () => void | Promise<void>;
-}) {
+} & React.ComponentProps<"div">) {
   const [ingredients, setIngredients] = useState<IngredientField[]>(
     initialValues?.ingredients.length
       ? initialValues.ingredients
@@ -125,7 +125,6 @@ export function RecipeForm({
             className="rounded-md border px-3 py-2 text-sm"
           />
         </div>
-
         <div className="flex flex-col gap-1.5">
           <label htmlFor="description" className="text-sm font-medium">
             Description
@@ -138,7 +137,6 @@ export function RecipeForm({
             className="rounded-md border px-3 py-2 text-sm"
           />
         </div>
-
         <div className="grid gap-4 md:grid-cols-3">
           <div className="flex flex-col gap-1.5">
             <label htmlFor="servings" className="text-sm font-medium">
@@ -153,7 +151,6 @@ export function RecipeForm({
               className="rounded-md border px-3 py-2 text-sm"
             />
           </div>
-
           <div className="flex flex-col gap-1.5">
             <label htmlFor="prepTimeMins" className="text-sm font-medium">
               Prep time (mins)
@@ -167,7 +164,6 @@ export function RecipeForm({
               className="rounded-md border px-3 py-2 text-sm"
             />
           </div>
-
           <div className="flex flex-col gap-1.5">
             <label htmlFor="cookTimeMins" className="text-sm font-medium">
               Cook time (mins)
@@ -182,7 +178,6 @@ export function RecipeForm({
             />
           </div>
         </div>
-
         <div className="grid gap-4 md:grid-cols-2">
           <div className="flex flex-col gap-1.5">
             <label htmlFor="sourceName" className="text-sm font-medium">
@@ -195,7 +190,6 @@ export function RecipeForm({
               className="rounded-md border px-3 py-2 text-sm"
             />
           </div>
-
           <div className="flex flex-col gap-1.5">
             <label htmlFor="sourceUrl" className="text-sm font-medium">
               Source URL
@@ -209,7 +203,6 @@ export function RecipeForm({
             />
           </div>
         </div>
-
         <div className="flex flex-col gap-1.5">
           <label htmlFor="imageUrl" className="text-sm font-medium">
             Image URL
@@ -223,7 +216,6 @@ export function RecipeForm({
           />
         </div>
       </section>
-
       <section className="flex flex-col gap-4">
         <div className="flex items-center justify-between gap-4">
           <h2 className="text-lg font-semibold">Ingredients</h2>
@@ -240,13 +232,11 @@ export function RecipeForm({
             Add ingredient
           </button>
         </div>
-
         <datalist id="ingredient-suggestions">
           {ingredientSuggestions.map((ingredient) => (
             <option key={ingredient.name} value={ingredient.name} />
           ))}
         </datalist>
-
         <div className="flex flex-col gap-4">
           {ingredients.map((ingredient, index) => (
             <div key={index} className="rounded-lg border p-4">
@@ -263,7 +253,6 @@ export function RecipeForm({
                     className="rounded-md border px-3 py-2 text-sm"
                   />
                 </div>
-
                 <div className="flex flex-col gap-1.5">
                   <label className="text-sm font-medium">Amount</label>
                   <input
@@ -278,7 +267,6 @@ export function RecipeForm({
                     className="rounded-md border px-3 py-2 text-sm"
                   />
                 </div>
-
                 <div className="flex flex-col gap-1.5">
                   <label className="text-sm font-medium">Unit</label>
                   <input
@@ -291,7 +279,6 @@ export function RecipeForm({
                   />
                 </div>
               </div>
-
               <div className="mt-4 flex flex-col gap-1.5">
                 <label className="text-sm font-medium">Notes</label>
                 <div className="flex gap-3">
@@ -324,7 +311,6 @@ export function RecipeForm({
           ))}
         </div>
       </section>
-
       <section className="flex flex-col gap-4">
         <div className="flex items-center justify-between gap-4">
           <h2 className="text-lg font-semibold">Steps</h2>
@@ -338,7 +324,6 @@ export function RecipeForm({
             Add step
           </button>
         </div>
-
         <div className="flex flex-col gap-4">
           {steps.map((step, index) => (
             <div key={index} className="rounded-lg border p-4">
