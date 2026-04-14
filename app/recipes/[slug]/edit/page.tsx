@@ -4,7 +4,9 @@ import {
   getRecipeBySlug,
   updateRecipeFromForm,
 } from "@/actions/recipes";
-import { RecipeForm } from "@/components/recipe-form";
+import { RecipeForm, SubmitButton } from "@/components/recipe-form";
+import { DeleteRecipeButton } from "@/components/ui/delete-recipe-button";
+import { HistoryBackButton } from "@/components/ui/history-back-button";
 import { requireCurrentUserId } from "@/lib/auth/session";
 import { notFound } from "next/navigation";
 
@@ -28,39 +30,49 @@ export default async function EditRecipePage({
   const deleteAction = deleteRecipeFromForm.bind(null, recipe.id);
 
   return (
-    <main className="flex flex-col gap-8">
-      <div className="mb-8 space-y-2">
+    <main className="grid grid-cols-[3fr_1fr] grid-rows-1 gap-8 items-start">
+      <div className="space-y-2 col-start-1 row-start-1">
         <h1 className="text-2xl font-bold">Edit recipe</h1>
         <p className="text-sm text-gray-600">
           Update details, ingredients, and steps.
         </p>
+        <RecipeForm
+          action={updateRecipeAction}
+          submitLabel="Save recipe"
+          cancelHref={`/recipes/${recipe.slug}`}
+          ingredientSuggestions={ingredients}
+          initialValues={{
+            title: recipe.title,
+            description: recipe.description,
+            servings: recipe.servings,
+            prepTimeMins: recipe.prepTimeMins,
+            cookTimeMins: recipe.cookTimeMins,
+            imageUrl: recipe.imageUrl,
+            sourceUrl: recipe.sourceUrl,
+            sourceName: recipe.sourceName,
+            ingredients: recipe.recipeIngredients.map((ingredient) => ({
+              name: ingredient.ingredient.name,
+              amount: ingredient.amount?.toString() ?? "",
+              unit: ingredient.unit ?? "",
+              notes: ingredient.notes ?? "",
+            })),
+            steps: recipe.steps.map((step) => ({
+              instruction: step.instruction,
+            })),
+          }}
+          deleteAction={deleteAction}
+        />
       </div>
-      <RecipeForm
-        action={updateRecipeAction}
-        submitLabel="Save recipe"
-        cancelHref={`/recipes/${recipe.slug}`}
-        ingredientSuggestions={ingredients}
-        initialValues={{
-          title: recipe.title,
-          description: recipe.description,
-          servings: recipe.servings,
-          prepTimeMins: recipe.prepTimeMins,
-          cookTimeMins: recipe.cookTimeMins,
-          imageUrl: recipe.imageUrl,
-          sourceUrl: recipe.sourceUrl,
-          sourceName: recipe.sourceName,
-          ingredients: recipe.recipeIngredients.map((ingredient) => ({
-            name: ingredient.ingredient.name,
-            amount: ingredient.amount?.toString() ?? "",
-            unit: ingredient.unit ?? "",
-            notes: ingredient.notes ?? "",
-          })),
-          steps: recipe.steps.map((step) => ({
-            instruction: step.instruction,
-          })),
-        }}
-        deleteAction={deleteAction}
-      />
+      <aside className="flex flex-col items-start gap-3 col-start-2 row-start-1">
+        <SubmitButton label="Save recipe" form="recipe-form" />
+        <HistoryBackButton
+          fallbackHref={`/recipes/${recipe.slug}`}
+          className="rounded-md border px-4 py-2 text-sm"
+        >
+          Cancel
+        </HistoryBackButton>
+        <DeleteRecipeButton action={deleteAction} form="recipe-form" />
+      </aside>
     </main>
   );
 }
