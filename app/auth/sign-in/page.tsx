@@ -20,16 +20,20 @@ export default function SignInPage() {
     setError(null);
     setIsPending(true);
 
-    const result = await authClient.signIn.email({
-      email: email.trim(),
-      password,
-      callbackURL: "/",
-    });
+    try {
+      const result = await authClient.signIn.email({
+        email: email.trim(),
+        password,
+        callbackURL: "/",
+      });
 
-    setIsPending(false);
-
-    if (result.error) {
-      setError(result.error.message ?? "Unable to sign in.");
+      if (result.error) {
+        setError(result.error.message ?? "Unable to sign in.");
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Unable to sign in.");
+    } finally {
+      setIsPending(false);
     }
   }
 
