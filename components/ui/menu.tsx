@@ -22,7 +22,7 @@ export function Menu() {
             : "home";
 
   return (
-    <nav className="flex items-center justify-between mb-8" data-testid="menu">
+    <nav className="mb-8 flex items-center justify-between" data-testid="menu">
       <Link href={"/"}>
         <h1>Recipe Box</h1>
       </Link>

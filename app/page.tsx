@@ -4,7 +4,6 @@ import { getPublicRecipes } from "@/lib/recipes";
 // TODO: Add GitHub OAuth
 // TODO: Add My Recipes filter toggle?
 // TODO: Main component?
-// TODO: Apply TW Prettier plugin
 
 export default async function Home({
   searchParams,
@@ -16,7 +15,7 @@ export default async function Home({
   const recipes = await getPublicRecipes(query);
 
   return (
-    <main className="grid grid-cols-1 sm:grid-cols-[3fr_1fr] gap-8">
+    <main className="grid grid-cols-1 gap-8 sm:grid-cols-[3fr_1fr]">
       <HomePageContent recipes={recipes} query={query} />
     </main>
   );

@@ -22,7 +22,7 @@ export function SignOutButton() {
       type="button"
       onClick={handleSignOut}
       disabled={isPending}
-      className="disabled:opacity-70 cursor-pointer"
+      className="cursor-pointer disabled:opacity-70"
     >
       {isPending ? "Signing out..." : "Sign Out"}
     </button>

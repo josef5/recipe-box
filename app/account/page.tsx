@@ -6,7 +6,7 @@ export default async function AccountPage() {
   const user = await requireCurrentUser();
 
   return (
-    <main className="grid sm:grid-cols-[3fr_1fr] gap-8 items-start">
+    <main className="grid items-start gap-8 sm:grid-cols-[3fr_1fr]">
       <div className="flex flex-col gap-8">
         <header className="flex flex-col gap-2">
           <h1 className="text-2xl font-bold">Account</h1>
@@ -22,11 +22,11 @@ export default async function AccountPage() {
             <dt className="font-medium">Email</dt>
             <dd>{user.email || "Not available"}</dd>
             <dt className="font-medium">User ID</dt>
-            <dd className="break-all text-sm text-gray-600">{user.id}</dd>
+            <dd className="text-sm break-all text-gray-600">{user.id}</dd>
           </dl>
         </section>
       </div>
-      <aside className="flex sm:flex-col items-start gap-3 sm:col-start-2 sm:row-start-1">
+      <aside className="flex items-start gap-3 sm:col-start-2 sm:row-start-1 sm:flex-col">
         {/* <SignOutButton /> */}
       </aside>
     </main>

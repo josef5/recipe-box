@@ -22,7 +22,7 @@ export default async function RecipePage({
   if (!recipe) notFound();
 
   return (
-    <main className="grid sm:grid-cols-[3fr_1fr] gap-8">
+    <main className="grid gap-8 sm:grid-cols-[3fr_1fr]">
       <RecipeDetail recipe={recipe} />
     </main>
   );
