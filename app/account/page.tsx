@@ -1,10 +1,14 @@
+import { getManagedUsersForAccountPage } from "@/actions/admin-users";
+import { AdminUsersSection } from "@/components/admin-users-section";
 import { ChangePasswordForm } from "@/components/change-password-form";
-import { requireCurrentUser } from "@/lib/auth/session";
+import { requireCurrentUser, userHasAdminRole } from "@/lib/auth/session";
 
 export const dynamic = "force-dynamic";
 
 export default async function AccountPage() {
   const user = await requireCurrentUser();
+  const isAdmin = userHasAdminRole(user);
+  const adminUsers = isAdmin ? await getManagedUsersForAccountPage() : [];
 
   return (
     <main className="grid items-start gap-8 sm:grid-cols-[3fr_1fr]">
@@ -27,6 +31,12 @@ export default async function AccountPage() {
           </dl>
         </section>
         <ChangePasswordForm />
+        {isAdmin ? (
+          <AdminUsersSection
+            initialUsers={adminUsers}
+            currentUserId={user.id}
+          />
+        ) : null}
       </div>
       <aside className="flex items-start gap-3 sm:col-start-2 sm:row-start-1 sm:flex-col">
         {/* <SignOutButton /> */}
