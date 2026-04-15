@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { formatStableDate } from "@/lib/utils";
 import { NewRecipeButton } from "./ui/new-recipe-button";
 
 type HomeRecipe = {
@@ -7,7 +8,7 @@ type HomeRecipe = {
   title: string;
   description: string | null;
   ownerDisplayName: string | null;
-  createdAt: Date;
+  createdAt: Date | string | number;
   updatedAt: Date;
 };
 
@@ -72,7 +73,7 @@ function RecipeCard({ recipe }: { recipe: HomeRecipe }) {
           <div className="">{recipe.description}</div>
         ) : null}
         <div className="">By {recipe.ownerDisplayName ?? "Unknown cook"}</div>
-        <div>Created: {new Date(recipe.createdAt).toLocaleDateString()}</div>
+        <div>Created: {formatStableDate(recipe.createdAt)}</div>
       </Link>
     </li>
   );
