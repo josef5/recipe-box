@@ -1,3 +1,4 @@
+import { ChangePasswordForm } from "@/components/change-password-form";
 import { requireCurrentUser } from "@/lib/auth/session";
 
 export const dynamic = "force-dynamic";
@@ -25,6 +26,7 @@ export default async function AccountPage() {
             <dd className="text-sm break-all text-gray-600">{user.id}</dd>
           </dl>
         </section>
+        <ChangePasswordForm />
       </div>
       <aside className="flex items-start gap-3 sm:col-start-2 sm:row-start-1 sm:flex-col">
         {/* <SignOutButton /> */}
