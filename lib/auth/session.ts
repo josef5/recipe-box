@@ -1,4 +1,5 @@
 import { auth } from "@/lib/auth/server";
+import { forbidden } from "next/navigation";
 import { redirect } from "next/navigation";
 
 type GetSessionOptions = Parameters<typeof auth.getSession>[0];
@@ -80,4 +81,38 @@ export async function requireCurrentUserId() {
   }
 
   return userId;
+}
+
+/**
+ * Returns true when the user has an admin role.
+ * Supports role values represented as either a string or a string array.
+ * @param user The auth user or partial user data.
+ */
+export function userHasAdminRole(user: unknown) {
+  if (!user || typeof user !== "object") {
+    return false;
+  }
+
+  const role = (user as { role?: string | string[] | null }).role;
+
+  if (Array.isArray(role)) {
+    return role.includes("admin");
+  }
+
+  return role === "admin";
+}
+
+/**
+ * Ensures the current signed-in user has admin privileges.
+ * Throws a 403 if the user is signed in but not an admin.
+ * @returns The current admin user.
+ */
+export async function requireCurrentAdmin() {
+  const user = await requireCurrentUser();
+
+  if (!userHasAdminRole(user)) {
+    forbidden();
+  }
+
+  return user;
 }
