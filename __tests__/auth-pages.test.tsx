@@ -71,6 +71,28 @@ describe("auth pages", () => {
     });
   });
 
+  it("shows a friendly message when sign-in throws", async () => {
+    authMocks.signInEmail.mockRejectedValueOnce(
+      new Error("Invalid email or password"),
+    );
+
+    render(<SignInPage />);
+
+    fireEvent.change(screen.getByLabelText("Email"), {
+      target: { value: "cook@example.com" },
+    });
+    fireEvent.change(screen.getByLabelText("Password"), {
+      target: { value: "wrong-pass" },
+    });
+    fireEvent.submit(
+      screen.getByRole("button", { name: "Sign in" }).closest("form")!,
+    );
+
+    expect(
+      await screen.findByText("Invalid email or password"),
+    ).toBeInTheDocument();
+  });
+
   it("submits sign-up credentials and links back to sign-in", async () => {
     render(<SignUpPage />);
 
