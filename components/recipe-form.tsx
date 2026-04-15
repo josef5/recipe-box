@@ -32,14 +32,12 @@ type RecipeFormValues = {
   steps: StepField[];
 };
 
-function Form({
+export function RecipeForm({
   action,
   ingredientSuggestions,
   initialValues,
 }: {
   action: (formData: FormData) => void | Promise<void>;
-  submitLabel: string;
-  cancelHref: string;
   ingredientSuggestions: IngredientSuggestion[];
   initialValues?: RecipeFormValues;
   deleteAction?: () => void | Promise<void>;
@@ -349,7 +347,13 @@ function Form({
   );
 }
 
-function SubmitButton({ label, form }: { label: string; form?: string }) {
+export function SubmitButton({
+  label,
+  form,
+}: {
+  label: string;
+  form?: string;
+}) {
   const { pending } = useFormStatus();
 
   return (
@@ -364,7 +368,7 @@ function SubmitButton({ label, form }: { label: string; form?: string }) {
   );
 }
 
-function DeleteButton({
+export function DeleteButton({
   action,
   form,
 }: {
@@ -388,9 +392,3 @@ function DeleteButton({
     </button>
   );
 }
-
-export const RecipeForm = {
-  Form,
-  SubmitButton,
-  DeleteButton,
-};

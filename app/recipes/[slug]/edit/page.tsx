@@ -1,10 +1,14 @@
 import {
+  DeleteButton,
+  RecipeForm,
+  SubmitButton,
+} from "@/components/recipe-form";
+import {
   deleteRecipeFromForm,
   getIngredients,
   getRecipeBySlug,
   updateRecipeFromForm,
 } from "@/actions/recipes";
-import { RecipeForm } from "@/components/recipe-form";
 import { HistoryBackButton } from "@/components/ui/history-back-button";
 import { requireCurrentUserId } from "@/lib/auth/session";
 import { notFound } from "next/navigation";
@@ -35,10 +39,8 @@ export default async function EditRecipePage({
         <p className="text-sm text-gray-600">
           Update details, ingredients, and steps.
         </p>
-        <RecipeForm.Form
+        <RecipeForm
           action={updateRecipeAction}
-          submitLabel="Save recipe"
-          cancelHref={`/recipes/${recipe.slug}`}
           ingredientSuggestions={ingredients}
           initialValues={{
             title: recipe.title,
@@ -59,18 +61,17 @@ export default async function EditRecipePage({
               instruction: step.instruction,
             })),
           }}
-          deleteAction={deleteAction}
         />
       </div>
       <aside className="flex flex-col items-start gap-3 col-start-2 row-start-1">
-        <RecipeForm.SubmitButton label="Save recipe" form="recipe-form" />
+        <SubmitButton label="Save recipe" form="recipe-form" />
         <HistoryBackButton
           fallbackHref={`/recipes/${recipe.slug}`}
           className="rounded-md border px-4 py-2 text-sm"
         >
           Cancel
         </HistoryBackButton>
-        <RecipeForm.DeleteButton action={deleteAction} form="recipe-form" />
+        <DeleteButton action={deleteAction} form="recipe-form" />
       </aside>
     </main>
   );
