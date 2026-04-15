@@ -1,4 +1,3 @@
-import { SignOutButton } from "@/components/ui/sign-out-button";
 import { requireCurrentUser } from "@/lib/auth/session";
 
 export const dynamic = "force-dynamic";
@@ -7,7 +6,7 @@ export default async function AccountPage() {
   const user = await requireCurrentUser();
 
   return (
-    <main>
+    <main className="grid grid-cols-[3fr_1fr] grid-rows-1 gap-8 items-start">
       <div className="flex flex-col gap-8">
         <header className="flex flex-col gap-2">
           <h1 className="text-2xl font-bold">Account</h1>
@@ -26,20 +25,10 @@ export default async function AccountPage() {
             <dd className="break-all text-sm text-gray-600">{user.id}</dd>
           </dl>
         </section>
-        <section className="rounded-lg border p-4">
-          <div className="flex flex-col gap-3">
-            <h2 className="text-lg font-semibold">Account actions</h2>
-            <p className="text-sm text-gray-600">
-              This page is the starting point for account management. It
-              currently lets the user review their profile details and sign out
-              safely.
-            </p>
-            <div>
-              <SignOutButton />
-            </div>
-          </div>
-        </section>
       </div>
+      <aside className="flex flex-col items-start gap-3 col-start-2 row-start-1">
+        {/* <SignOutButton /> */}
+      </aside>
     </main>
   );
 }
