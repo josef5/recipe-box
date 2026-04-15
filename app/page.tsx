@@ -1,6 +1,11 @@
 import { HomePageContent } from "@/components/home-page-content";
 import { getPublicRecipes } from "@/lib/recipes";
 
+// TODO: Add GitHub OAuth
+// TODO: Add My Recipes filter toggle?
+// TODO: Main component?
+// TODO: Apply TW Prettier plugin
+
 export default async function Home({
   searchParams,
 }: {
