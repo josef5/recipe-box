@@ -32,28 +32,7 @@ type RecipeFormValues = {
   steps: StepField[];
 };
 
-export function SubmitButton({
-  label,
-  form,
-}: {
-  label: string;
-  form?: string;
-}) {
-  const { pending } = useFormStatus();
-
-  return (
-    <button
-      type="submit"
-      form={form}
-      disabled={pending}
-      className="rounded-md bg-indigo-500 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-400 disabled:cursor-not-allowed disabled:opacity-70"
-    >
-      {pending ? "Saving..." : label}
-    </button>
-  );
-}
-
-export function RecipeForm({
+function Form({
   action,
   ingredientSuggestions,
   initialValues,
@@ -369,3 +348,49 @@ export function RecipeForm({
     </>
   );
 }
+
+function SubmitButton({ label, form }: { label: string; form?: string }) {
+  const { pending } = useFormStatus();
+
+  return (
+    <button
+      type="submit"
+      form={form}
+      disabled={pending}
+      className="rounded-md bg-indigo-500 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-400 disabled:cursor-not-allowed disabled:opacity-70"
+    >
+      {pending ? "Saving..." : label}
+    </button>
+  );
+}
+
+function DeleteButton({
+  action,
+  form,
+}: {
+  action: (formData: FormData) => void | Promise<void>;
+  form: string;
+}) {
+  return (
+    <button
+      type="submit"
+      form={form}
+      formAction={action}
+      formNoValidate
+      onClick={(event) => {
+        if (!window.confirm("Delete this recipe? This cannot be undone.")) {
+          event.preventDefault();
+        }
+      }}
+      className="rounded-md border border-red-300 px-4 py-2 text-sm text-red-700"
+    >
+      Delete
+    </button>
+  );
+}
+
+export const RecipeForm = {
+  Form,
+  SubmitButton,
+  DeleteButton,
+};
