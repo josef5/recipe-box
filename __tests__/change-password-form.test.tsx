@@ -1,0 +1,97 @@
+import { ChangePasswordForm } from "@/components/change-password-form";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+
+const authMocks = vi.hoisted(() => ({
+  changePassword: vi.fn(),
+}));
+
+vi.mock("@/lib/auth/client", () => ({
+  authClient: {
+    changePassword: authMocks.changePassword,
+  },
+}));
+
+describe("change password form", () => {
+  beforeEach(() => {
+    authMocks.changePassword.mockReset();
+    authMocks.changePassword.mockResolvedValue({ error: null });
+  });
+
+  it("submits matching passwords to auth client", async () => {
+    render(<ChangePasswordForm />);
+
+    fireEvent.change(screen.getByLabelText("Current password"), {
+      target: { value: "old-pass-123" },
+    });
+    fireEvent.change(screen.getByLabelText("New password"), {
+      target: { value: "new-pass-123" },
+    });
+    fireEvent.change(screen.getByLabelText("Confirm new password"), {
+      target: { value: "new-pass-123" },
+    });
+
+    fireEvent.submit(
+      screen.getByRole("button", { name: "Update password" }).closest("form")!,
+    );
+
+    await waitFor(() => {
+      expect(authMocks.changePassword).toHaveBeenCalledWith({
+        currentPassword: "old-pass-123",
+        newPassword: "new-pass-123",
+        revokeOtherSessions: true,
+      });
+    });
+
+    expect(await screen.findByText("Password updated.")).toBeInTheDocument();
+  });
+
+  it("does not submit when confirmation does not match", async () => {
+    render(<ChangePasswordForm />);
+
+    fireEvent.change(screen.getByLabelText("Current password"), {
+      target: { value: "old-pass-123" },
+    });
+    fireEvent.change(screen.getByLabelText("New password"), {
+      target: { value: "new-pass-123" },
+    });
+    fireEvent.change(screen.getByLabelText("Confirm new password"), {
+      target: { value: "different-pass" },
+    });
+
+    fireEvent.submit(
+      screen.getByRole("button", { name: "Update password" }).closest("form")!,
+    );
+
+    expect(
+      await screen.findByText("New password and confirmation do not match."),
+    ).toBeInTheDocument();
+    expect(authMocks.changePassword).not.toHaveBeenCalled();
+  });
+
+  it("shows auth errors from the API", async () => {
+    authMocks.changePassword.mockResolvedValueOnce({
+      error: { message: "Current password is incorrect" },
+    });
+
+    render(<ChangePasswordForm />);
+
+    fireEvent.change(screen.getByLabelText("Current password"), {
+      target: { value: "wrong-pass" },
+    });
+    fireEvent.change(screen.getByLabelText("New password"), {
+      target: { value: "new-pass-123" },
+    });
+    fireEvent.change(screen.getByLabelText("Confirm new password"), {
+      target: { value: "new-pass-123" },
+    });
+
+    fireEvent.submit(
+      screen.getByRole("button", { name: "Update password" }).closest("form")!,
+    );
+
+    expect(
+      await screen.findByText("Current password is incorrect"),
+    ).toBeInTheDocument();
+  });
+});
