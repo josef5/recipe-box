@@ -29,14 +29,14 @@ type RecipeDetailData = {
 export function RecipeDetail({ recipe }: { recipe: RecipeDetailData }) {
   return (
     <>
-      <aside className="col-start-2 row-start-1">
+      <aside className="sm:col-start-2 sm:row-start-1">
         <EditRecipeButton
           recipeUserId={recipe.userId}
           editHref={`/recipes/${recipe.slug}/edit`}
         />
         <p>By {recipe.ownerDisplayName ?? "Unknown cook"}</p>
       </aside>
-      <div className="flex flex-col items-start justify-between col-start-1 row-start-1">
+      <div className="flex flex-col items-start justify-between sm:col-start-1 sm:row-start-1">
         <h1>{recipe.title}</h1>
         {recipe.description && <p>{recipe.description}</p>}
         <div>

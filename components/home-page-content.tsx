@@ -20,7 +20,7 @@ export function HomePageContent({
 }) {
   return (
     <>
-      <aside className="col-start-2 row-start-1">
+      <aside className="sm:col-start-2 sm:row-start-1">
         <form action="/" method="get" className="flex gap-2">
           <input
             type="search"
@@ -40,7 +40,7 @@ export function HomePageContent({
         </form>
         <NewRecipeButton />
       </aside>
-      <div className="flex flex-col gap-4 col-start-1 row-start-1">
+      <div className="flex flex-col gap-4 sm:col-start-1 sm:row-start-1">
         <div className="flex items-start justify-between gap-4">
           <h1>Recipes</h1>
         </div>
@@ -56,7 +56,6 @@ export function HomePageContent({
           </ul>
         )}
       </div>
-      {/* <pre>{JSON.stringify(recipes, null, 2)}</pre> */}
     </>
   );
 }
