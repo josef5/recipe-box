@@ -6,7 +6,7 @@ import { requireCurrentUserId } from "@/lib/auth/session";
 export const dynamic = "force-dynamic";
 
 export default async function NewRecipePage() {
-  await requireCurrentUserId();
+  await requireCurrentUserId({ redirectTo: "/recipes/new" });
   const ingredients = await getIngredients();
 
   return (

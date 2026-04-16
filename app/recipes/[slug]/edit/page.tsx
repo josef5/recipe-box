@@ -21,7 +21,9 @@ export default async function EditRecipePage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const currentUser = await requireCurrentUser();
+  const currentUser = await requireCurrentUser({
+    redirectTo: `/recipes/${slug}/edit`,
+  });
   const recipe = await getRecipeBySlug(slug);
   const canEditRecipe =
     !!recipe &&

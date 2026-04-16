@@ -6,7 +6,7 @@ import { requireCurrentUser, userHasAdminRole } from "@/lib/auth/session";
 export const dynamic = "force-dynamic";
 
 export default async function AccountPage() {
-  const user = await requireCurrentUser();
+  const user = await requireCurrentUser({ redirectTo: "/account" });
   const isAdmin = userHasAdminRole(user);
   const adminUsers = isAdmin ? await getManagedUsersForAccountPage() : [];
 

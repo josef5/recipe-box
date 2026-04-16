@@ -1,11 +1,26 @@
 "use client";
 
 import { authClient } from "@/lib/auth/client";
+import { useSearchParams } from "next/navigation";
 import { useState } from "react";
+
+function getSafeRedirectPath(redirectTo: string | null) {
+  if (
+    !redirectTo ||
+    !redirectTo.startsWith("/") ||
+    redirectTo.startsWith("//")
+  ) {
+    return "/";
+  }
+
+  return redirectTo;
+}
 
 export default function SignInPage() {
   const [error, setError] = useState<string | null>(null);
   const [isPending, setIsPending] = useState(false);
+  const searchParams = useSearchParams();
+  const callbackURL = getSafeRedirectPath(searchParams.get("redirectTo"));
 
   async function handleSubmit(formData: FormData) {
     const email = formData.get("email");
@@ -23,7 +38,7 @@ export default function SignInPage() {
       const result = await authClient.signIn.email({
         email: email.trim(),
         password,
-        callbackURL: "/",
+        callbackURL,
       });
 
       if (result.error) {
