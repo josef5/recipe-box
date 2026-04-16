@@ -7,12 +7,27 @@ type UserDisplaySource = {
   name?: string | null;
   email?: string | null;
 };
+type RequireUserOptions = {
+  redirectTo?: string;
+};
 
 const freshSessionOptions = {
   query: {
     disableCookieCache: "true",
   },
 } as GetSessionOptions;
+
+function toSignInPath(redirectTo?: string) {
+  if (
+    !redirectTo ||
+    !redirectTo.startsWith("/") ||
+    redirectTo.startsWith("//")
+  ) {
+    return "/auth/sign-in";
+  }
+
+  return `/auth/sign-in?redirectTo=${encodeURIComponent(redirectTo)}`;
+}
 
 /**
  * Retrieves the current signed-in user from Neon Auth.
@@ -58,11 +73,11 @@ export async function getCurrentUserId() {
  * Redirects to sign-in if no session exists.
  * @returns The current signed-in user.
  */
-export async function requireCurrentUser() {
+export async function requireCurrentUser(options?: RequireUserOptions) {
   const user = await getCurrentUser();
 
   if (!user) {
-    redirect("/auth/sign-in");
+    redirect(toSignInPath(options?.redirectTo));
   }
 
   return user;
@@ -73,11 +88,11 @@ export async function requireCurrentUser() {
  * Redirects to sign-in if no session exists.
  * @returns The current signed-in user's ID.
  */
-export async function requireCurrentUserId() {
+export async function requireCurrentUserId(options?: RequireUserOptions) {
   const userId = await getCurrentUserId();
 
   if (!userId) {
-    redirect("/auth/sign-in");
+    redirect(toSignInPath(options?.redirectTo));
   }
 
   return userId;
