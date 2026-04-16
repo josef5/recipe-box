@@ -370,25 +370,23 @@ export function SubmitButton({
 
 export function DeleteButton({
   action,
-  form,
 }: {
   action: (formData: FormData) => void | Promise<void>;
-  form: string;
 }) {
   return (
-    <button
-      type="submit"
-      form={form}
-      formAction={action}
-      formNoValidate
-      onClick={(event) => {
-        if (!window.confirm("Delete this recipe? This cannot be undone.")) {
-          event.preventDefault();
-        }
-      }}
-      className="rounded-md border border-red-300 px-4 py-2 text-sm text-red-700"
-    >
-      Delete
-    </button>
+    <form action={action}>
+      <button
+        type="submit"
+        formNoValidate
+        onClick={(event) => {
+          if (!window.confirm("Delete this recipe? This cannot be undone.")) {
+            event.preventDefault();
+          }
+        }}
+        className="rounded-md border border-red-300 px-4 py-2 text-sm text-red-700"
+      >
+        Delete
+      </button>
+    </form>
   );
 }
