@@ -10,7 +10,7 @@ import { desc, ilike, or } from "drizzle-orm";
 import {
   getUserDisplayName,
   requireCurrentUser,
-  requireCurrentUserId,
+  userHasAdminRole,
 } from "@/lib/auth/session";
 
 export type RecipeFormData = {
@@ -179,19 +179,22 @@ async function parseRecipeFormData(
  * @param id The ID of the recipe.
  * @returns The owned recipe.
  */
-async function getOwnedRecipe(id: string) {
-  const userId = await requireCurrentUserId();
+async function getEditableRecipe(id: string) {
+  const user = await requireCurrentUser();
   const recipe = await getRecipe(id);
 
   if (!recipe) {
     throw new Error("Recipe not found");
   }
 
-  if (recipe.userId !== userId) {
+  const isOwner = recipe.userId === user.id;
+  const isAdmin = userHasAdminRole(user);
+
+  if (!isOwner && !isAdmin) {
     forbidden();
   }
 
-  return recipe;
+  return { recipe, user, isOwner };
 }
 
 /**
@@ -336,8 +339,7 @@ export async function createRecipeFromForm(formData: FormData) {
  * @returns A Promise that resolves to the updated recipe.
  */
 export async function updateRecipe(id: string, data: RecipeFormData) {
-  const existingRecipe = await getOwnedRecipe(id);
-  const user = await requireCurrentUser();
+  const { recipe: existingRecipe, user } = await getEditableRecipe(id);
   const previousSlug = existingRecipe.slug;
 
   const slug =
@@ -348,6 +350,7 @@ export async function updateRecipe(id: string, data: RecipeFormData) {
   const [recipe] = await db
     .update(recipes)
     .set({
+      userId: user.id,
       slug,
       ownerDisplayName: getUserDisplayName(user),
       title: data.title,
@@ -415,7 +418,7 @@ export async function updateRecipeFromForm(id: string, formData: FormData) {
  * @returns A Promise that resolves when the recipe is deleted.
  */
 export async function deleteRecipe(id: string) {
-  const recipe = await getOwnedRecipe(id);
+  const { recipe } = await getEditableRecipe(id);
   await db.delete(recipes).where(eq(recipes.id, id));
   revalidatePath("/");
   revalidatePath(`/recipes/${recipe.slug}`);

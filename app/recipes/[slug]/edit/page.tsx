@@ -10,7 +10,7 @@ import {
   updateRecipeFromForm,
 } from "@/actions/recipes";
 import { HistoryBackButton } from "@/components/ui/history-back-button";
-import { requireCurrentUserId } from "@/lib/auth/session";
+import { requireCurrentUser, userHasAdminRole } from "@/lib/auth/session";
 import { notFound } from "next/navigation";
 
 export const dynamic = "force-dynamic";
@@ -21,10 +21,13 @@ export default async function EditRecipePage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const currentUserId = await requireCurrentUserId();
+  const currentUser = await requireCurrentUser();
   const recipe = await getRecipeBySlug(slug);
+  const canEditRecipe =
+    !!recipe &&
+    (recipe.userId === currentUser.id || userHasAdminRole(currentUser));
 
-  if (!recipe || recipe.userId !== currentUserId) {
+  if (!canEditRecipe) {
     notFound();
   }
 

@@ -3,6 +3,20 @@
 import { authClient } from "@/lib/auth/client";
 import Link from "next/link";
 
+function userHasAdminRole(user: unknown) {
+  if (!user || typeof user !== "object") {
+    return false;
+  }
+
+  const role = (user as { role?: string | string[] | null }).role;
+
+  if (Array.isArray(role)) {
+    return role.includes("admin");
+  }
+
+  return role === "admin";
+}
+
 export function EditRecipeButton({
   recipeUserId,
   editHref,
@@ -11,8 +25,10 @@ export function EditRecipeButton({
   editHref: string;
 }) {
   const { data: session, isPending } = authClient.useSession();
+  const isOwner = !!recipeUserId && session?.user?.id === recipeUserId;
+  const isAdmin = userHasAdminRole(session?.user);
 
-  if (isPending || !recipeUserId || session?.user?.id !== recipeUserId) {
+  if (isPending || (!isOwner && !isAdmin)) {
     return null;
   }
 
