@@ -45,6 +45,8 @@ pnpm db:studio
 ## Auth and account admin
 
 - `/account` is a protected route.
+- If an unsigned-in user is redirected to sign-in from a protected route (for example `/account`), sign-in returns them to the original path.
+- Current auth UI is sign-in (email/password).
 - All signed-in users can manage their own password from the account page.
 - Users with auth role `admin` see an additional admin users section.
 - Admin section supports:

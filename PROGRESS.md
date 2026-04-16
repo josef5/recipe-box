@@ -66,8 +66,7 @@
 - `app/recipes/[slug]/page.tsx` — recipe detail; static/SSG with `generateStaticParams()` and revalidation
 - `app/recipes/[slug]/edit/page.tsx` — edit recipe route; owner only; dedicated full-page route
 - `app/recipes/new/page.tsx` — new recipe route; sign-in required; dedicated full-page route
-- `app/auth/sign-in/page.tsx` — sign in (email/password + Google OAuth)
-- `app/auth/sign-up/page.tsx` — sign up (name, email/password + Google OAuth)
+- `app/auth/sign-in/page.tsx` — sign in (email/password)
 - `app/api/auth/[...path]/route.ts` — auth handler proxy
 - Old `[id]` route removed; no backward compatibility redirect
 
@@ -75,15 +74,20 @@
 
 - `server.ts` — `createNeonAuth()` with `NEON_AUTH_BASE_URL` and `NEON_AUTH_COOKIE_SECRET`
 - `client.ts` — `createAuthClient()`
-- `session.ts` — helpers to read the current signed-in user in server components and actions, including admin-role checks
-- `proxy.ts` (project root) — protects routes via `auth.middleware()`, redirects to `/auth/sign-in`
-- Google OAuth works with Neon shared credentials in dev; needs custom credentials in prod
-- Email/password sign-in/sign-up implemented
+- `session.ts` — helpers to read the current signed-in user in server components and actions, including admin-role checks and optional `redirectTo` support in auth guards
+- `proxy.ts` (project root) — protects routes via `auth.middleware()`, redirects to `/auth/sign-in`, and appends `redirectTo` for protected-route return navigation
+- Email/password sign-in implemented
 - Current signed-in user is used to gate create/edit/delete access and menu links
 - Recipe owner names are denormalized onto recipes for public cached/static display
 - Signed-in users have a protected `/account` page for profile details and password changes
 - Admin-role users have an account admin section for user listing, creation (provisional passwords), and deletion
 - Deleting an auth user keeps recipe records and nulls `recipes.userId`
+- Users redirected from protected routes are returned to the original path after successful sign-in
+
+### Testing
+
+- Sign-in coverage is consolidated in `__tests__/sign-in-page.test.tsx`
+- Sign-in tests cover default callbacks, `redirectTo` callbacks, unsafe redirect fallback, and error handling
 
 ### UI components
 
@@ -125,13 +129,13 @@
 
 ### Next up
 
-- [ ] **Auth/ownership verification** — verify sign-in/sign-up flows and confirm create/edit/delete ownership behavior end-to-end, including modal entry/close flows
+- [ ] **Auth/ownership verification** — verify sign-in redirect return behavior and confirm create/edit/delete ownership behavior end-to-end
 
 ### Remaining backlog
 
 - [ ] **Styling pass** — consistent layout, typography, spacing across all pages
 - [ ] **Image uploads** — Vercel Blob integration, image field on recipe form
-- [ ] **Expanded auth** — confirm email/password + Google OAuth work end-to-end in prod
+- [ ] **Expanded auth** — decide whether to add sign-up and/or social providers, then validate end-to-end in prod
 - [ ] **Account UX polish** — refine the account page layout and decide which settings should be promoted into first-class app flows
 - [ ] **Deployment** — Vercel, production environment variables, custom Google OAuth credentials
 
