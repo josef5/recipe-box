@@ -9,6 +9,108 @@ import {
 import { formatStableDate } from "@/lib/utils";
 import { useState } from "react";
 
+const UNEXPECTED_ACTION_RESPONSE_MESSAGE =
+  "An unexpected response was received from the server.";
+
+type ClientActionResult<T = void> =
+  | { ok: true; data: T }
+  | { ok: false; error: string };
+
+async function listManagedUsersViaApi(): Promise<
+  ClientActionResult<ManagedUser[]>
+> {
+  try {
+    const response = await fetch("/api/admin-users", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      cache: "no-store",
+    });
+
+    const payload = (await response.json()) as ClientActionResult<
+      ManagedUser[]
+    >;
+
+    if (!response.ok) {
+      return {
+        ok: false,
+        error:
+          !payload || typeof payload !== "object" || !("error" in payload)
+            ? "Unable to list users."
+            : String(payload.error),
+      };
+    }
+
+    return payload;
+  } catch {
+    return { ok: false, error: "Unable to list users." };
+  }
+}
+
+async function createManagedUserViaApi(input: {
+  name: string;
+  email: string;
+  provisionalPassword: string;
+}): Promise<ClientActionResult<ManagedUser>> {
+  try {
+    const response = await fetch("/api/admin-users", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(input),
+    });
+
+    const payload = (await response.json()) as ClientActionResult<ManagedUser>;
+
+    if (!response.ok) {
+      return {
+        ok: false,
+        error:
+          !payload || typeof payload !== "object" || !("error" in payload)
+            ? "Unable to create user."
+            : String(payload.error),
+      };
+    }
+
+    return payload;
+  } catch {
+    return { ok: false, error: "Unable to create user." };
+  }
+}
+
+async function deleteManagedUserViaApi(input: {
+  userId: string;
+}): Promise<ClientActionResult<{ userId: string }>> {
+  try {
+    const response = await fetch(`/api/admin-users/${input.userId}`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    const payload = (await response.json()) as ClientActionResult<{
+      userId: string;
+    }>;
+
+    if (!response.ok) {
+      return {
+        ok: false,
+        error:
+          !payload || typeof payload !== "object" || !("error" in payload)
+            ? "Unable to delete user."
+            : String(payload.error),
+      };
+    }
+
+    return payload;
+  } catch {
+    return { ok: false, error: "Unable to delete user." };
+  }
+}
+
 type AdminUsersSectionProps = {
   initialUsers: ManagedUser[];
   currentUserId: string;
@@ -28,14 +130,39 @@ export function AdminUsersSection({
   const [success, setSuccess] = useState<string | null>(null);
 
   async function refreshUsers() {
-    const result = await listManagedUsersAction();
+    try {
+      const result = await listManagedUsersAction();
 
-    if (!result.ok) {
-      setError(result.error);
+      if (!result.ok) {
+        setError(result.error);
+        return;
+      }
+
+      setUsers(result.data);
+      return;
+    } catch (refreshError) {
+      if (
+        refreshError instanceof Error &&
+        refreshError.message === UNEXPECTED_ACTION_RESPONSE_MESSAGE
+      ) {
+        const fallbackResult = await listManagedUsersViaApi();
+
+        if (!fallbackResult.ok) {
+          setError(fallbackResult.error);
+          return;
+        }
+
+        setUsers(fallbackResult.data);
+        return;
+      }
+
+      setError(
+        refreshError instanceof Error
+          ? refreshError.message
+          : "Unable to list users.",
+      );
       return;
     }
-
-    setUsers(result.data);
   }
 
   async function handleCreateUser(event: React.FormEvent<HTMLFormElement>) {
@@ -62,6 +189,29 @@ export function AdminUsersSection({
       setProvisionalPassword("");
       await refreshUsers();
     } catch (submissionError) {
+      if (
+        submissionError instanceof Error &&
+        submissionError.message === UNEXPECTED_ACTION_RESPONSE_MESSAGE
+      ) {
+        const fallbackResult = await createManagedUserViaApi({
+          name,
+          email,
+          provisionalPassword,
+        });
+
+        if (!fallbackResult.ok) {
+          setError(fallbackResult.error);
+          return;
+        }
+
+        setSuccess(`Created user: ${fallbackResult.data.email}`);
+        setName("");
+        setEmail("");
+        setProvisionalPassword("");
+        await refreshUsers();
+        return;
+      }
+
       setError(
         submissionError instanceof Error
           ? submissionError.message
@@ -90,6 +240,24 @@ export function AdminUsersSection({
         currentUsers.filter((user) => user.id !== result.data.userId),
       );
     } catch (submissionError) {
+      if (
+        submissionError instanceof Error &&
+        submissionError.message === UNEXPECTED_ACTION_RESPONSE_MESSAGE
+      ) {
+        const fallbackResult = await deleteManagedUserViaApi({ userId });
+
+        if (!fallbackResult.ok) {
+          setError(fallbackResult.error);
+          return;
+        }
+
+        setSuccess("User deleted.");
+        setUsers((currentUsers) =>
+          currentUsers.filter((user) => user.id !== fallbackResult.data.userId),
+        );
+        return;
+      }
+
       setError(
         submissionError instanceof Error
           ? submissionError.message
