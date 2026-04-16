@@ -49,3 +49,4 @@
 
 - For current project status, known gaps, and pending work, consult `PROGRESS.md`.
 - Treat `PROGRESS.md` as informational context only. If it conflicts with this file, follow this file.
+- Prefer nullish coalescing `??` over logical OR `||` when falling back on `null` or `undefined`. Use `||` only when intentionally treating falsy values (e.g. `0`, `""`) as fallbacks.
