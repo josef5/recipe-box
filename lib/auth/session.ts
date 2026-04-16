@@ -104,17 +104,23 @@ export async function requireCurrentUserId(options?: RequireUserOptions) {
  * @param user The auth user or partial user data.
  */
 export function userHasAdminRole(user: unknown) {
-  if (!user || typeof user !== "object") {
+  if (!user || typeof user !== "object" || !("role" in user)) {
     return false;
   }
 
-  const role = (user as { role?: string | string[] | null }).role;
+  // Support both string and array role formats for flexibility.
+  const { role } = user as { role?: unknown };
+
+  if (typeof role === "string") {
+    return role === "admin";
+  }
 
   if (Array.isArray(role)) {
     return role.includes("admin");
   }
 
-  return role === "admin";
+  return false;
+}
 }
 
 /**
