@@ -19,6 +19,7 @@ describe("admin users section", () => {
     actionMocks.createManagedUserAction.mockReset();
     actionMocks.deleteManagedUserAction.mockReset();
     actionMocks.listManagedUsersAction.mockReset();
+    vi.restoreAllMocks();
   });
 
   it("creates a user and refreshes the table", async () => {
@@ -168,5 +169,104 @@ describe("admin users section", () => {
     expect(
       await screen.findByText("Unable to create user."),
     ).toBeInTheDocument();
+  });
+
+  it("falls back to API endpoints when server action transport fails", async () => {
+    actionMocks.createManagedUserAction.mockRejectedValue(
+      new Error("An unexpected response was received from the server."),
+    );
+    actionMocks.listManagedUsersAction.mockRejectedValue(
+      new Error("An unexpected response was received from the server."),
+    );
+
+    const fetchMock = vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(
+      new Response(
+        JSON.stringify({
+          ok: true,
+          data: {
+            id: "user-2",
+            name: "Family Member",
+            email: "family@example.com",
+            role: "user",
+            createdAt: "2026-04-15T00:00:00.000Z",
+          },
+        }),
+        {
+          status: 200,
+          headers: { "Content-Type": "application/json" },
+        },
+      ),
+    );
+
+    fetchMock.mockResolvedValueOnce(
+      new Response(
+        JSON.stringify({
+          ok: true,
+          data: [
+            {
+              id: "admin-1",
+              name: "Admin",
+              email: "admin@example.com",
+              role: "admin",
+              createdAt: "2026-04-14T00:00:00.000Z",
+            },
+            {
+              id: "user-2",
+              name: "Family Member",
+              email: "family@example.com",
+              role: "user",
+              createdAt: "2026-04-15T00:00:00.000Z",
+            },
+          ],
+        }),
+        {
+          status: 200,
+          headers: { "Content-Type": "application/json" },
+        },
+      ),
+    );
+
+    render(
+      <AdminUsersSection
+        currentUserId="admin-1"
+        initialUsers={[
+          {
+            id: "admin-1",
+            name: "Admin",
+            email: "admin@example.com",
+            role: "admin",
+            createdAt: "2026-04-14T00:00:00.000Z",
+          },
+        ]}
+      />,
+    );
+
+    fireEvent.change(screen.getByLabelText("Name"), {
+      target: { value: "Family Member" },
+    });
+    fireEvent.change(screen.getByLabelText("Email"), {
+      target: { value: "family@example.com" },
+    });
+    fireEvent.change(screen.getByLabelText("Provisional password"), {
+      target: { value: "provisional-pass" },
+    });
+
+    fireEvent.submit(screen.getByRole("button", { name: "Create user" }));
+
+    expect(
+      await screen.findByText("Created user: family@example.com"),
+    ).toBeInTheDocument();
+    expect(await screen.findByText("Family Member")).toBeInTheDocument();
+
+    expect(fetchMock).toHaveBeenNthCalledWith(
+      1,
+      "/api/admin-users",
+      expect.objectContaining({ method: "POST" }),
+    );
+    expect(fetchMock).toHaveBeenNthCalledWith(
+      2,
+      "/api/admin-users",
+      expect.objectContaining({ method: "GET" }),
+    );
   });
 });
