@@ -17,6 +17,10 @@ export type AdminClient = {
   removeUser: (input: { userId: string }) => Promise<unknown>;
 };
 
+/**
+ * Returns an instance of the AdminClient for performing administrative actions.
+ * @returns {AdminClient} The admin client instance.
+ */
 export function getAdminClient(): AdminClient {
   return (auth as unknown as { admin: AdminClient }).admin;
 }
