@@ -50,7 +50,7 @@ export function HomePageContent({
             {query ? `No recipes found for "${query}".` : "No recipes yet."}
           </p>
         ) : (
-          <ul>
+          <ul className="flex flex-col gap-4">
             {recipes.map((recipe) => (
               <RecipeCard key={recipe.id} recipe={recipe} />
             ))}
@@ -63,7 +63,7 @@ export function HomePageContent({
 
 function RecipeCard({ recipe }: { recipe: HomeRecipe }) {
   return (
-    <li key={recipe.id}>
+    <li key={recipe.id} className="rounded-md border border-white">
       <Link
         href={`/recipes/${recipe.slug}`}
         className="block rounded-md px-4 py-3"
