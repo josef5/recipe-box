@@ -1,7 +1,6 @@
 "use client";
 
 import { authClient } from "@/lib/auth/client";
-import Link from "next/link";
 import { useState } from "react";
 
 export default function SignInPage() {
@@ -80,18 +79,6 @@ export default function SignInPage() {
         className="w-80 rounded-md bg-indigo-500 px-3 py-2 text-sm font-semibold text-white hover:bg-indigo-400 disabled:opacity-50"
       >
         {isPending ? "Signing in..." : "Sign in"}
-      </button>
-
-      <hr className="w-80" />
-
-      <button
-        type="button"
-        onClick={() =>
-          authClient.signIn.social({ provider: "google", callbackURL: "/" })
-        }
-        className="rounded-md bg-indigo-500 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-400"
-      >
-        Continue with Google
       </button>
     </form>
   );
