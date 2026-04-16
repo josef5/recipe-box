@@ -2,7 +2,7 @@
 
 import { db } from "@/db";
 import { recipes } from "@/db/schema";
-import { auth } from "@/lib/auth/server";
+import { getAdminClient } from "@/lib/auth/admin-client";
 import { requireCurrentAdmin } from "@/lib/auth/session";
 import { eq } from "drizzle-orm";
 
@@ -20,6 +20,18 @@ type ActionResult<T = void> =
   | { ok: true; data: T }
   | { ok: false; error: string };
 
+function toActionErrorMessage(error: unknown, fallback: string) {
+  if (error instanceof Error && error.message) {
+    if (error.message.includes("NEXT_HTTP_ERROR_FALLBACK;403")) {
+      return "You are not allowed to perform this action.";
+    }
+
+    return error.message;
+  }
+
+  return fallback;
+}
+
 type AdminUserRecord = {
   id: string;
   name: string;
@@ -28,33 +40,45 @@ type AdminUserRecord = {
   createdAt: Date | string | number;
 };
 
-type AdminClient = {
-  listUsers: (input: {
-    query: {
-      limit: number;
-      sortBy: string;
-      sortDirection: "asc" | "desc";
-    };
-  }) => Promise<{
-    data?: { users?: AdminUserRecord[] };
-    error?: { message?: string } | null;
-  }>;
-  createUser: (input: {
-    name: string;
-    email: string;
-    password: string;
-    role: "user" | "admin";
-  }) => Promise<{
-    data?: { user?: AdminUserRecord };
-    error?: { message?: string } | null;
-  }>;
-  removeUser: (input: { userId: string }) => Promise<{
-    data?: { success: boolean };
-    error?: { message?: string } | null;
-  }>;
-};
+function extractErrorMessage(error: unknown): string | null {
+  if (typeof error === "string" && error.trim()) {
+    return error;
+  }
 
-const authAdmin = auth as unknown as { admin: AdminClient };
+  if (
+    error &&
+    typeof error === "object" &&
+    "message" in error &&
+    typeof (error as { message?: unknown }).message === "string"
+  ) {
+    return (error as { message: string }).message;
+  }
+
+  return null;
+}
+
+function normalizeAdminResult<T>(result: unknown): {
+  data: T | null;
+  errorMessage: string | null;
+} {
+  if (!result || typeof result !== "object") {
+    return { data: null, errorMessage: null };
+  }
+
+  const shaped = result as {
+    data?: unknown;
+    error?: unknown;
+  };
+
+  if ("data" in shaped || "error" in shaped) {
+    return {
+      data: (shaped.data as T | undefined) ?? null,
+      errorMessage: extractErrorMessage(shaped.error),
+    };
+  }
+
+  return { data: result as T, errorMessage: null };
+}
 
 function toManagedUser(user: {
   id: string;
@@ -78,23 +102,27 @@ function toManagedUser(user: {
 }
 
 async function fetchManagedUsers() {
-  const result = await authAdmin.admin.listUsers({
+  const adminClient = getAdminClient();
+  const result = await adminClient.listUsers({
     query: {
       limit: USER_LIST_LIMIT,
       sortBy: "createdAt",
       sortDirection: "desc",
     },
   });
+  const normalized = normalizeAdminResult<{
+    users?: AdminUserRecord[];
+  }>(result);
 
-  if (result.error) {
-    throw new Error(result.error.message ?? "Unable to list users.");
+  if (normalized.errorMessage) {
+    throw new Error(normalized.errorMessage);
   }
 
-  if (!result.data?.users) {
+  if (!normalized.data?.users) {
     return [];
   }
 
-  return result.data.users.map((user: AdminUserRecord) =>
+  return normalized.data.users.map((user: AdminUserRecord) =>
     toManagedUser({
       id: user.id,
       name: user.name,
@@ -108,15 +136,15 @@ async function fetchManagedUsers() {
 export async function listManagedUsersAction(): Promise<
   ActionResult<ManagedUser[]>
 > {
-  await requireCurrentAdmin();
-
   try {
+    await requireCurrentAdmin();
+
     const users = await fetchManagedUsers();
     return { ok: true, data: users };
   } catch (error) {
     return {
       ok: false,
-      error: error instanceof Error ? error.message : "Unable to list users.",
+      error: toActionErrorMessage(error, "Unable to list users."),
     };
   }
 }
@@ -126,81 +154,129 @@ export async function createManagedUserAction(input: {
   email: string;
   provisionalPassword: string;
 }): Promise<ActionResult<ManagedUser>> {
-  await requireCurrentAdmin();
+  try {
+    await requireCurrentAdmin();
 
-  const name = input.name.trim();
-  const email = input.email.trim().toLowerCase();
-  const provisionalPassword = input.provisionalPassword;
+    const name = input.name.trim();
+    const email = input.email.trim().toLowerCase();
+    const provisionalPassword = input.provisionalPassword;
 
-  if (!name) {
-    return { ok: false, error: "Name is required." };
-  }
+    if (!name) {
+      return { ok: false, error: "Name is required." };
+    }
 
-  if (!email.includes("@")) {
-    return { ok: false, error: "Valid email is required." };
-  }
+    if (!email.includes("@")) {
+      return { ok: false, error: "Valid email is required." };
+    }
 
-  if (provisionalPassword.length < 8) {
+    if (provisionalPassword.length < 8) {
+      return {
+        ok: false,
+        error: "Provisional password must be at least 8 characters.",
+      };
+    }
+
+    const adminClient = getAdminClient();
+    const result = await adminClient.createUser({
+      name,
+      email,
+      password: provisionalPassword,
+      role: "user",
+    });
+    const normalized = normalizeAdminResult<{
+      user?: AdminUserRecord;
+      id?: string;
+      name?: string;
+      email?: string;
+      role?: string | null;
+      createdAt?: Date | string | number;
+    }>(result);
+
+    if (normalized.errorMessage) {
+      return {
+        ok: false,
+        error: normalized.errorMessage,
+      };
+    }
+
+    const createdUser = normalized.data?.user
+      ? normalized.data.user
+      : normalized.data &&
+          typeof normalized.data === "object" &&
+          "id" in normalized.data &&
+          "email" in normalized.data
+        ? (normalized.data as AdminUserRecord)
+        : null;
+
+    if (!createdUser) {
+      return {
+        ok: false,
+        error: "Unable to create user.",
+      };
+    }
+
+    const user = toManagedUser({
+      id: createdUser.id,
+      name: createdUser.name,
+      email: createdUser.email,
+      role: createdUser.role ?? null,
+      createdAt: createdUser.createdAt,
+    });
+
+    return { ok: true, data: user };
+  } catch (error) {
     return {
       ok: false,
-      error: "Provisional password must be at least 8 characters.",
+      error: toActionErrorMessage(error, "Unable to create user."),
     };
   }
-
-  const result = await authAdmin.admin.createUser({
-    name,
-    email,
-    password: provisionalPassword,
-    role: "user",
-  });
-
-  if (result.error || !result.data?.user) {
-    return {
-      ok: false,
-      error: result.error?.message ?? "Unable to create user.",
-    };
-  }
-
-  const user = toManagedUser({
-    id: result.data.user.id,
-    name: result.data.user.name,
-    email: result.data.user.email,
-    role: result.data.user.role ?? null,
-    createdAt: result.data.user.createdAt,
-  });
-
-  return { ok: true, data: user };
 }
 
 export async function deleteManagedUserAction(input: {
   userId: string;
 }): Promise<ActionResult<{ userId: string }>> {
-  const currentUser = await requireCurrentAdmin();
-  const userId = input.userId;
+  try {
+    const currentUser = await requireCurrentAdmin();
+    const userId = input.userId;
 
-  if (!userId) {
-    return { ok: false, error: "User ID is required." };
-  }
+    if (!userId) {
+      return { ok: false, error: "User ID is required." };
+    }
 
-  if (userId === currentUser.id) {
-    return { ok: false, error: "You cannot delete your own admin user." };
-  }
+    if (userId === currentUser.id) {
+      return { ok: false, error: "You cannot delete your own admin user." };
+    }
 
-  const result = await authAdmin.admin.removeUser({ userId });
+    const adminClient = getAdminClient();
+    const result = await adminClient.removeUser({ userId });
+    const normalized = normalizeAdminResult<{ success?: boolean }>(result);
 
-  if (result.error) {
+    if (normalized.errorMessage) {
+      return {
+        ok: false,
+        error: normalized.errorMessage,
+      };
+    }
+
+    if (normalized.data && normalized.data.success === false) {
+      return {
+        ok: false,
+        error: "Unable to delete user.",
+      };
+    }
+
+    await db
+      .update(recipes)
+      .set({ userId: null })
+      .where(eq(recipes.userId, userId));
+
+    return { ok: true, data: { userId } };
+  } catch (error) {
     return {
       ok: false,
-      error: result.error.message ?? "Unable to delete user.",
+      error: toActionErrorMessage(error, "Unable to delete user."),
     };
   }
-
-  await db
-    .update(recipes)
-    .set({ userId: null })
-    .where(eq(recipes.userId, userId));
-
-  return { ok: true, data: { userId } };
 }
 
 export async function getManagedUsersForAccountPage() {
