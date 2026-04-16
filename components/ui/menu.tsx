@@ -34,7 +34,9 @@ export function Menu() {
           {isSignedIn && !isPending ? (
             <>
               {(variant === "home" || variant === "recipe") && (
-                <Link href="/account">Account</Link>
+                <Link href="/account">
+                  {session?.user.name ?? session?.user.email}
+                </Link>
               )}
               <SignOutButton />
             </>
