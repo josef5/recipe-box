@@ -82,16 +82,6 @@ export default function SignInPage() {
         {isPending ? "Signing in..." : "Sign in"}
       </button>
 
-      <p className="text-sm text-gray-600">
-        Need an account?{" "}
-        <Link
-          href="/auth/sign-up"
-          className="font-medium text-indigo-600 hover:underline"
-        >
-          Sign up
-        </Link>
-      </p>
-
       <hr className="w-80" />
 
       <button
