@@ -1,7 +1,11 @@
 import { getManagedUsersForAccountPage } from "@/actions/admin-users";
 import { AdminUsersSection } from "@/components/admin-users-section";
 import { ChangePasswordForm } from "@/components/change-password-form";
-import { requireCurrentUser, userHasAdminRole } from "@/lib/auth/session";
+import {
+  deriveRole,
+  requireCurrentUser,
+  userHasAdminRole,
+} from "@/lib/auth/session";
 
 export const dynamic = "force-dynamic";
 
@@ -17,15 +21,17 @@ export default async function AccountPage() {
           <h1 className="text-2xl font-bold">Account</h1>
           <p className="text-sm text-gray-600">
             Manage your account settings for{" "}
-            {user.name || user.email || "your profile"}.
+            {user.name ?? user.email ?? "your profile"}.
           </p>
         </header>
         <section className="rounded-lg border p-4">
           <dl className="grid gap-3 sm:grid-cols-[140px_1fr]">
             <dt className="font-medium">Name</dt>
-            <dd>{user.name || "Not set"}</dd>
+            <dd>{user.name ?? "Not set"}</dd>
             <dt className="font-medium">Email</dt>
-            <dd>{user.email || "Not available"}</dd>
+            <dd>{user.email ?? "Not available"}</dd>
+            <dt className="font-medium">Role</dt>
+            <dd>{deriveRole(user).join(", ") ?? "user"}</dd>
             <dt className="font-medium">User ID</dt>
             <dd className="text-sm break-all text-gray-600">{user.id}</dd>
           </dl>
