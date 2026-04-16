@@ -62,10 +62,10 @@
 ### Routing
 
 - `app/page.tsx` — recipe list (server component)
-- `app/account/page.tsx` — protected account page with profile summary and basic account actions
+- `app/account/page.tsx` — protected account page with profile summary, password change flow, and admin-only user management section
 - `app/recipes/[slug]/page.tsx` — recipe detail; static/SSG with `generateStaticParams()` and revalidation
-- `app/recipes/[slug]/edit/page.tsx` — edit recipe route; owner only; renders as a modal-style overlay over the recipe page
-- `app/recipes/new/page.tsx` — new recipe route; sign-in required; renders as a modal-style overlay over the home page
+- `app/recipes/[slug]/edit/page.tsx` — edit recipe route; owner only; dedicated full-page route
+- `app/recipes/new/page.tsx` — new recipe route; sign-in required; dedicated full-page route
 - `app/auth/sign-in/page.tsx` — sign in (email/password + Google OAuth)
 - `app/auth/sign-up/page.tsx` — sign up (name, email/password + Google OAuth)
 - `app/api/auth/[...path]/route.ts` — auth handler proxy
@@ -75,24 +75,23 @@
 
 - `server.ts` — `createNeonAuth()` with `NEON_AUTH_BASE_URL` and `NEON_AUTH_COOKIE_SECRET`
 - `client.ts` — `createAuthClient()`
-- `session.ts` — helpers to read the current signed-in user in server components and actions
+- `session.ts` — helpers to read the current signed-in user in server components and actions, including admin-role checks
 - `proxy.ts` (project root) — protects routes via `auth.middleware()`, redirects to `/auth/sign-in`
 - Google OAuth works with Neon shared credentials in dev; needs custom credentials in prod
 - Email/password sign-in/sign-up implemented
 - Current signed-in user is used to gate create/edit/delete access and menu links
 - Recipe owner names are denormalized onto recipes for public cached/static display
-- Signed-in users have a protected `/account` page for profile details and sign-out
+- Signed-in users have a protected `/account` page for profile details and password changes
+- Admin-role users have an account admin section for user listing, creation (provisional passwords), and deletion
+- Deleting an auth user keeps recipe records and nulls `recipes.userId`
 
 ### UI components
 
-- `components/app-menu.tsx` — shared nav bar for global navigation/account actions only; contextual `New Recipe` and `Edit Recipe` actions were moved closer to page content
-- `components/recipe-form.tsx` — shared add/edit form; static fields are uncontrolled, dynamic ingredient/step lists are controlled via `useState`; ingredient autocomplete via `<datalist>`; delete action now lives beside save/cancel on the edit screen only
-- `components/home-actions.tsx` — contextual client-side `New Recipe` trigger for signed-in users
-- `components/recipe-owner-actions.tsx` — contextual client-side `Edit Recipe` trigger for the recipe owner only
-- `components/home-page-content.tsx` — shared home page content used by `/` and the new-recipe modal route
-- `components/recipe-detail.tsx` — shared recipe detail content used by the detail page and the edit modal route
-- `components/modal-shell.tsx` — reusable modal overlay shell
-- `components/history-back-button.tsx` — close/cancel helper with back-or-fallback navigation behavior
+- `components/recipe-form.tsx` — shared add/edit form; static fields are uncontrolled, dynamic ingredient/step lists are controlled via `useState`; ingredient autocomplete via `<datalist>`
+- `components/home-page-content.tsx` — shared home page content used by `/`
+- `components/recipe-detail.tsx` — shared recipe detail content used by the detail page
+- `components/change-password-form.tsx` — account password update form (current + new + confirm)
+- `components/admin-users-section.tsx` — admin-only account section for user management
 
 ### Forms
 
@@ -115,12 +114,10 @@
 - Existing older recipes may remain unowned until recreated or backfilled
 - Live database schema was repaired to ensure `recipes.user_id` exists after migration drift
 
-### Static pages + modal behavior
+### Static and dynamic route behavior
 
 - Public recipe detail pages are now static/SSG with revalidation
-- `New Recipe` and `Edit Recipe` use dedicated routes that render as modal-style overlays
-- Modal close/cancel uses browser back when appropriate and falls back to the canonical page URL
-- Modal triggers use client navigation with `scroll={false}` for a smoother overlay experience
+- `New Recipe` and `Edit Recipe` are dedicated full-page routes (not modal overlays)
 
 ---
 
@@ -133,7 +130,6 @@
 ### Remaining backlog
 
 - [ ] **Styling pass** — consistent layout, typography, spacing across all pages
-- [ ] **Modal polish** — refine overlay spacing, backdrop, focus management, and transitions
 - [ ] **Image uploads** — Vercel Blob integration, image field on recipe form
 - [ ] **Expanded auth** — confirm email/password + Google OAuth work end-to-end in prod
 - [ ] **Account UX polish** — refine the account page layout and decide which settings should be promoted into first-class app flows
@@ -174,4 +170,4 @@ pnpm db:seed        # seed database with placeholder recipes
 - Unknown ingredient names typed into the form are automatically created as global ingredients on submit
 - `generateSlug` only generates a new slug on `updateRecipe` when the title has changed, to preserve stable URLs
 - Recipe detail pages use cached public reads and static regeneration; create/edit remain dynamic authenticated routes
-- New/edit are implemented as always-modal route presentations rather than Next intercepted-route modals
+- Dates rendered in client/SSR UI should use stable formatting (`formatStableDate` in `lib/utils.ts`) to avoid hydration mismatches
