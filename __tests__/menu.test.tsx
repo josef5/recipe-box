@@ -24,6 +24,8 @@ vi.mock("@/components/sign-out-button", () => ({
   SignOutButton: () => <button type="button">Sign Out</button>,
 }));
 
+const mockUserName = "Test User";
+
 describe("Menu", () => {
   it("shows sign-in navigation on the home variant when signed out", () => {
     authMocks.useSession.mockReturnValue({
@@ -43,7 +45,7 @@ describe("Menu", () => {
       "/auth/sign-in",
     );
     expect(
-      screen.queryByRole("link", { name: "Account" }),
+      screen.queryByRole("link", { name: mockUserName }),
     ).not.toBeInTheDocument();
     expect(
       screen.queryByRole("button", { name: "Sign Out" }),
@@ -55,6 +57,7 @@ describe("Menu", () => {
       data: {
         user: {
           id: "user-1",
+          name: mockUserName,
         },
       },
       isPending: false,
@@ -67,7 +70,7 @@ describe("Menu", () => {
       "href",
       "/",
     );
-    expect(screen.getByRole("link", { name: "Account" })).toHaveAttribute(
+    expect(screen.getByRole("link", { name: mockUserName })).toHaveAttribute(
       "href",
       "/account",
     );
