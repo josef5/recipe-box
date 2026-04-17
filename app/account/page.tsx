@@ -10,6 +10,8 @@ import {
 
 export const dynamic = "force-dynamic";
 
+// TODO: Close change pw accordion on success -> decompose to client component
+
 export default async function AccountPage() {
   const user = await requireCurrentUser({ redirectTo: "/account" });
   const isAdmin = userHasAdminRole(user);
