@@ -68,6 +68,7 @@ describe("admin users section", () => {
       />,
     );
 
+    fireEvent.click(screen.getByRole("button", { name: "Create new user" }));
     fireEvent.change(screen.getByLabelText("Name"), {
       target: { value: "Family Member" },
     });
@@ -154,6 +155,7 @@ describe("admin users section", () => {
       />,
     );
 
+    fireEvent.click(screen.getByRole("button", { name: "Create new user" }));
     fireEvent.change(screen.getByLabelText("Name"), {
       target: { value: "Family Member" },
     });
@@ -241,6 +243,7 @@ describe("admin users section", () => {
       />,
     );
 
+    fireEvent.click(screen.getByRole("button", { name: "Create new user" }));
     fireEvent.change(screen.getByLabelText("Name"), {
       target: { value: "Family Member" },
     });
