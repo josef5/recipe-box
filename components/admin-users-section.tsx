@@ -347,10 +347,9 @@ export function AdminUsersSection({
               {isCreating ? "Creating..." : "Create user"}
             </button>
           </form>
-
-          {error ? <p className="mt-4 text-sm text-red-500">{error}</p> : null}
         </>
       </Accordion>
+      {error ? <p className="mt-4 text-sm text-red-500">{error}</p> : null}
       {success ? (
         <p className="mt-4 text-sm text-green-700">{success}</p>
       ) : null}
