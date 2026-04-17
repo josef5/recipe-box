@@ -5,7 +5,7 @@ import { useState } from "react";
 
 const MIN_PASSWORD_LENGTH = 8;
 
-export function ChangePasswordForm() {
+export function ChangePasswordForm({ onSuccess }: { onSuccess?: () => void }) {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [isPending, setIsPending] = useState(false);
@@ -56,6 +56,8 @@ export function ChangePasswordForm() {
       }
 
       setSuccess("Password updated.");
+
+      onSuccess?.();
     } catch (err) {
       setError(
         err instanceof Error ? err.message : "Unable to update password.",
