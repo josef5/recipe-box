@@ -1,6 +1,7 @@
 import { getManagedUsersForAccountPage } from "@/actions/admin-users";
 import { AdminUsersSection } from "@/components/admin-users-section";
 import { ChangePasswordForm } from "@/components/change-password-form";
+import { Accordion } from "@/components/ui/accordion";
 import {
   deriveRole,
   requireCurrentUser,
@@ -35,8 +36,14 @@ export default async function AccountPage() {
             <dt className="font-medium">User ID</dt>
             <dd className="text-sm break-all text-gray-600">{user.id}</dd>
           </dl>
+          <Accordion
+            titleNode={<h2 className="font-medium">Change Password</h2>}
+            className="border-none px-0"
+          >
+            <ChangePasswordForm />
+          </Accordion>
         </section>
-        <ChangePasswordForm />
+
         {isAdmin ? (
           <AdminUsersSection
             initialUsers={adminUsers}

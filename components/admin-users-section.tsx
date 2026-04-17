@@ -8,6 +8,7 @@ import {
 } from "@/actions/admin-users";
 import { formatStableDate } from "@/lib/utils";
 import { useState } from "react";
+import { Accordion } from "./ui/accordion";
 
 const UNEXPECTED_ACTION_RESPONSE_MESSAGE =
   "An unexpected response was received from the server.";
@@ -275,72 +276,79 @@ export function AdminUsersSection({
         Create users with provisional passwords and remove users when needed.
       </p>
 
-      <form onSubmit={handleCreateUser} className="mt-4 grid gap-4">
-        <div className="grid gap-1.5">
-          <label htmlFor="adminUserName" className="text-sm font-medium">
-            Name
-          </label>
-          <input
-            id="adminUserName"
-            name="name"
-            type="text"
-            required
-            value={name}
-            onChange={(event) => setName(event.target.value)}
-            className="rounded-md border px-3 py-2 text-sm"
-          />
-        </div>
+      <Accordion
+        titleNode={<h2 className="font-medium">Create new user</h2>}
+        className="border-none px-0"
+      >
+        <>
+          <form onSubmit={handleCreateUser} className="mt-4 grid gap-4">
+            <div className="grid gap-1.5">
+              <label htmlFor="adminUserName" className="text-sm font-medium">
+                Name
+              </label>
+              <input
+                id="adminUserName"
+                name="name"
+                type="text"
+                required
+                value={name}
+                onChange={(event) => setName(event.target.value)}
+                className="rounded-md border px-3 py-2 text-sm"
+              />
+            </div>
 
-        <div className="grid gap-1.5">
-          <label htmlFor="adminUserEmail" className="text-sm font-medium">
-            Email
-          </label>
-          <input
-            id="adminUserEmail"
-            name="email"
-            type="email"
-            required
-            value={email}
-            onChange={(event) => setEmail(event.target.value)}
-            className="rounded-md border px-3 py-2 text-sm"
-          />
-        </div>
+            <div className="grid gap-1.5">
+              <label htmlFor="adminUserEmail" className="text-sm font-medium">
+                Email
+              </label>
+              <input
+                id="adminUserEmail"
+                name="email"
+                type="email"
+                required
+                value={email}
+                onChange={(event) => setEmail(event.target.value)}
+                className="rounded-md border px-3 py-2 text-sm"
+              />
+            </div>
 
-        <div className="grid gap-1.5">
-          <label
-            htmlFor="adminUserProvisionalPassword"
-            className="text-sm font-medium"
-          >
-            Provisional password
-          </label>
-          <input
-            id="adminUserProvisionalPassword"
-            name="provisionalPassword"
-            type="password"
-            required
-            minLength={8}
-            value={provisionalPassword}
-            onChange={(event) => setProvisionalPassword(event.target.value)}
-            className="rounded-md border px-3 py-2 text-sm"
-            autoComplete="new-password"
-          />
-        </div>
+            <div className="grid gap-1.5">
+              <label
+                htmlFor="adminUserProvisionalPassword"
+                className="text-sm font-medium"
+              >
+                Provisional password
+              </label>
+              <input
+                id="adminUserProvisionalPassword"
+                name="provisionalPassword"
+                type="password"
+                required
+                minLength={8}
+                value={provisionalPassword}
+                onChange={(event) => setProvisionalPassword(event.target.value)}
+                className="rounded-md border px-3 py-2 text-sm"
+                autoComplete="new-password"
+              />
+            </div>
 
-        <button
-          type="submit"
-          disabled={isCreating}
-          className="w-full rounded-md bg-indigo-500 px-3 py-2 text-sm font-semibold text-white hover:bg-indigo-400 disabled:opacity-50 sm:w-auto"
-        >
-          {isCreating ? "Creating..." : "Create user"}
-        </button>
-      </form>
+            <button
+              type="submit"
+              disabled={isCreating}
+              className="w-full rounded-md bg-indigo-500 px-3 py-2 text-sm font-semibold text-white hover:bg-indigo-400 disabled:opacity-50 sm:w-auto"
+            >
+              {isCreating ? "Creating..." : "Create user"}
+            </button>
+          </form>
 
-      {error ? <p className="mt-4 text-sm text-red-500">{error}</p> : null}
-      {success ? (
-        <p className="mt-4 text-sm text-green-700">{success}</p>
-      ) : null}
+          {error ? <p className="mt-4 text-sm text-red-500">{error}</p> : null}
+          {success ? (
+            <p className="mt-4 text-sm text-green-700">{success}</p>
+          ) : null}
+        </>
+      </Accordion>
 
-      <div className="mt-6 overflow-x-auto">
+      <div className="mt-2 overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b text-left">
