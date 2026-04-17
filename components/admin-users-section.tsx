@@ -7,7 +7,7 @@ import {
   type ManagedUser,
 } from "@/actions/admin-users";
 import { formatStableDate } from "@/lib/utils";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Accordion } from "./ui/accordion";
 
 const UNEXPECTED_ACTION_RESPONSE_MESSAGE =
@@ -129,6 +129,10 @@ export function AdminUsersSection({
   const [deletingUserId, setDeletingUserId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+  const accordionRef = useRef<{
+    open: () => void;
+    close: () => void;
+  }>(null);
 
   async function refreshUsers() {
     try {
@@ -188,6 +192,7 @@ export function AdminUsersSection({
       setName("");
       setEmail("");
       setProvisionalPassword("");
+      accordionRef.current?.close();
       await refreshUsers();
     } catch (submissionError) {
       if (
@@ -209,6 +214,7 @@ export function AdminUsersSection({
         setName("");
         setEmail("");
         setProvisionalPassword("");
+        accordionRef.current?.close();
         await refreshUsers();
         return;
       }
@@ -279,6 +285,7 @@ export function AdminUsersSection({
       <Accordion
         titleNode={<h2 className="font-medium">Create new user</h2>}
         className="border-none px-0"
+        ref={accordionRef}
       >
         <>
           <form onSubmit={handleCreateUser} className="mt-4 grid gap-4">
@@ -342,12 +349,11 @@ export function AdminUsersSection({
           </form>
 
           {error ? <p className="mt-4 text-sm text-red-500">{error}</p> : null}
-          {success ? (
-            <p className="mt-4 text-sm text-green-700">{success}</p>
-          ) : null}
         </>
       </Accordion>
-
+      {success ? (
+        <p className="mt-4 text-sm text-green-700">{success}</p>
+      ) : null}
       <div className="mt-2 overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
