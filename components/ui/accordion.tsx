@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useImperativeHandle } from "react";
 import { cn } from "@/lib/utils";
 
 export function Accordion({
@@ -8,12 +8,22 @@ export function Accordion({
   titleNode,
   children,
   className,
+  ref,
 }: {
   title?: string;
   titleNode?: React.ReactNode;
   children: React.ReactNode;
-} & React.HTMLAttributes<HTMLDivElement>) {
+} & React.HTMLAttributes<HTMLDivElement> &
+  React.RefAttributes<{
+    open: () => void;
+    close: () => void;
+  }>) {
   const [isOpen, setIsOpen] = useState(false);
+
+  useImperativeHandle(ref, () => ({
+    open: () => setIsOpen(true),
+    close: () => setIsOpen(false),
+  }));
 
   return (
     <div className={cn("rounded-lg border p-4", className)}>
