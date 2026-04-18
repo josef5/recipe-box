@@ -99,6 +99,7 @@ export function RecipeForm({
       <form
         action={formAction}
         id="recipe-form"
+        noValidate
         className="flex max-w-3xl flex-col gap-8"
       >
         {state?.errors._form && (
@@ -117,7 +118,6 @@ export function RecipeForm({
             <input
               id="title"
               name="title"
-              required
               defaultValue={initialValues?.title ?? ""}
               className="rounded-md border px-3 py-2 text-sm"
             />
@@ -146,7 +146,6 @@ export function RecipeForm({
                 id="servings"
                 name="servings"
                 type="number"
-                min="1"
                 defaultValue={initialValues?.servings ?? ""}
                 className="rounded-md border px-3 py-2 text-sm"
               />
@@ -162,7 +161,6 @@ export function RecipeForm({
                 id="prepTimeMins"
                 name="prepTimeMins"
                 type="number"
-                min="0"
                 defaultValue={initialValues?.prepTimeMins ?? ""}
                 className="rounded-md border px-3 py-2 text-sm"
               />
@@ -180,7 +178,6 @@ export function RecipeForm({
                 id="cookTimeMins"
                 name="cookTimeMins"
                 type="number"
-                min="0"
                 defaultValue={initialValues?.cookTimeMins ?? ""}
                 className="rounded-md border px-3 py-2 text-sm"
               />
@@ -277,8 +274,6 @@ export function RecipeForm({
                     <input
                       name="ingredientAmount"
                       type="number"
-                      step="0.01"
-                      min="0"
                       value={ingredient.amount}
                       onChange={(event) =>
                         updateIngredient(index, "amount", event.target.value)

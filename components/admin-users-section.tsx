@@ -288,7 +288,11 @@ export function AdminUsersSection({
         ref={accordionRef}
       >
         <>
-          <form onSubmit={handleCreateUser} className="mt-4 grid gap-4">
+          <form
+            onSubmit={handleCreateUser}
+            noValidate
+            className="mt-4 grid gap-4"
+          >
             <div className="grid gap-1.5">
               <label htmlFor="adminUserName" className="text-sm font-medium">
                 Name
@@ -297,7 +301,6 @@ export function AdminUsersSection({
                 id="adminUserName"
                 name="name"
                 type="text"
-                required
                 value={name}
                 onChange={(event) => setName(event.target.value)}
                 className="rounded-md border px-3 py-2 text-sm"
@@ -312,7 +315,6 @@ export function AdminUsersSection({
                 id="adminUserEmail"
                 name="email"
                 type="email"
-                required
                 value={email}
                 onChange={(event) => setEmail(event.target.value)}
                 className="rounded-md border px-3 py-2 text-sm"
@@ -330,8 +332,6 @@ export function AdminUsersSection({
                 id="adminUserProvisionalPassword"
                 name="provisionalPassword"
                 type="password"
-                required
-                minLength={8}
                 value={provisionalPassword}
                 onChange={(event) => setProvisionalPassword(event.target.value)}
                 className="rounded-md border px-3 py-2 text-sm"

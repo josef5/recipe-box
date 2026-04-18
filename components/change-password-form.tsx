@@ -68,7 +68,7 @@ export function ChangePasswordForm({ onSuccess }: { onSuccess?: () => void }) {
   }
 
   return (
-    <form action={handleSubmit} className="mt-4 grid gap-4">
+    <form action={handleSubmit} noValidate className="mt-4 grid gap-4">
       <div className="grid gap-1.5">
         <label htmlFor="currentPassword" className="text-sm font-medium">
           Current password
@@ -77,7 +77,6 @@ export function ChangePasswordForm({ onSuccess }: { onSuccess?: () => void }) {
           id="currentPassword"
           name="currentPassword"
           type="password"
-          required
           className="rounded-md border px-3 py-2 text-sm"
           autoComplete="current-password"
         />
@@ -91,8 +90,6 @@ export function ChangePasswordForm({ onSuccess }: { onSuccess?: () => void }) {
           id="newPassword"
           name="newPassword"
           type="password"
-          required
-          minLength={MIN_PASSWORD_LENGTH}
           className="rounded-md border px-3 py-2 text-sm"
           autoComplete="new-password"
         />
@@ -106,8 +103,6 @@ export function ChangePasswordForm({ onSuccess }: { onSuccess?: () => void }) {
           id="confirmPassword"
           name="confirmPassword"
           type="password"
-          required
-          minLength={MIN_PASSWORD_LENGTH}
           className="rounded-md border px-3 py-2 text-sm"
           autoComplete="new-password"
         />
