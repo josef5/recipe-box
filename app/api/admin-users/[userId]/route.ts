@@ -2,6 +2,7 @@ import { db } from "@/db";
 import { recipes } from "@/db/schema";
 import { getAdminClient } from "@/lib/auth/admin-client";
 import { requireCurrentAdmin } from "@/lib/auth/session";
+import { DeleteAdminUserSchema } from "@/lib/validation/admin-users";
 import { eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
 
@@ -56,14 +57,20 @@ export async function DELETE(
   try {
     const currentUser = await requireCurrentAdmin();
     const adminClient = getAdminClient();
-    const { userId } = await context.params;
+    const { userId: rawUserId } = await context.params;
 
-    if (!userId) {
+    const parsed = DeleteAdminUserSchema.safeParse({ userId: rawUserId });
+    if (!parsed.success) {
       return NextResponse.json(
-        { ok: false, error: "User ID is required." },
+        {
+          ok: false,
+          error: parsed.error.issues[0]?.message ?? "Invalid input.",
+        },
         { status: 400 },
       );
     }
+
+    const { userId } = parsed.data;
 
     if (userId === currentUser.id) {
       return NextResponse.json(

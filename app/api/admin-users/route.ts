@@ -1,5 +1,6 @@
 import { getAdminClient } from "@/lib/auth/admin-client";
 import { requireCurrentAdmin } from "@/lib/auth/session";
+import { CreateAdminUserSchema } from "@/lib/validation/admin-users";
 import { NextRequest, NextResponse } from "next/server";
 
 type ManagedUser = {
@@ -144,33 +145,18 @@ export async function POST(
       provisionalPassword?: string;
     };
 
-    const name = body.name?.trim() ?? "";
-    const email = body.email?.trim().toLowerCase() ?? "";
-    const provisionalPassword = body.provisionalPassword ?? "";
-
-    if (!name) {
-      return NextResponse.json(
-        { ok: false, error: "Name is required." },
-        { status: 400 },
-      );
-    }
-
-    if (!email.includes("@")) {
-      return NextResponse.json(
-        { ok: false, error: "Valid email is required." },
-        { status: 400 },
-      );
-    }
-
-    if (provisionalPassword.length < 8) {
+    const parsed = CreateAdminUserSchema.safeParse(body);
+    if (!parsed.success) {
       return NextResponse.json(
         {
           ok: false,
-          error: "Provisional password must be at least 8 characters.",
+          error: parsed.error.issues[0]?.message ?? "Invalid input.",
         },
         { status: 400 },
       );
     }
+
+    const { name, email, provisionalPassword } = parsed.data;
 
     const result = await adminClient.createUser({
       name,
