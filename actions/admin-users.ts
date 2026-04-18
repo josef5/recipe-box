@@ -5,6 +5,10 @@ import { recipes } from "@/db/schema";
 import { getAdminClient } from "@/lib/auth/admin-client";
 import { requireCurrentAdmin } from "@/lib/auth/session";
 import { eq } from "drizzle-orm";
+import {
+  CreateAdminUserSchema,
+  DeleteAdminUserSchema,
+} from "@/lib/validation/admin-users";
 
 const USER_LIST_LIMIT = 200;
 
@@ -157,25 +161,15 @@ export async function createManagedUserAction(input: {
   try {
     await requireCurrentAdmin();
 
-    const name = input.name.trim();
-    const email = input.email.trim().toLowerCase();
-    const provisionalPassword = input.provisionalPassword;
-
-    if (!name) {
-      return { ok: false, error: "Name is required." };
-    }
-
-    if (!email.includes("@")) {
-      return { ok: false, error: "Valid email is required." };
-    }
-
-    if (provisionalPassword.length < 8) {
+    const parsed = CreateAdminUserSchema.safeParse(input);
+    if (!parsed.success) {
       return {
         ok: false,
-        error: "Provisional password must be at least 8 characters.",
+        error: parsed.error.issues[0]?.message ?? "Invalid input.",
       };
     }
 
+    const { name, email, provisionalPassword } = parsed.data;
     const adminClient = getAdminClient();
     const result = await adminClient.createUser({
       name,
@@ -237,12 +231,16 @@ export async function deleteManagedUserAction(input: {
 }): Promise<ActionResult<{ userId: string }>> {
   try {
     const currentUser = await requireCurrentAdmin();
-    const userId = input.userId;
 
-    if (!userId) {
-      return { ok: false, error: "User ID is required." };
+    const parsed = DeleteAdminUserSchema.safeParse(input);
+    if (!parsed.success) {
+      return {
+        ok: false,
+        error: parsed.error.issues[0]?.message ?? "Invalid input.",
+      };
     }
 
+    const { userId } = parsed.data;
     if (userId === currentUser.id) {
       return { ok: false, error: "You cannot delete your own admin user." };
     }
