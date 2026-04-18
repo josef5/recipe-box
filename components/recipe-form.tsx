@@ -1,7 +1,8 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useActionState } from "react";
 import { useFormStatus } from "react-dom";
+import type { RecipeFormState } from "@/lib/validation/recipes";
 
 type IngredientSuggestion = {
   name: string;
@@ -37,11 +38,15 @@ export function RecipeForm({
   ingredientSuggestions,
   initialValues,
 }: {
-  action: (formData: FormData) => void | Promise<void>;
+  action: (
+    prevState: RecipeFormState,
+    formData: FormData,
+  ) => Promise<RecipeFormState>;
   ingredientSuggestions: IngredientSuggestion[];
   initialValues?: RecipeFormValues;
   deleteAction?: () => void | Promise<void>;
 } & React.ComponentProps<"div">) {
+  const [state, formAction] = useActionState(action, null);
   const [ingredients, setIngredients] = useState<IngredientField[]>(
     initialValues?.ingredients.length
       ? initialValues.ingredients
@@ -92,10 +97,18 @@ export function RecipeForm({
   return (
     <>
       <form
-        action={action}
+        action={formAction}
         id="recipe-form"
         className="flex max-w-3xl flex-col gap-8"
       >
+        {state?.errors._form && (
+          <p
+            role="alert"
+            className="rounded-md bg-red-50 px-4 py-3 text-sm text-red-700"
+          >
+            {state.errors._form}
+          </p>
+        )}
         <section className="flex flex-col gap-4">
           <div className="flex flex-col gap-1.5">
             <label htmlFor="title" className="text-sm font-medium">
@@ -108,6 +121,9 @@ export function RecipeForm({
               defaultValue={initialValues?.title ?? ""}
               className="rounded-md border px-3 py-2 text-sm"
             />
+            {state?.errors.title && (
+              <p className="text-sm text-red-600">{state.errors.title}</p>
+            )}
           </div>
           <div className="flex flex-col gap-1.5">
             <label htmlFor="description" className="text-sm font-medium">
@@ -134,6 +150,9 @@ export function RecipeForm({
                 defaultValue={initialValues?.servings ?? ""}
                 className="rounded-md border px-3 py-2 text-sm"
               />
+              {state?.errors.servings && (
+                <p className="text-sm text-red-600">{state.errors.servings}</p>
+              )}
             </div>
             <div className="flex flex-col gap-1.5">
               <label htmlFor="prepTimeMins" className="text-sm font-medium">
@@ -147,6 +166,11 @@ export function RecipeForm({
                 defaultValue={initialValues?.prepTimeMins ?? ""}
                 className="rounded-md border px-3 py-2 text-sm"
               />
+              {state?.errors.prepTimeMins && (
+                <p className="text-sm text-red-600">
+                  {state.errors.prepTimeMins}
+                </p>
+              )}
             </div>
             <div className="flex flex-col gap-1.5">
               <label htmlFor="cookTimeMins" className="text-sm font-medium">
@@ -160,6 +184,11 @@ export function RecipeForm({
                 defaultValue={initialValues?.cookTimeMins ?? ""}
                 className="rounded-md border px-3 py-2 text-sm"
               />
+              {state?.errors.cookTimeMins && (
+                <p className="text-sm text-red-600">
+                  {state.errors.cookTimeMins}
+                </p>
+              )}
             </div>
           </div>
           <div className="grid gap-4 md:grid-cols-2">
@@ -185,6 +214,9 @@ export function RecipeForm({
                 defaultValue={initialValues?.sourceUrl ?? ""}
                 className="rounded-md border px-3 py-2 text-sm"
               />
+              {state?.errors.sourceUrl && (
+                <p className="text-sm text-red-600">{state.errors.sourceUrl}</p>
+              )}
             </div>
           </div>
           <div className="flex flex-col gap-1.5">
@@ -198,6 +230,9 @@ export function RecipeForm({
               defaultValue={initialValues?.imageUrl ?? ""}
               className="rounded-md border px-3 py-2 text-sm"
             />
+            {state?.errors.imageUrl && (
+              <p className="text-sm text-red-600">{state.errors.imageUrl}</p>
+            )}
           </div>
         </section>
         <section className="flex flex-col gap-4">
