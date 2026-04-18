@@ -27,9 +27,6 @@ describe("change password form", () => {
     fireEvent.change(screen.getByLabelText("New password"), {
       target: { value: "new-pass-123" },
     });
-    fireEvent.change(screen.getByLabelText("Confirm new password"), {
-      target: { value: "new-pass-123" },
-    });
 
     fireEvent.submit(
       screen.getByRole("button", { name: "Update password" }).closest("form")!,
@@ -46,29 +43,6 @@ describe("change password form", () => {
     expect(await screen.findByText("Password updated.")).toBeInTheDocument();
   });
 
-  it("does not submit when confirmation does not match", async () => {
-    render(<ChangePasswordForm />);
-
-    fireEvent.change(screen.getByLabelText("Current password"), {
-      target: { value: "old-pass-123" },
-    });
-    fireEvent.change(screen.getByLabelText("New password"), {
-      target: { value: "new-pass-123" },
-    });
-    fireEvent.change(screen.getByLabelText("Confirm new password"), {
-      target: { value: "different-pass" },
-    });
-
-    fireEvent.submit(
-      screen.getByRole("button", { name: "Update password" }).closest("form")!,
-    );
-
-    expect(
-      await screen.findByText("New password and confirmation do not match."),
-    ).toBeInTheDocument();
-    expect(authMocks.changePassword).not.toHaveBeenCalled();
-  });
-
   it("shows auth errors from the API", async () => {
     authMocks.changePassword.mockResolvedValueOnce({
       error: { message: "Current password is incorrect" },
@@ -80,9 +54,6 @@ describe("change password form", () => {
       target: { value: "wrong-pass" },
     });
     fireEvent.change(screen.getByLabelText("New password"), {
-      target: { value: "new-pass-123" },
-    });
-    fireEvent.change(screen.getByLabelText("Confirm new password"), {
       target: { value: "new-pass-123" },
     });
 

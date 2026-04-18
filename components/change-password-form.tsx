@@ -13,12 +13,10 @@ export function ChangePasswordForm({ onSuccess }: { onSuccess?: () => void }) {
   async function handleSubmit(formData: FormData) {
     const currentPassword = formData.get("currentPassword");
     const newPassword = formData.get("newPassword");
-    const confirmPassword = formData.get("confirmPassword");
 
     if (
       typeof currentPassword !== "string" ||
-      typeof newPassword !== "string" ||
-      typeof confirmPassword !== "string"
+      typeof newPassword !== "string"
     ) {
       setError("Invalid form submission.");
       setSuccess(null);
@@ -29,12 +27,6 @@ export function ChangePasswordForm({ onSuccess }: { onSuccess?: () => void }) {
       setError(
         `New password must be at least ${MIN_PASSWORD_LENGTH} characters.`,
       );
-      setSuccess(null);
-      return;
-    }
-
-    if (newPassword !== confirmPassword) {
-      setError("New password and confirmation do not match.");
       setSuccess(null);
       return;
     }
@@ -89,19 +81,6 @@ export function ChangePasswordForm({ onSuccess }: { onSuccess?: () => void }) {
         <input
           id="newPassword"
           name="newPassword"
-          type="password"
-          className="rounded-md border px-3 py-2 text-sm"
-          autoComplete="new-password"
-        />
-      </div>
-
-      <div className="grid gap-1.5">
-        <label htmlFor="confirmPassword" className="text-sm font-medium">
-          Confirm new password
-        </label>
-        <input
-          id="confirmPassword"
-          name="confirmPassword"
           type="password"
           className="rounded-md border px-3 py-2 text-sm"
           autoComplete="new-password"
