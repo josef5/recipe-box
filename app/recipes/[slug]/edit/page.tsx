@@ -45,6 +45,7 @@ export default async function EditRecipePage({
           Update details, ingredients, and steps.
         </p>
         <RecipeForm
+          key={recipe.id}
           action={updateRecipeAction}
           ingredientSuggestions={ingredients}
           initialValues={{
