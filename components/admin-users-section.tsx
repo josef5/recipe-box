@@ -6,6 +6,7 @@ import {
   listManagedUsersAction,
   type ManagedUser,
 } from "@/actions/admin-users";
+import { CreateAdminUserSchema } from "@/lib/validation/admin-users";
 import { formatStableDate } from "@/lib/utils";
 import { useRef, useState } from "react";
 import { Accordion } from "./ui/accordion";
@@ -174,14 +175,22 @@ export function AdminUsersSection({
     event.preventDefault();
     setError(null);
     setSuccess(null);
+
+    const parsed = CreateAdminUserSchema.safeParse({
+      name,
+      email,
+      provisionalPassword,
+    });
+
+    if (!parsed.success) {
+      setError(parsed.error.issues[0]?.message ?? "Unable to create user.");
+      return;
+    }
+
     setIsCreating(true);
 
     try {
-      const result = await createManagedUserAction({
-        name,
-        email,
-        provisionalPassword,
-      });
+      const result = await createManagedUserAction(parsed.data);
 
       if (!result.ok) {
         setError(result.error);
@@ -199,11 +208,7 @@ export function AdminUsersSection({
         submissionError instanceof Error &&
         submissionError.message === UNEXPECTED_ACTION_RESPONSE_MESSAGE
       ) {
-        const fallbackResult = await createManagedUserViaApi({
-          name,
-          email,
-          provisionalPassword,
-        });
+        const fallbackResult = await createManagedUserViaApi(parsed.data);
 
         if (!fallbackResult.ok) {
           setError(fallbackResult.error);

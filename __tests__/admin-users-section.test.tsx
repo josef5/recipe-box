@@ -173,6 +173,41 @@ describe("admin users section", () => {
     ).toBeInTheDocument();
   });
 
+  it("shows a client-side validation error and skips submit for invalid email", async () => {
+    render(
+      <AdminUsersSection
+        currentUserId="admin-1"
+        initialUsers={[
+          {
+            id: "admin-1",
+            name: "Admin",
+            email: "admin@example.com",
+            role: "admin",
+            createdAt: "2026-04-14T00:00:00.000Z",
+          },
+        ]}
+      />,
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "Create new user" }));
+    fireEvent.change(screen.getByLabelText("Name"), {
+      target: { value: "Family Member" },
+    });
+    fireEvent.change(screen.getByLabelText("Email"), {
+      target: { value: "not-an-email" },
+    });
+    fireEvent.change(screen.getByLabelText("Provisional password"), {
+      target: { value: "provisional-pass" },
+    });
+
+    fireEvent.submit(screen.getByRole("button", { name: "Create user" }));
+
+    expect(
+      await screen.findByText("Valid email is required."),
+    ).toBeInTheDocument();
+    expect(actionMocks.createManagedUserAction).not.toHaveBeenCalled();
+  });
+
   it("falls back to API endpoints when server action transport fails", async () => {
     actionMocks.createManagedUserAction.mockRejectedValue(
       new Error("An unexpected response was received from the server."),
