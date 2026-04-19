@@ -1,7 +1,10 @@
 "use client";
 
 import { authClient } from "@/lib/auth/client";
-import { validateSignInFormData } from "@/lib/validation/auth";
+import {
+  type SignInFieldErrors,
+  validateSignInFormData,
+} from "@/lib/validation/auth";
 import { useSearchParams } from "next/navigation";
 import { useState } from "react";
 
@@ -18,6 +21,9 @@ function getSafeRedirectPath(redirectTo: string | null) {
 }
 
 export default function SignInPage() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [fieldErrors, setFieldErrors] = useState<SignInFieldErrors>({});
   const [error, setError] = useState<string | null>(null);
   const [isPending, setIsPending] = useState(false);
   const searchParams = useSearchParams();
@@ -27,12 +33,14 @@ export default function SignInPage() {
     const validated = validateSignInFormData(formData);
 
     if (!validated.success) {
-      setError(validated.error);
+      setFieldErrors(validated.errors);
+      setError(null);
       return;
     }
 
     const { email, password } = validated.data;
 
+    setFieldErrors({});
     setError(null);
     setIsPending(true);
 
@@ -69,9 +77,17 @@ export default function SignInPage() {
           id="email"
           name="email"
           type="email"
+          value={email}
+          onChange={(event) => {
+            setEmail(event.target.value);
+            setFieldErrors((current) => ({ ...current, email: undefined }));
+          }}
           placeholder="you@example.com"
           className="rounded-md border px-3 py-2 text-sm"
         />
+        {fieldErrors.email ? (
+          <p className="text-sm text-red-600">{fieldErrors.email}</p>
+        ) : null}
       </div>
 
       <div className="flex w-80 flex-col gap-1.5">
@@ -82,9 +98,17 @@ export default function SignInPage() {
           id="password"
           name="password"
           type="password"
+          value={password}
+          onChange={(event) => {
+            setPassword(event.target.value);
+            setFieldErrors((current) => ({ ...current, password: undefined }));
+          }}
           placeholder="*****"
           className="rounded-md border px-3 py-2 text-sm"
         />
+        {fieldErrors.password ? (
+          <p className="text-sm text-red-600">{fieldErrors.password}</p>
+        ) : null}
       </div>
 
       {error ? <p className="text-sm text-red-500">{error}</p> : null}

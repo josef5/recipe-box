@@ -1,10 +1,16 @@
 "use client";
 
 import { authClient } from "@/lib/auth/client";
-import { validateChangePasswordFormData } from "@/lib/validation/auth";
+import {
+  type ChangePasswordFieldErrors,
+  validateChangePasswordFormData,
+} from "@/lib/validation/auth";
 import { useState } from "react";
 
 export function ChangePasswordForm({ onSuccess }: { onSuccess?: () => void }) {
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [fieldErrors, setFieldErrors] = useState<ChangePasswordFieldErrors>({});
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [isPending, setIsPending] = useState(false);
@@ -13,13 +19,15 @@ export function ChangePasswordForm({ onSuccess }: { onSuccess?: () => void }) {
     const validated = validateChangePasswordFormData(formData);
 
     if (!validated.success) {
-      setError(validated.error);
+      setFieldErrors(validated.errors);
+      setError(null);
       setSuccess(null);
       return;
     }
 
     const { currentPassword, newPassword } = validated.data;
 
+    setFieldErrors({});
     setError(null);
     setSuccess(null);
     setIsPending(true);
@@ -58,9 +66,20 @@ export function ChangePasswordForm({ onSuccess }: { onSuccess?: () => void }) {
           id="currentPassword"
           name="currentPassword"
           type="password"
+          value={currentPassword}
+          onChange={(event) => {
+            setCurrentPassword(event.target.value);
+            setFieldErrors((current) => ({
+              ...current,
+              currentPassword: undefined,
+            }));
+          }}
           className="rounded-md border px-3 py-2 text-sm"
           autoComplete="current-password"
         />
+        {fieldErrors.currentPassword ? (
+          <p className="text-sm text-red-600">{fieldErrors.currentPassword}</p>
+        ) : null}
       </div>
 
       <div className="grid gap-1.5">
@@ -71,9 +90,20 @@ export function ChangePasswordForm({ onSuccess }: { onSuccess?: () => void }) {
           id="newPassword"
           name="newPassword"
           type="password"
+          value={newPassword}
+          onChange={(event) => {
+            setNewPassword(event.target.value);
+            setFieldErrors((current) => ({
+              ...current,
+              newPassword: undefined,
+            }));
+          }}
           className="rounded-md border px-3 py-2 text-sm"
           autoComplete="new-password"
         />
+        {fieldErrors.newPassword ? (
+          <p className="text-sm text-red-600">{fieldErrors.newPassword}</p>
+        ) : null}
       </div>
 
       {error ? <p className="text-sm text-red-500">{error}</p> : null}

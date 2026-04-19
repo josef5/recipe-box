@@ -118,6 +118,10 @@ type AdminUsersSectionProps = {
   currentUserId: string;
 };
 
+type CreateUserFieldErrors = Partial<
+  Record<"name" | "email" | "provisionalPassword", string>
+>;
+
 export function AdminUsersSection({
   initialUsers,
   currentUserId,
@@ -128,6 +132,8 @@ export function AdminUsersSection({
   const [provisionalPassword, setProvisionalPassword] = useState("");
   const [isCreating, setIsCreating] = useState(false);
   const [deletingUserId, setDeletingUserId] = useState<string | null>(null);
+  const [createUserFieldErrors, setCreateUserFieldErrors] =
+    useState<CreateUserFieldErrors>({});
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const accordionRef = useRef<{
@@ -183,9 +189,17 @@ export function AdminUsersSection({
     });
 
     if (!parsed.success) {
-      setError(parsed.error.issues[0]?.message ?? "Unable to create user.");
+      const fieldErrors = parsed.error.flatten().fieldErrors;
+
+      setCreateUserFieldErrors({
+        name: fieldErrors.name?.[0],
+        email: fieldErrors.email?.[0],
+        provisionalPassword: fieldErrors.provisionalPassword?.[0],
+      });
       return;
     }
+
+    setCreateUserFieldErrors({});
 
     setIsCreating(true);
 
@@ -307,9 +321,20 @@ export function AdminUsersSection({
                 name="name"
                 type="text"
                 value={name}
-                onChange={(event) => setName(event.target.value)}
+                onChange={(event) => {
+                  setName(event.target.value);
+                  setCreateUserFieldErrors((current) => ({
+                    ...current,
+                    name: undefined,
+                  }));
+                }}
                 className="rounded-md border px-3 py-2 text-sm"
               />
+              {createUserFieldErrors.name ? (
+                <p className="text-sm text-red-600">
+                  {createUserFieldErrors.name}
+                </p>
+              ) : null}
             </div>
 
             <div className="grid gap-1.5">
@@ -321,9 +346,20 @@ export function AdminUsersSection({
                 name="email"
                 type="email"
                 value={email}
-                onChange={(event) => setEmail(event.target.value)}
+                onChange={(event) => {
+                  setEmail(event.target.value);
+                  setCreateUserFieldErrors((current) => ({
+                    ...current,
+                    email: undefined,
+                  }));
+                }}
                 className="rounded-md border px-3 py-2 text-sm"
               />
+              {createUserFieldErrors.email ? (
+                <p className="text-sm text-red-600">
+                  {createUserFieldErrors.email}
+                </p>
+              ) : null}
             </div>
 
             <div className="grid gap-1.5">
@@ -338,10 +374,21 @@ export function AdminUsersSection({
                 name="provisionalPassword"
                 type="password"
                 value={provisionalPassword}
-                onChange={(event) => setProvisionalPassword(event.target.value)}
+                onChange={(event) => {
+                  setProvisionalPassword(event.target.value);
+                  setCreateUserFieldErrors((current) => ({
+                    ...current,
+                    provisionalPassword: undefined,
+                  }));
+                }}
                 className="rounded-md border px-3 py-2 text-sm"
                 autoComplete="new-password"
               />
+              {createUserFieldErrors.provisionalPassword ? (
+                <p className="text-sm text-red-600">
+                  {createUserFieldErrors.provisionalPassword}
+                </p>
+              ) : null}
             </div>
 
             <button
