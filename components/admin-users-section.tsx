@@ -1,17 +1,9 @@
 "use client";
 
-import {
-  createManagedUserAction,
-  deleteManagedUserAction,
-  listManagedUsersAction,
-  type ManagedUser,
-} from "@/actions/admin-users";
+import { type ManagedUser } from "@/actions/admin-users";
 import { formatStableDate } from "@/lib/utils";
 import { useRef, useState } from "react";
 import { Accordion } from "./ui/accordion";
-
-const UNEXPECTED_ACTION_RESPONSE_MESSAGE =
-  "An unexpected response was received from the server.";
 
 type ClientActionResult<T = void> =
   | { ok: true; data: T }
@@ -135,39 +127,14 @@ export function AdminUsersSection({
   }>(null);
 
   async function refreshUsers() {
-    try {
-      const result = await listManagedUsersAction();
+    const result = await listManagedUsersViaApi();
 
-      if (!result.ok) {
-        setError(result.error);
-        return;
-      }
-
-      setUsers(result.data);
-      return;
-    } catch (refreshError) {
-      if (
-        refreshError instanceof Error &&
-        refreshError.message === UNEXPECTED_ACTION_RESPONSE_MESSAGE
-      ) {
-        const fallbackResult = await listManagedUsersViaApi();
-
-        if (!fallbackResult.ok) {
-          setError(fallbackResult.error);
-          return;
-        }
-
-        setUsers(fallbackResult.data);
-        return;
-      }
-
-      setError(
-        refreshError instanceof Error
-          ? refreshError.message
-          : "Unable to list users.",
-      );
+    if (!result.ok) {
+      setError(result.error);
       return;
     }
+
+    setUsers(result.data);
   }
 
   async function handleCreateUser(event: React.FormEvent<HTMLFormElement>) {
@@ -176,57 +143,26 @@ export function AdminUsersSection({
     setSuccess(null);
     setIsCreating(true);
 
-    try {
-      const result = await createManagedUserAction({
-        name,
-        email,
-        provisionalPassword,
-      });
+    const result = await createManagedUserViaApi({
+      name,
+      email,
+      provisionalPassword,
+    });
 
-      if (!result.ok) {
-        setError(result.error);
-        return;
-      }
-
-      setSuccess(`Created user: ${result.data.email}`);
-      setName("");
-      setEmail("");
-      setProvisionalPassword("");
-      accordionRef.current?.close();
-      await refreshUsers();
-    } catch (submissionError) {
-      if (
-        submissionError instanceof Error &&
-        submissionError.message === UNEXPECTED_ACTION_RESPONSE_MESSAGE
-      ) {
-        const fallbackResult = await createManagedUserViaApi({
-          name,
-          email,
-          provisionalPassword,
-        });
-
-        if (!fallbackResult.ok) {
-          setError(fallbackResult.error);
-          return;
-        }
-
-        setSuccess(`Created user: ${fallbackResult.data.email}`);
-        setName("");
-        setEmail("");
-        setProvisionalPassword("");
-        accordionRef.current?.close();
-        await refreshUsers();
-        return;
-      }
-
-      setError(
-        submissionError instanceof Error
-          ? submissionError.message
-          : "Unable to create user.",
-      );
-    } finally {
-      setIsCreating(false);
+    if (!result.ok) {
+      setError(result.error);
+      return;
     }
+
+    setSuccess(`Created user: ${result.data.email}`);
+    setName("");
+    setEmail("");
+    setProvisionalPassword("");
+    accordionRef.current?.close();
+
+    await refreshUsers();
+
+    setIsCreating(false);
   }
 
   async function handleDeleteUser(userId: string) {
@@ -234,45 +170,18 @@ export function AdminUsersSection({
     setSuccess(null);
     setDeletingUserId(userId);
 
-    try {
-      const result = await deleteManagedUserAction({ userId });
+    const result = await deleteManagedUserViaApi({ userId });
 
-      if (!result.ok) {
-        setError(result.error);
-        return;
-      }
-
-      setSuccess("User deleted.");
-      setUsers((currentUsers) =>
-        currentUsers.filter((user) => user.id !== result.data.userId),
-      );
-    } catch (submissionError) {
-      if (
-        submissionError instanceof Error &&
-        submissionError.message === UNEXPECTED_ACTION_RESPONSE_MESSAGE
-      ) {
-        const fallbackResult = await deleteManagedUserViaApi({ userId });
-
-        if (!fallbackResult.ok) {
-          setError(fallbackResult.error);
-          return;
-        }
-
-        setSuccess("User deleted.");
-        setUsers((currentUsers) =>
-          currentUsers.filter((user) => user.id !== fallbackResult.data.userId),
-        );
-        return;
-      }
-
-      setError(
-        submissionError instanceof Error
-          ? submissionError.message
-          : "Unable to delete user.",
-      );
-    } finally {
-      setDeletingUserId(null);
+    if (!result.ok) {
+      setError(result.error);
+      return;
     }
+
+    setSuccess("User deleted.");
+    setUsers((currentUsers) =>
+      currentUsers.filter((user) => user.id !== result.data.userId),
+    );
+    setDeletingUserId(null);
   }
 
   return (
