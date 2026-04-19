@@ -65,4 +65,41 @@ describe("change password form", () => {
       await screen.findByText("Current password is incorrect"),
     ).toBeInTheDocument();
   });
+
+  it("shows a validation error when current password is missing", async () => {
+    render(<ChangePasswordForm />);
+
+    fireEvent.change(screen.getByLabelText("New password"), {
+      target: { value: "new-pass-123" },
+    });
+
+    fireEvent.submit(
+      screen.getByRole("button", { name: "Update password" }).closest("form")!,
+    );
+
+    expect(
+      await screen.findByText("Current password is required."),
+    ).toBeInTheDocument();
+    expect(authMocks.changePassword).not.toHaveBeenCalled();
+  });
+
+  it("shows a validation error when new password is too short", async () => {
+    render(<ChangePasswordForm />);
+
+    fireEvent.change(screen.getByLabelText("Current password"), {
+      target: { value: "old-pass-123" },
+    });
+    fireEvent.change(screen.getByLabelText("New password"), {
+      target: { value: "short" },
+    });
+
+    fireEvent.submit(
+      screen.getByRole("button", { name: "Update password" }).closest("form")!,
+    );
+
+    expect(
+      await screen.findByText("New password must be at least 8 characters."),
+    ).toBeInTheDocument();
+    expect(authMocks.changePassword).not.toHaveBeenCalled();
+  });
 });
