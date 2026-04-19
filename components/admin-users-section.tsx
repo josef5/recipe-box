@@ -9,7 +9,7 @@ type ClientActionResult<T = void> =
   | { ok: true; data: T }
   | { ok: false; error: string };
 
-async function listManagedUsersViaApi(): Promise<
+async function listManagedUsersApi(): Promise<
   ClientActionResult<ManagedUser[]>
 > {
   try {
@@ -41,7 +41,7 @@ async function listManagedUsersViaApi(): Promise<
   }
 }
 
-async function createManagedUserViaApi(input: {
+async function createManagedUserApi(input: {
   name: string;
   email: string;
   provisionalPassword: string;
@@ -73,7 +73,7 @@ async function createManagedUserViaApi(input: {
   }
 }
 
-async function deleteManagedUserViaApi(input: {
+async function deleteManagedUserApi(input: {
   userId: string;
 }): Promise<ClientActionResult<{ userId: string }>> {
   try {
@@ -127,7 +127,7 @@ export function AdminUsersSection({
   }>(null);
 
   async function refreshUsers() {
-    const result = await listManagedUsersViaApi();
+    const result = await listManagedUsersApi();
 
     if (!result.ok) {
       setError(result.error);
@@ -143,7 +143,7 @@ export function AdminUsersSection({
     setSuccess(null);
     setIsCreating(true);
 
-    const result = await createManagedUserViaApi({
+    const result = await createManagedUserApi({
       name,
       email,
       provisionalPassword,
@@ -170,7 +170,7 @@ export function AdminUsersSection({
     setSuccess(null);
     setDeletingUserId(userId);
 
-    const result = await deleteManagedUserViaApi({ userId });
+    const result = await deleteManagedUserApi({ userId });
 
     if (!result.ok) {
       setError(result.error);
