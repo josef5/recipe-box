@@ -1,6 +1,7 @@
 "use client";
 
 import { authClient } from "@/lib/auth/client";
+import { validateSignInFormData } from "@/lib/validation/auth";
 import { useSearchParams } from "next/navigation";
 import { useState } from "react";
 
@@ -23,13 +24,14 @@ export default function SignInPage() {
   const callbackURL = getSafeRedirectPath(searchParams.get("redirectTo"));
 
   async function handleSubmit(formData: FormData) {
-    const email = formData.get("email");
-    const password = formData.get("password");
+    const validated = validateSignInFormData(formData);
 
-    if (typeof email !== "string" || typeof password !== "string") {
-      setError("Invalid form submission.");
+    if (!validated.success) {
+      setError(validated.error);
       return;
     }
+
+    const { email, password } = validated.data;
 
     setError(null);
     setIsPending(true);
@@ -54,6 +56,7 @@ export default function SignInPage() {
   return (
     <form
       action={handleSubmit}
+      noValidate
       className="flex min-h-screen flex-col items-center justify-center gap-5"
     >
       <h1 className="text-2xl font-bold">Sign in to recipe-box</h1>
@@ -66,7 +69,6 @@ export default function SignInPage() {
           id="email"
           name="email"
           type="email"
-          required
           placeholder="you@example.com"
           className="rounded-md border px-3 py-2 text-sm"
         />
@@ -80,7 +82,6 @@ export default function SignInPage() {
           id="password"
           name="password"
           type="password"
-          required
           placeholder="*****"
           className="rounded-md border px-3 py-2 text-sm"
         />

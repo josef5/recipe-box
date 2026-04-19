@@ -1,9 +1,8 @@
 "use client";
 
 import { authClient } from "@/lib/auth/client";
+import { validateChangePasswordFormData } from "@/lib/validation/auth";
 import { useState } from "react";
-
-const MIN_PASSWORD_LENGTH = 8;
 
 export function ChangePasswordForm({ onSuccess }: { onSuccess?: () => void }) {
   const [error, setError] = useState<string | null>(null);
@@ -11,25 +10,15 @@ export function ChangePasswordForm({ onSuccess }: { onSuccess?: () => void }) {
   const [isPending, setIsPending] = useState(false);
 
   async function handleSubmit(formData: FormData) {
-    const currentPassword = formData.get("currentPassword");
-    const newPassword = formData.get("newPassword");
+    const validated = validateChangePasswordFormData(formData);
 
-    if (
-      typeof currentPassword !== "string" ||
-      typeof newPassword !== "string"
-    ) {
-      setError("Invalid form submission.");
+    if (!validated.success) {
+      setError(validated.error);
       setSuccess(null);
       return;
     }
 
-    if (newPassword.length < MIN_PASSWORD_LENGTH) {
-      setError(
-        `New password must be at least ${MIN_PASSWORD_LENGTH} characters.`,
-      );
-      setSuccess(null);
-      return;
-    }
+    const { currentPassword, newPassword } = validated.data;
 
     setError(null);
     setSuccess(null);
