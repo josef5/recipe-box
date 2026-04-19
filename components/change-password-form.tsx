@@ -2,6 +2,7 @@
 
 import { authClient } from "@/lib/auth/client";
 import {
+  ChangePasswordSchema,
   type ChangePasswordFieldErrors,
   validateChangePasswordFormData,
 } from "@/lib/validation/auth";
@@ -14,6 +15,10 @@ export function ChangePasswordForm({ onSuccess }: { onSuccess?: () => void }) {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [isPending, setIsPending] = useState(false);
+  const isFormValid = ChangePasswordSchema.safeParse({
+    currentPassword,
+    newPassword,
+  }).success;
 
   async function handleSubmit(formData: FormData) {
     const validated = validateChangePasswordFormData(formData);
@@ -111,7 +116,7 @@ export function ChangePasswordForm({ onSuccess }: { onSuccess?: () => void }) {
 
       <button
         type="submit"
-        disabled={isPending}
+        disabled={isPending || !isFormValid}
         className="w-full rounded-md bg-indigo-500 px-3 py-2 text-sm font-semibold text-white hover:bg-indigo-400 disabled:opacity-50 sm:w-auto"
       >
         {isPending ? "Updating..." : "Update password"}

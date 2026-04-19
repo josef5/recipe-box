@@ -1,8 +1,11 @@
 "use client";
 
-import { useMemo, useState, useActionState } from "react";
+import { useActionState, useEffect, useMemo, useRef, useState } from "react";
 import { useFormStatus } from "react-dom";
-import type { RecipeFormState } from "@/lib/validation/recipes";
+import {
+  type RecipeFormState,
+  validateRecipeFormData,
+} from "@/lib/validation/recipes";
 
 type IngredientSuggestion = {
   name: string;
@@ -47,6 +50,8 @@ export function RecipeForm({
   deleteAction?: () => void | Promise<void>;
 } & React.ComponentProps<"div">) {
   const [state, formAction] = useActionState(action, null);
+  const formRef = useRef<HTMLFormElement>(null);
+  const [isClientValid, setIsClientValid] = useState(false);
   const [ingredients, setIngredients] = useState<IngredientField[]>(
     initialValues?.ingredients.length
       ? initialValues.ingredients
@@ -94,12 +99,43 @@ export function RecipeForm({
     });
   }
 
+  function syncClientValidity() {
+    const form = formRef.current;
+
+    if (!form) {
+      return;
+    }
+
+    const validated = validateRecipeFormData(new FormData(form));
+    const nextIsValid = validated.success;
+
+    setIsClientValid(nextIsValid);
+    form.dataset.clientValid = nextIsValid ? "true" : "false";
+  }
+
+  function scheduleClientValiditySync() {
+    if (typeof window === "undefined") {
+      return;
+    }
+
+    window.requestAnimationFrame(() => {
+      syncClientValidity();
+    });
+  }
+
+  useEffect(() => {
+    syncClientValidity();
+  }, [ingredients, steps]);
+
   return (
     <>
       <form
+        ref={formRef}
         action={formAction}
         id="recipe-form"
         noValidate
+        data-client-valid={isClientValid ? "true" : "false"}
+        onInput={scheduleClientValiditySync}
         className="flex max-w-3xl flex-col gap-8"
       >
         {state?.errors._form && (
@@ -380,17 +416,50 @@ export function RecipeForm({
 export function SubmitButton({
   label,
   form,
+  disabled = false,
 }: {
   label: string;
   form?: string;
+  disabled?: boolean;
 }) {
   const { pending } = useFormStatus();
+  const [isFormValid, setIsFormValid] = useState(!form);
+
+  useEffect(() => {
+    if (!form) {
+      return;
+    }
+
+    const formElement = document.getElementById(form);
+
+    if (!(formElement instanceof HTMLFormElement)) {
+      return;
+    }
+
+    const updateFormValidity = () => {
+      setIsFormValid(formElement.dataset.clientValid === "true");
+    };
+
+    queueMicrotask(updateFormValidity);
+
+    const observer = new MutationObserver(updateFormValidity);
+    observer.observe(formElement, {
+      attributes: true,
+      attributeFilter: ["data-client-valid"],
+    });
+
+    return () => {
+      observer.disconnect();
+    };
+  }, [form]);
+
+  const isDisabled = pending || disabled || (form ? !isFormValid : false);
 
   return (
     <button
       type="submit"
       form={form}
-      disabled={pending}
+      disabled={isDisabled}
       className="rounded-md bg-indigo-500 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-400 disabled:cursor-not-allowed disabled:opacity-70"
     >
       {pending ? "Saving..." : label}
