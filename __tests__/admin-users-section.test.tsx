@@ -208,6 +208,37 @@ describe("admin users section", () => {
     expect(actionMocks.createManagedUserAction).not.toHaveBeenCalled();
   });
 
+  it("shows all client-side validation errors for an empty submit", async () => {
+    render(
+      <AdminUsersSection
+        currentUserId="admin-1"
+        initialUsers={[
+          {
+            id: "admin-1",
+            name: "Admin",
+            email: "admin@example.com",
+            role: "admin",
+            createdAt: "2026-04-14T00:00:00.000Z",
+          },
+        ]}
+      />,
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "Create new user" }));
+    fireEvent.submit(screen.getByRole("button", { name: "Create user" }));
+
+    expect(await screen.findByText("Name is required.")).toBeInTheDocument();
+    expect(
+      await screen.findByText("Valid email is required."),
+    ).toBeInTheDocument();
+    expect(
+      await screen.findByText(
+        "Provisional password must be at least 8 characters.",
+      ),
+    ).toBeInTheDocument();
+    expect(actionMocks.createManagedUserAction).not.toHaveBeenCalled();
+  });
+
   it("falls back to API endpoints when server action transport fails", async () => {
     actionMocks.createManagedUserAction.mockRejectedValue(
       new Error("An unexpected response was received from the server."),

@@ -102,4 +102,20 @@ describe("change password form", () => {
     ).toBeInTheDocument();
     expect(authMocks.changePassword).not.toHaveBeenCalled();
   });
+
+  it("shows all client-side validation errors for an empty submit", async () => {
+    render(<ChangePasswordForm />);
+
+    fireEvent.submit(
+      screen.getByRole("button", { name: "Update password" }).closest("form")!,
+    );
+
+    expect(
+      await screen.findByText("Current password is required."),
+    ).toBeInTheDocument();
+    expect(
+      await screen.findByText("New password must be at least 8 characters."),
+    ).toBeInTheDocument();
+    expect(authMocks.changePassword).not.toHaveBeenCalled();
+  });
 });

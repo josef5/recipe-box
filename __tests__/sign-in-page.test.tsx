@@ -159,4 +159,18 @@ describe("sign-in page", () => {
     ).toBeInTheDocument();
     expect(mocks.signInEmail).not.toHaveBeenCalled();
   });
+
+  it("shows all client-side validation errors for an empty submit", async () => {
+    render(<SignInPage />);
+
+    fireEvent.submit(
+      screen.getByRole("button", { name: "Sign in" }).closest("form")!,
+    );
+
+    expect(await screen.findByText("Email is required.")).toBeInTheDocument();
+    expect(
+      await screen.findByText("Password is required."),
+    ).toBeInTheDocument();
+    expect(mocks.signInEmail).not.toHaveBeenCalled();
+  });
 });
