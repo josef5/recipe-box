@@ -239,6 +239,44 @@ describe("admin users section", () => {
     expect(actionMocks.createManagedUserAction).not.toHaveBeenCalled();
   });
 
+  it("disables create user submit until the form is valid", () => {
+    render(
+      <AdminUsersSection
+        currentUserId="admin-1"
+        initialUsers={[
+          {
+            id: "admin-1",
+            name: "Admin",
+            email: "admin@example.com",
+            role: "admin",
+            createdAt: "2026-04-14T00:00:00.000Z",
+          },
+        ]}
+      />,
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "Create new user" }));
+
+    const submitButton = screen.getByRole("button", { name: "Create user" });
+
+    expect(submitButton).toBeDisabled();
+
+    fireEvent.change(screen.getByLabelText("Name"), {
+      target: { value: "Family Member" },
+    });
+    fireEvent.change(screen.getByLabelText("Email"), {
+      target: { value: "family@example.com" },
+    });
+
+    expect(submitButton).toBeDisabled();
+
+    fireEvent.change(screen.getByLabelText("Provisional password"), {
+      target: { value: "provisional-pass" },
+    });
+
+    expect(submitButton).toBeEnabled();
+  });
+
   it("falls back to API endpoints when server action transport fails", async () => {
     actionMocks.createManagedUserAction.mockRejectedValue(
       new Error("An unexpected response was received from the server."),

@@ -173,4 +173,24 @@ describe("sign-in page", () => {
     ).toBeInTheDocument();
     expect(mocks.signInEmail).not.toHaveBeenCalled();
   });
+
+  it("disables submit until the form is valid", () => {
+    render(<SignInPage />);
+
+    const submitButton = screen.getByRole("button", { name: "Sign in" });
+
+    expect(submitButton).toBeDisabled();
+
+    fireEvent.change(screen.getByLabelText("Email"), {
+      target: { value: "cook@example.com" },
+    });
+
+    expect(submitButton).toBeDisabled();
+
+    fireEvent.change(screen.getByLabelText("Password"), {
+      target: { value: "secret-pass" },
+    });
+
+    expect(submitButton).toBeEnabled();
+  });
 });

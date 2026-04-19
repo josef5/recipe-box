@@ -118,4 +118,26 @@ describe("change password form", () => {
     ).toBeInTheDocument();
     expect(authMocks.changePassword).not.toHaveBeenCalled();
   });
+
+  it("disables submit until the form is valid", () => {
+    render(<ChangePasswordForm />);
+
+    const submitButton = screen.getByRole("button", {
+      name: "Update password",
+    });
+
+    expect(submitButton).toBeDisabled();
+
+    fireEvent.change(screen.getByLabelText("Current password"), {
+      target: { value: "old-pass-123" },
+    });
+
+    expect(submitButton).toBeDisabled();
+
+    fireEvent.change(screen.getByLabelText("New password"), {
+      target: { value: "new-pass-123" },
+    });
+
+    expect(submitButton).toBeEnabled();
+  });
 });
