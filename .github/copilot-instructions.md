@@ -20,6 +20,7 @@
 - Auth helpers are in `lib/auth/session.ts`. Use `requireCurrentUser()` / `requireCurrentUserId()` for authenticated routes and writes.
 - `proxy.ts` currently protects `/account` only. Create/edit access is enforced inside route code and server actions, not globally in middleware.
 - When you need a public owner label, use `getUserDisplayName()` and persist it onto `recipes.ownerDisplayName` rather than querying auth at render time.
+- Admin user management is split intentionally: the `/account` page server-renders the initial managed user list with `getManagedUsersForAccountPage()`, while the client admin users section performs create/delete/refresh through `/api/admin-users` JSON routes. Do not call `fetchManagedUsers()` from client code.
 
 ## UI and form conventions
 

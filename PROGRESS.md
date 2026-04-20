@@ -63,6 +63,8 @@
 
 - `app/page.tsx` — recipe list (server component)
 - `app/account/page.tsx` — protected account page with profile summary, password change flow, and admin-only user management section
+- `app/api/admin-users/route.ts` — admin-only JSON API for listing and creating managed users
+- `app/api/admin-users/[userId]/route.ts` — admin-only JSON API for deleting managed users
 - `app/recipes/[slug]/page.tsx` — recipe detail; static/SSG with `generateStaticParams()` and revalidation
 - `app/recipes/[slug]/edit/page.tsx` — edit recipe route; owner only; dedicated full-page route
 - `app/recipes/new/page.tsx` — new recipe route; sign-in required; dedicated full-page route
@@ -81,6 +83,7 @@
 - Recipe owner names are denormalized onto recipes for public cached/static display
 - Signed-in users have a protected `/account` page for profile details and password changes
 - Admin-role users have an account admin section for user listing, creation (provisional passwords), and deletion
+- The account page server-renders the initial admin user list, while the client admin users section performs mutations and list refreshes through JSON API routes
 - Deleting an auth user keeps recipe records and nulls `recipes.userId`
 - Users redirected from protected routes are returned to the original path after successful sign-in
 
@@ -88,6 +91,7 @@
 
 - Sign-in coverage is consolidated in `__tests__/sign-in-page.test.tsx`
 - Sign-in tests cover default callbacks, `redirectTo` callbacks, unsafe redirect fallback, and error handling
+- `__tests__/admin-users-section.test.tsx` covers API-driven create, delete, create-failure, and refresh-failure flows for the admin users client section
 
 ### UI components
 
@@ -95,7 +99,7 @@
 - `components/home-page-content.tsx` — shared home page content used by `/`
 - `components/recipe-detail.tsx` — shared recipe detail content used by the detail page
 - `components/change-password-form.tsx` — account password update form (current + new + confirm)
-- `components/admin-users-section.tsx` — admin-only account section for user management
+- `components/admin-users-section.tsx` — admin-only account section for user management; receives server-rendered initial users and uses `/api/admin-users` for client-side create/delete/refresh
 
 ### Forms
 
@@ -175,3 +179,4 @@ pnpm db:seed        # seed database with placeholder recipes
 - `generateSlug` only generates a new slug on `updateRecipe` when the title has changed, to preserve stable URLs
 - Recipe detail pages use cached public reads and static regeneration; create/edit remain dynamic authenticated routes
 - Dates rendered in client/SSR UI should use stable formatting (`formatStableDate` in `lib/utils.ts`) to avoid hydration mismatches
+- Admin user management is split intentionally: initial data is fetched on the server for the account page, while interactive client updates use API routes instead of direct server action transport

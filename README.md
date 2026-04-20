@@ -49,6 +49,8 @@ pnpm db:studio
 - Current auth UI is sign-in (email/password).
 - All signed-in users can manage their own password from the account page.
 - Users with auth role `admin` see an additional admin users section.
+- The account page server-renders the initial admin user list via `getManagedUsersForAccountPage()`.
+- The admin users client UI performs create, delete, and refresh calls via `/api/admin-users` JSON endpoints.
 - Admin section supports:
   - list users
   - create users with provisional passwords
