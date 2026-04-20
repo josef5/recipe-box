@@ -24,6 +24,7 @@ describe("HomePageContent", () => {
             slug: "tomato-soup",
             title: "Tomato Soup",
             description: "Rich and cozy.",
+            imageUrl: "https://example.com/tomato-soup.jpg",
             ownerDisplayName: "Jamie Oliver",
             createdAt: new Date("2026-01-01T00:00:00.000Z"),
             updatedAt: new Date("2026-01-02T00:00:00.000Z"),
@@ -33,6 +34,7 @@ describe("HomePageContent", () => {
             slug: "toast",
             title: "Toast",
             description: null,
+            imageUrl: null,
             ownerDisplayName: null,
             createdAt: new Date("2026-01-03T00:00:00.000Z"),
             updatedAt: new Date("2026-01-04T00:00:00.000Z"),
@@ -53,6 +55,9 @@ describe("HomePageContent", () => {
       "/recipes/toast",
     );
     expect(screen.getByText("Rich and cozy.")).toBeVisible();
+    expect(
+      screen.getByRole("img", { name: "Tomato Soup photo" }),
+    ).toBeVisible();
     expect(screen.getByText("By Jamie Oliver")).toBeVisible();
     expect(screen.getByText("By Unknown cook")).toBeVisible();
   });
