@@ -78,6 +78,7 @@ function RecipeCard({ recipe }: { recipe: HomeRecipe }) {
             height={800}
             sizes="(max-width: 640px) 100vw, 720px"
             unoptimized
+            loading="eager"
             className="mb-3 max-h-56 w-full rounded-md border object-cover"
           />
         ) : null}
