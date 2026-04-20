@@ -32,6 +32,8 @@ type RecipeFormValues = {
   steps: StepField[];
 };
 
+// TODO: Make images uploadable?
+
 export function RecipeForm({
   action,
   ingredientSuggestions,
