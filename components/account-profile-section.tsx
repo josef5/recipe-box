@@ -1,5 +1,6 @@
 "use client";
 
+import { authClient } from "@/lib/auth/client";
 import { useState } from "react";
 
 type AccountProfileSectionProps = {
@@ -9,6 +10,7 @@ type AccountProfileSectionProps = {
 export function AccountProfileSection({
   initialName,
 }: AccountProfileSectionProps) {
+  const { refetch: refetchSession } = authClient.useSession();
   const [currentName, setCurrentName] = useState<string | null>(initialName);
   const [draftName, setDraftName] = useState(initialName ?? "");
   const [isEditing, setIsEditing] = useState(false);
@@ -64,6 +66,13 @@ export function AccountProfileSection({
       setCurrentName(result.data.name);
       setDraftName(result.data.name);
       setIsEditing(false);
+
+      await refetchSession({
+        query: {
+          disableCookieCache: true,
+        },
+      });
+
       setSuccess("Name updated.");
     } catch (err) {
       setError(
