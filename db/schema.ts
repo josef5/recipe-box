@@ -26,6 +26,7 @@ export const recipes = pgTable("recipes", {
   prepTimeMins: integer("prep_time_mins"),
   cookTimeMins: integer("cook_time_mins"),
   imageUrl: text("image_url"),
+  imagePublicId: text("image_public_id"),
   sourceUrl: text("source_url"),
   sourceName: text("source_name"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
