@@ -7,6 +7,7 @@ type HomeRecipe = {
   slug: string;
   title: string;
   description: string | null;
+  imageUrl: string | null;
   ownerDisplayName: string | null;
   createdAt: Date | string | number;
   updatedAt: Date;
@@ -68,6 +69,13 @@ function RecipeCard({ recipe }: { recipe: HomeRecipe }) {
         href={`/recipes/${recipe.slug}`}
         className="block rounded-md px-4 py-3"
       >
+        {recipe.imageUrl ? (
+          <img
+            src={recipe.imageUrl}
+            alt={`${recipe.title} photo`}
+            className="mb-3 max-h-56 w-full rounded-md border object-cover"
+          />
+        ) : null}
         <h2>{recipe.title}</h2>
         {recipe.description ? (
           <div className="">{recipe.description}</div>

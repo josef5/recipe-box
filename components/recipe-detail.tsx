@@ -4,6 +4,7 @@ type RecipeDetailData = {
   title: string;
   slug: string;
   description: string | null;
+  imageUrl: string | null;
   ownerDisplayName: string | null;
   userId: string | null;
   prepTimeMins: number | null;
@@ -38,6 +39,13 @@ export function RecipeDetail({ recipe }: { recipe: RecipeDetailData }) {
       </aside>
       <div className="flex flex-col items-start justify-between sm:col-start-1 sm:row-start-1">
         <h1>{recipe.title}</h1>
+        {recipe.imageUrl ? (
+          <img
+            src={recipe.imageUrl}
+            alt={`${recipe.title} photo`}
+            className="mt-3 max-h-112 w-full rounded-md border object-cover"
+          />
+        ) : null}
         {recipe.description && <p>{recipe.description}</p>}
         <div>
           {recipe.prepTimeMins && <span>Prep: {recipe.prepTimeMins}m</span>}
