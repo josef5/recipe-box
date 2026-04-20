@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useMemo, useRef, useState } from "react";
 import { useFormStatus } from "react-dom";
 
@@ -339,9 +340,13 @@ export function RecipeForm({
               <p className="text-sm text-red-700">{imageUploadError}</p>
             ) : null}
             {imageUrl ? (
-              <img
+              <Image
                 src={imageUrl}
                 alt="Recipe preview"
+                width={1200}
+                height={800}
+                sizes="(max-width: 768px) 100vw, 768px"
+                unoptimized
                 className="mt-2 max-h-64 w-full rounded-md border object-cover"
               />
             ) : null}

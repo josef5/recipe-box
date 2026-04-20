@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { EditRecipeButton } from "./ui/edit-recipe-button";
 
 type RecipeDetailData = {
@@ -40,9 +41,13 @@ export function RecipeDetail({ recipe }: { recipe: RecipeDetailData }) {
       <div className="flex flex-col items-start justify-between sm:col-start-1 sm:row-start-1">
         <h1>{recipe.title}</h1>
         {recipe.imageUrl ? (
-          <img
+          <Image
             src={recipe.imageUrl}
             alt={`${recipe.title} photo`}
+            width={1600}
+            height={1066}
+            sizes="(max-width: 640px) 100vw, 900px"
+            unoptimized
             className="mt-3 max-h-112 w-full rounded-md border object-cover"
           />
         ) : null}

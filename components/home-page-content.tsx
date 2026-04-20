@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { formatStableDate } from "@/lib/utils";
 import { NewRecipeButton } from "./ui/new-recipe-button";
@@ -70,9 +71,13 @@ function RecipeCard({ recipe }: { recipe: HomeRecipe }) {
         className="block rounded-md px-4 py-3"
       >
         {recipe.imageUrl ? (
-          <img
+          <Image
             src={recipe.imageUrl}
             alt={`${recipe.title} photo`}
+            width={1200}
+            height={800}
+            sizes="(max-width: 640px) 100vw, 720px"
+            unoptimized
             className="mb-3 max-h-56 w-full rounded-md border object-cover"
           />
         ) : null}
