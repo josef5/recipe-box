@@ -1,5 +1,6 @@
 import { getManagedUsersForAccountPage } from "@/actions/admin-users";
 import { AdminUsersSection } from "@/components/admin-users-section";
+import { AccountProfileSection } from "@/components/account-profile-section";
 import { ChangePasswordForm } from "@/components/change-password-form";
 import { Accordion } from "@/components/ui/accordion";
 import {
@@ -11,7 +12,6 @@ import {
 export const dynamic = "force-dynamic";
 
 // TODO: Close change pw accordion on success -> decompose to client component
-// TODO: Allow user name editing
 
 export default async function AccountPage() {
   const user = await requireCurrentUser({ redirectTo: "/account" });
@@ -30,8 +30,7 @@ export default async function AccountPage() {
         </header>
         <section className="rounded-lg border p-4">
           <dl className="grid gap-3 sm:grid-cols-[140px_1fr]">
-            <dt className="font-medium">Name</dt>
-            <dd>{user.name ?? "Not set"}</dd>
+            <AccountProfileSection initialName={user.name ?? null} />
             <dt className="font-medium">Email</dt>
             <dd>{user.email ?? "Not available"}</dd>
             <dt className="font-medium">Role</dt>
