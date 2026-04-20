@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { useFormStatus } from "react-dom";
 
 type IngredientSuggestion = {
@@ -26,13 +26,12 @@ type RecipeFormValues = {
   prepTimeMins?: number | null;
   cookTimeMins?: number | null;
   imageUrl?: string | null;
+  imagePublicId?: string | null;
   sourceUrl?: string | null;
   sourceName?: string | null;
   ingredients: IngredientField[];
   steps: StepField[];
 };
-
-// TODO: Make images uploadable?
 
 export function RecipeForm({
   action,
@@ -52,6 +51,14 @@ export function RecipeForm({
   const [steps, setSteps] = useState<StepField[]>(
     initialValues?.steps.length ? initialValues.steps : [{ instruction: "" }],
   );
+  const [imageUrl, setImageUrl] = useState(initialValues?.imageUrl ?? "");
+  const [imagePublicId, setImagePublicId] = useState(
+    initialValues?.imagePublicId ?? "",
+  );
+  const [selectedImageFile, setSelectedImageFile] = useState<File | null>(null);
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
+  const [imageUploadError, setImageUploadError] = useState<string | null>(null);
+  const imageInputRef = useRef<HTMLInputElement>(null);
 
   const ingredientDefaults = useMemo(
     () =>
@@ -89,6 +96,93 @@ export function RecipeForm({
       next[index] = { instruction };
       return next;
     });
+  }
+
+  async function uploadSelectedImage() {
+    if (!selectedImageFile || isUploadingImage) {
+      return;
+    }
+
+    setIsUploadingImage(true);
+    setImageUploadError(null);
+
+    try {
+      const signatureResponse = await fetch("/api/cloudinary/signature", {
+        method: "POST",
+      });
+
+      const signaturePayload = (await signatureResponse.json()) as
+        | {
+            ok: true;
+            data: {
+              cloudName: string;
+              apiKey: string;
+              folder: string;
+              timestamp: number;
+              signature: string;
+            };
+          }
+        | {
+            ok: false;
+            error: string;
+          };
+
+      if (!signatureResponse.ok || !signaturePayload.ok) {
+        throw new Error(
+          signaturePayload.ok
+            ? "Unable to get upload signature."
+            : signaturePayload.error,
+        );
+      }
+
+      const uploadData = new FormData();
+      uploadData.append("file", selectedImageFile);
+      uploadData.append("folder", signaturePayload.data.folder);
+      uploadData.append(
+        "timestamp",
+        signaturePayload.data.timestamp.toString(),
+      );
+      uploadData.append("signature", signaturePayload.data.signature);
+      uploadData.append("api_key", signaturePayload.data.apiKey);
+
+      const uploadResponse = await fetch(
+        `https://api.cloudinary.com/v1_1/${signaturePayload.data.cloudName}/image/upload`,
+        {
+          method: "POST",
+          body: uploadData,
+        },
+      );
+
+      const uploadPayload = (await uploadResponse.json()) as {
+        secure_url?: string;
+        public_id?: string;
+        error?: { message?: string };
+      };
+
+      if (
+        !uploadResponse.ok ||
+        !uploadPayload.secure_url ||
+        !uploadPayload.public_id
+      ) {
+        throw new Error(
+          uploadPayload.error?.message ?? "Unable to upload image.",
+        );
+      }
+
+      setImageUrl(uploadPayload.secure_url);
+      setImagePublicId(uploadPayload.public_id);
+      setSelectedImageFile(null);
+
+      if (imageInputRef.current) {
+        imageInputRef.current.value = "";
+      }
+    } catch (error) {
+      setImageUploadError(
+        error instanceof Error ? error.message : "Unable to upload image.",
+      );
+    } finally {
+      setIsUploadingImage(false);
+    }
   }
 
   return (
@@ -197,9 +291,60 @@ export function RecipeForm({
               id="imageUrl"
               name="imageUrl"
               type="url"
-              defaultValue={initialValues?.imageUrl ?? ""}
+              value={imageUrl}
+              onChange={(event) => {
+                setImageUrl(event.target.value);
+                setImagePublicId("");
+              }}
               className="rounded-md border px-3 py-2 text-sm"
             />
+            <input name="imagePublicId" type="hidden" value={imagePublicId} />
+            <p className="text-xs text-gray-600">
+              Upload to Cloudinary or paste any external image URL.
+            </p>
+            <div className="flex flex-wrap items-center gap-3">
+              <input
+                ref={imageInputRef}
+                type="file"
+                accept="image/*"
+                onChange={(event) => {
+                  setSelectedImageFile(event.target.files?.[0] ?? null);
+                  setImageUploadError(null);
+                }}
+                className="text-sm"
+              />
+              <button
+                type="button"
+                disabled={!selectedImageFile || isUploadingImage}
+                onClick={uploadSelectedImage}
+                className="rounded-md border px-3 py-2 text-sm disabled:cursor-not-allowed disabled:opacity-70"
+              >
+                {isUploadingImage ? "Uploading..." : "Upload image"}
+              </button>
+              {imageUrl ? (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setImageUrl("");
+                    setImagePublicId("");
+                    setImageUploadError(null);
+                  }}
+                  className="rounded-md border px-3 py-2 text-sm"
+                >
+                  Remove image
+                </button>
+              ) : null}
+            </div>
+            {imageUploadError ? (
+              <p className="text-sm text-red-700">{imageUploadError}</p>
+            ) : null}
+            {imageUrl ? (
+              <img
+                src={imageUrl}
+                alt="Recipe preview"
+                className="mt-2 max-h-64 w-full rounded-md border object-cover"
+              />
+            ) : null}
           </div>
         </section>
         <section className="flex flex-col gap-4">
