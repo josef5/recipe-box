@@ -19,6 +19,7 @@
 - `recipes` has a `slug` column — unique, non-null, derived from title
 - `recipes` has an optional `userId` owner field for authorization
 - `recipes` stores optional `ownerDisplayName` for public owner display without auth lookups
+- `recipes` stores optional `imagePublicId` for Cloudinary asset lifecycle management
 - `recipe_ingredients` stores per-recipe amount, unit, notes, sort_order
 - `steps` ordered by `step_number`
 - Migrations in `/drizzle`; run with `pnpm db:migrate`
@@ -29,6 +30,15 @@
 - Migration `0001_recipe_slug.sql` backfills existing rows using title → slug transformation, handles duplicates, then enforces `NOT NULL` + `UNIQUE`
 - Seed script (`scripts/seed.ts`) generates slugs via `generateSlug()` on insert
 - Seed script supports optional `SEED_USER_ID` to assign ownership to dummy recipes without deleting them
+
+### Cloudinary image integration
+
+- Added signed upload endpoint at `app/api/cloudinary/signature/route.ts`
+- Added Cloudinary helpers in `lib/cloudinary.ts` for upload signing and asset deletion
+- Recipe form supports Cloudinary upload + preview while still allowing manual external image URLs
+- Public recipe list and detail pages render images via `next/image`
+- Recipe updates/deletes clean up prior Cloudinary assets when `imagePublicId` changes or recipe is removed
+- Migration `0004_conscious_the_professor.sql` adds `recipes.image_public_id`
 
 ### Slug helper (`lib/slug.ts`)
 
@@ -92,12 +102,13 @@
 - Sign-in coverage is consolidated in `__tests__/sign-in-page.test.tsx`
 - Sign-in tests cover default callbacks, `redirectTo` callbacks, unsafe redirect fallback, and error handling
 - `__tests__/admin-users-section.test.tsx` covers API-driven create, delete, create-failure, and refresh-failure flows for the admin users client section
+- Image rendering and form behavior are covered in `__tests__/home-page-content.test.tsx`, `__tests__/recipe-detail.test.tsx`, and `__tests__/recipe-form.test.tsx`
 
 ### UI components
 
-- `components/recipe-form.tsx` — shared add/edit form; static fields are uncontrolled, dynamic ingredient/step lists are controlled via `useState`; ingredient autocomplete via `<datalist>`
-- `components/home-page-content.tsx` — shared home page content used by `/`
-- `components/recipe-detail.tsx` — shared recipe detail content used by the detail page
+- `components/recipe-form.tsx` — shared add/edit form; static fields are uncontrolled, dynamic ingredient/step lists are controlled via `useState`; ingredient autocomplete via `<datalist>`; includes signed Cloudinary upload and image preview
+- `components/home-page-content.tsx` — shared home page content used by `/`, including recipe image thumbnails
+- `components/recipe-detail.tsx` — shared recipe detail content used by the detail page, including recipe image display
 - `components/change-password-form.tsx` — account password update form (current + new + confirm)
 - `components/admin-users-section.tsx` — admin-only account section for user management; receives server-rendered initial users and uses `/api/admin-users` for client-side create/delete/refresh
 
@@ -134,11 +145,11 @@
 ### Next up
 
 - [ ] **Auth/ownership verification** — verify sign-in redirect return behavior and confirm create/edit/delete ownership behavior end-to-end
+- [ ] **Cloudinary smoke test** — verify upload, replace, remove, and delete flows against real Cloudinary credentials
 
 ### Remaining backlog
 
 - [ ] **Styling pass** — consistent layout, typography, spacing across all pages
-- [ ] **Image uploads** — Vercel Blob integration, image field on recipe form
 - [ ] **Expanded auth** — decide whether to add sign-up and/or social providers, then validate end-to-end in prod
 - [ ] **Account UX polish** — refine the account page layout and decide which settings should be promoted into first-class app flows
 - [ ] **Deployment** — Vercel, production environment variables, custom Google OAuth credentials
@@ -152,6 +163,9 @@ DATABASE_URL=
 NEON_AUTH_BASE_URL=
 NEON_AUTH_COOKIE_SECRET=
 SEED_USER_ID=    # optional, used only when seeding owned dummy recipes
+CLOUDINARY_CLOUD_NAME=
+CLOUDINARY_API_KEY=
+CLOUDINARY_API_SECRET=
 ```
 
 ## Package scripts
@@ -160,6 +174,7 @@ SEED_USER_ID=    # optional, used only when seeding owned dummy recipes
 pnpm dev            # start dev server
 pnpm build          # production build
 pnpm lint           # eslint
+pnpm test           # run Vitest suite
 pnpm db:generate    # generate Drizzle migration from schema diff
 pnpm db:migrate     # apply migrations to database
 pnpm db:studio      # open Drizzle Studio
@@ -178,5 +193,6 @@ pnpm db:seed        # seed database with placeholder recipes
 - Unknown ingredient names typed into the form are automatically created as global ingredients on submit
 - `generateSlug` only generates a new slug on `updateRecipe` when the title has changed, to preserve stable URLs
 - Recipe detail pages use cached public reads and static regeneration; create/edit remain dynamic authenticated routes
+- Cloudinary integration is hybrid by design: direct signed browser uploads for image files and optional manual external URL input for compatibility
 - Dates rendered in client/SSR UI should use stable formatting (`formatStableDate` in `lib/utils.ts`) to avoid hydration mismatches
 - Admin user management is split intentionally: initial data is fetched on the server for the account page, while interactive client updates use API routes instead of direct server action transport

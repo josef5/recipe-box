@@ -45,6 +45,12 @@ pnpm db:seed
 pnpm db:studio
 ```
 
+## Recipe images
+
+- Recipe image uploads use Cloudinary signed uploads.
+- Set `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, and `CLOUDINARY_API_SECRET` in `.env.local`.
+- The recipe form also supports manual external image URLs for backward compatibility.
+
 ## Auth and account admin
 
 - `/account` is a protected route.
