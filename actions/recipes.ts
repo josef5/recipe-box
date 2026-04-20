@@ -12,6 +12,7 @@ import {
   requireCurrentUser,
   userHasAdminRole,
 } from "@/lib/auth/session";
+import { destroyCloudinaryImage } from "@/lib/cloudinary";
 
 export type RecipeFormData = {
   title: string;
@@ -20,6 +21,7 @@ export type RecipeFormData = {
   prepTimeMins?: number;
   cookTimeMins?: number;
   imageUrl?: string;
+  imagePublicId?: string;
   sourceUrl?: string;
   sourceName?: string;
   ingredients: {
@@ -162,6 +164,7 @@ async function parseRecipeFormData(
     prepTimeMins: getOptionalNumber(formData, "prepTimeMins"),
     cookTimeMins: getOptionalNumber(formData, "cookTimeMins"),
     imageUrl: getOptionalString(formData, "imageUrl"),
+    imagePublicId: getOptionalString(formData, "imagePublicId"),
     sourceUrl: getOptionalString(formData, "sourceUrl"),
     sourceName: getOptionalString(formData, "sourceName"),
     ingredients: ingredientData.filter((ingredient) => ingredient !== null),
@@ -292,6 +295,7 @@ export async function createRecipe(data: RecipeFormData) {
       prepTimeMins: data.prepTimeMins,
       cookTimeMins: data.cookTimeMins,
       imageUrl: data.imageUrl,
+      imagePublicId: data.imagePublicId,
       sourceUrl: data.sourceUrl,
       sourceName: data.sourceName,
     })
@@ -341,6 +345,8 @@ export async function createRecipeFromForm(formData: FormData) {
 export async function updateRecipe(id: string, data: RecipeFormData) {
   const { recipe: existingRecipe, user } = await getEditableRecipe(id);
   const previousSlug = existingRecipe.slug;
+  const existingImagePublicId = existingRecipe.imagePublicId?.trim();
+  const nextImagePublicId = data.imagePublicId?.trim();
 
   const slug =
     existingRecipe.title !== data.title
@@ -359,6 +365,7 @@ export async function updateRecipe(id: string, data: RecipeFormData) {
       prepTimeMins: data.prepTimeMins,
       cookTimeMins: data.cookTimeMins,
       imageUrl: data.imageUrl,
+      imagePublicId: data.imagePublicId,
       sourceUrl: data.sourceUrl,
       sourceName: data.sourceName,
       updatedAt: new Date(),
@@ -393,6 +400,10 @@ export async function updateRecipe(id: string, data: RecipeFormData) {
     );
   }
 
+  if (existingImagePublicId && existingImagePublicId !== nextImagePublicId) {
+    await destroyCloudinaryImage(existingImagePublicId);
+  }
+
   revalidatePath("/");
   revalidatePath(`/recipes/${previousSlug}`);
   revalidatePath(`/recipes/${recipe.slug}`);
@@ -420,6 +431,11 @@ export async function updateRecipeFromForm(id: string, formData: FormData) {
 export async function deleteRecipe(id: string) {
   const { recipe } = await getEditableRecipe(id);
   await db.delete(recipes).where(eq(recipes.id, id));
+
+  if (recipe.imagePublicId) {
+    await destroyCloudinaryImage(recipe.imagePublicId);
+  }
+
   revalidatePath("/");
   revalidatePath(`/recipes/${recipe.slug}`);
   revalidateTag("recipes", "max");
