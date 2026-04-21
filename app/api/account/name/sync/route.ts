@@ -1,6 +1,5 @@
 import { db } from "@/db";
 import { recipes } from "@/db/schema";
-import { auth } from "@/lib/auth/server";
 import { getUserDisplayName, requireCurrentUser } from "@/lib/auth/session";
 import { eq } from "drizzle-orm";
 import { revalidatePath, revalidateTag } from "next/cache";
@@ -32,18 +31,6 @@ export async function POST(
         {
           ok: false,
           error: `Name must be ${MAX_NAME_LENGTH} characters or fewer.`,
-        },
-        { status: 400 },
-      );
-    }
-
-    const result = await auth.updateUser({ name });
-
-    if (result.error) {
-      return NextResponse.json(
-        {
-          ok: false,
-          error: result.error.message ?? "Unable to update your name.",
         },
         { status: 400 },
       );
