@@ -1,6 +1,7 @@
 "use client";
 
 import { authClient } from "@/lib/auth/client";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 const MAX_NAME_LENGTH = 100;
@@ -12,6 +13,7 @@ type AccountProfileSectionProps = {
 export function AccountProfileSection({
   initialName,
 }: AccountProfileSectionProps) {
+  const router = useRouter();
   const [currentName, setCurrentName] = useState<string | null>(initialName);
   const [draftName, setDraftName] = useState(initialName ?? "");
   const [isEditing, setIsEditing] = useState(false);
@@ -86,6 +88,7 @@ export function AccountProfileSection({
       setDraftName(result.data.name);
       setIsEditing(false);
       setSuccess("Name updated.");
+      router.refresh();
     } catch (err) {
       setError(
         err instanceof Error ? err.message : "Unable to update your name.",

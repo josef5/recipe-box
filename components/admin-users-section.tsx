@@ -2,7 +2,7 @@
 
 import { type ManagedUser } from "@/actions/admin-users";
 import { formatStableDate } from "@/lib/utils";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Accordion } from "./ui/accordion";
 
 type ClientActionResult<T = void> =
@@ -125,6 +125,10 @@ export function AdminUsersSection({
     open: () => void;
     close: () => void;
   }>(null);
+
+  useEffect(() => {
+    setUsers(initialUsers);
+  }, [initialUsers]);
 
   async function refreshUsers() {
     const result = await listManagedUsersApi();
