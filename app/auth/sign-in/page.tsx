@@ -2,7 +2,9 @@
 
 import { authClient } from "@/lib/auth/client";
 import { useSearchParams } from "next/navigation";
-import { useState } from "react";
+import { Suspense, useState } from "react";
+
+export const dynamic = "force-dynamic";
 
 function getSafeRedirectPath(redirectTo: string | null) {
   if (
@@ -16,7 +18,7 @@ function getSafeRedirectPath(redirectTo: string | null) {
   return redirectTo;
 }
 
-export default function SignInPage() {
+function SignInForm() {
   const [error, setError] = useState<string | null>(null);
   const [isPending, setIsPending] = useState(false);
   const searchParams = useSearchParams();
@@ -96,5 +98,13 @@ export default function SignInPage() {
         {isPending ? "Signing in..." : "Sign in"}
       </button>
     </form>
+  );
+}
+
+export default function SignInPage() {
+  return (
+    <Suspense fallback={null}>
+      <SignInForm />
+    </Suspense>
   );
 }
