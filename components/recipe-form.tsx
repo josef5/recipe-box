@@ -1,7 +1,8 @@
 "use client";
 
 import Image from "next/image";
-import { useMemo, useRef, useState } from "react";
+import { useMemo, useRef, useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
 import { useFormStatus } from "react-dom";
 
 type IngredientSuggestion = {
@@ -39,11 +40,12 @@ export function RecipeForm({
   ingredientSuggestions,
   initialValues,
 }: {
-  action: (formData: FormData) => void | Promise<void>;
+  action: (formData: FormData) => string | void | Promise<string | void>;
   ingredientSuggestions: IngredientSuggestion[];
   initialValues?: RecipeFormValues;
   deleteAction?: () => void | Promise<void>;
 } & React.ComponentProps<"div">) {
+  const router = useRouter();
   const [ingredients, setIngredients] = useState<IngredientField[]>(
     initialValues?.ingredients.length
       ? initialValues.ingredients
@@ -189,7 +191,13 @@ export function RecipeForm({
   return (
     <>
       <form
-        action={action}
+        action={async (formData) => {
+          const destination = await action(formData);
+
+          if (destination) {
+            router.push(destination);
+          }
+        }}
         id="recipe-form"
         className="flex max-w-3xl flex-col gap-8"
       >
@@ -523,22 +531,28 @@ export function SubmitButton({
 export function DeleteButton({
   action,
 }: {
-  action: (formData: FormData) => void | Promise<void>;
+  action: () => string | void | Promise<string | void>;
 }) {
+  const router = useRouter();
+  const [isPending, startTransition] = useTransition();
+
   return (
-    <form action={action}>
-      <button
-        type="submit"
-        formNoValidate
-        onClick={(event) => {
-          if (!window.confirm("Delete this recipe? This cannot be undone.")) {
-            event.preventDefault();
-          }
-        }}
-        className="rounded-md border border-red-300 px-4 py-2 text-sm text-red-700"
-      >
-        Delete
-      </button>
-    </form>
+    <button
+      type="button"
+      disabled={isPending}
+      onClick={() => {
+        if (!window.confirm("Delete this recipe? This cannot be undone.")) {
+          return;
+        }
+
+        startTransition(async () => {
+          const destination = await action();
+          router.replace(destination ?? "/");
+        });
+      }}
+      className="rounded-md border border-red-300 px-4 py-2 text-sm text-red-700 disabled:cursor-not-allowed disabled:opacity-70"
+    >
+      {isPending ? "Deleting..." : "Delete"}
+    </button>
   );
 }

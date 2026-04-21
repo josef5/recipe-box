@@ -5,7 +5,7 @@ import { ingredients, recipes, recipeIngredients, steps } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { revalidatePath, revalidateTag } from "next/cache";
 import { generateSlug } from "@/lib/slug";
-import { forbidden, redirect } from "next/navigation";
+import { forbidden } from "next/navigation";
 import { desc, ilike, or } from "drizzle-orm";
 import {
   getUserDisplayName,
@@ -333,7 +333,7 @@ export async function createRecipe(data: RecipeFormData) {
 export async function createRecipeFromForm(formData: FormData) {
   const recipe = await createRecipe(await parseRecipeFormData(formData));
 
-  redirect(`/recipes/${recipe.slug}`);
+  return `/recipes/${recipe.slug}`;
 }
 
 /**
@@ -415,12 +415,12 @@ export async function updateRecipe(id: string, data: RecipeFormData) {
  * Updates an existing recipe in the database from form data.
  * @param id The ID of the recipe to update.
  * @param formData The form data containing the updated recipe information.
- * @returns A Promise that resolves to the updated recipe.
+ * @returns A Promise that resolves to the canonical recipe URL.
  */
 export async function updateRecipeFromForm(id: string, formData: FormData) {
   const recipe = await updateRecipe(id, await parseRecipeFormData(formData));
 
-  redirect(`/recipes/${recipe.slug}`);
+  return `/recipes/${recipe.slug}`;
 }
 
 /**
@@ -442,10 +442,11 @@ export async function deleteRecipe(id: string) {
 }
 
 /**
- * Deletes a recipe via form submission and redirects to the home page.
+ * Deletes a recipe via form submission.
  * @param id The ID of the recipe to delete.
+ * @returns A Promise that resolves to the home page URL.
  */
 export async function deleteRecipeFromForm(id: string) {
   await deleteRecipe(id);
-  redirect("/");
+  return "/";
 }

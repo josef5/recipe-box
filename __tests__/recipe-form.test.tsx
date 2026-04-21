@@ -2,6 +2,13 @@ import { RecipeForm } from "@/components/recipe-form";
 import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 
+vi.mock("next/navigation", () => ({
+  useRouter: () => ({
+    push: vi.fn(),
+    replace: vi.fn(),
+  }),
+}));
+
 describe("RecipeForm", () => {
   it("resets uncontrolled and controlled fields when remounted with a new key", () => {
     const action = vi.fn();
