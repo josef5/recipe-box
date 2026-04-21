@@ -3,34 +3,29 @@ import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const authMocks = vi.hoisted(() => ({
-  useSession: vi.fn(),
-  refetch: vi.fn(),
+  updateUser: vi.fn(),
 }));
 
 vi.mock("@/lib/auth/client", () => ({
   authClient: {
-    useSession: authMocks.useSession,
+    updateUser: authMocks.updateUser,
   },
 }));
+
+const syncResponse = (body: object, status = 200) =>
+  new Response(JSON.stringify(body), {
+    status,
+    headers: { "Content-Type": "application/json" },
+  });
 
 describe("account profile section", () => {
   beforeEach(() => {
     vi.restoreAllMocks();
-    authMocks.refetch.mockReset();
-    authMocks.refetch.mockResolvedValue(undefined);
-    authMocks.useSession.mockReturnValue({ refetch: authMocks.refetch });
+    authMocks.updateUser.mockReset();
+    authMocks.updateUser.mockResolvedValue({ error: null });
 
     vi.spyOn(globalThis, "fetch").mockResolvedValue(
-      new Response(
-        JSON.stringify({
-          ok: true,
-          data: { name: "Updated Name" },
-        }),
-        {
-          status: 200,
-          headers: { "Content-Type": "application/json" },
-        },
-      ),
+      syncResponse({ ok: true, data: { name: "Updated Name" } }),
     );
   });
 
@@ -56,56 +51,61 @@ describe("account profile section", () => {
     fireEvent.click(screen.getByRole("button", { name: "Cancel" }));
 
     expect(screen.getByText("Current Name")).toBeInTheDocument();
+    expect(authMocks.updateUser).not.toHaveBeenCalled();
     expect(globalThis.fetch).not.toHaveBeenCalled();
   });
 
-  it("submits updated name and shows success message", async () => {
+  it("calls authClient.updateUser then syncs DB and shows success", async () => {
     render(<AccountProfileSection initialName="Current Name" />);
 
     fireEvent.click(screen.getByRole("button", { name: "Edit" }));
     fireEvent.change(screen.getByLabelText("Name"), {
       target: { value: "Updated Name" },
     });
-
     fireEvent.submit(
       screen.getByRole("button", { name: "Save" }).closest("form")!,
     );
 
     await waitFor(() => {
-      expect(globalThis.fetch).toHaveBeenCalledWith(
-        "/api/account/name",
-        expect.objectContaining({
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ name: "Updated Name" }),
-        }),
-      );
+      expect(authMocks.updateUser).toHaveBeenCalledWith({
+        name: "Updated Name",
+      });
     });
 
-    expect(authMocks.refetch).toHaveBeenCalledWith({
-      query: {
-        disableCookieCache: true,
-      },
-    });
+    expect(globalThis.fetch).toHaveBeenCalledWith(
+      "/api/account/name/sync",
+      expect.objectContaining({
+        method: "POST",
+        body: JSON.stringify({ name: "Updated Name" }),
+      }),
+    );
 
     expect(await screen.findByText("Name updated.")).toBeInTheDocument();
     expect(screen.getByText("Updated Name")).toBeInTheDocument();
   });
 
-  it("shows action errors when update fails", async () => {
+  it("shows auth error when authClient.updateUser fails", async () => {
+    authMocks.updateUser.mockResolvedValueOnce({
+      error: { message: "Auth update failed." },
+    });
+
+    render(<AccountProfileSection initialName="Current Name" />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Edit" }));
+    fireEvent.change(screen.getByLabelText("Name"), {
+      target: { value: "Updated Name" },
+    });
+    fireEvent.submit(
+      screen.getByRole("button", { name: "Save" }).closest("form")!,
+    );
+
+    expect(await screen.findByText("Auth update failed.")).toBeInTheDocument();
+    expect(globalThis.fetch).not.toHaveBeenCalled();
+  });
+
+  it("shows sync error when DB sync fails", async () => {
     vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(
-      new Response(
-        JSON.stringify({
-          ok: false,
-          error: "Unable to update your name.",
-        }),
-        {
-          status: 400,
-          headers: { "Content-Type": "application/json" },
-        },
-      ),
+      syncResponse({ ok: false, error: "Unable to update your name." }, 400),
     );
 
     render(<AccountProfileSection initialName="Current Name" />);
