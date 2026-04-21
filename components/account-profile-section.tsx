@@ -3,6 +3,8 @@
 import { authClient } from "@/lib/auth/client";
 import { useState } from "react";
 
+const MAX_NAME_LENGTH = 100;
+
 type AccountProfileSectionProps = {
   initialName: string | null;
 };
@@ -10,7 +12,6 @@ type AccountProfileSectionProps = {
 export function AccountProfileSection({
   initialName,
 }: AccountProfileSectionProps) {
-  const { refetch: refetchSession } = authClient.useSession();
   const [currentName, setCurrentName] = useState<string | null>(initialName);
   const [draftName, setDraftName] = useState(initialName ?? "");
   const [isEditing, setIsEditing] = useState(false);
@@ -41,16 +42,34 @@ export function AccountProfileSection({
       return;
     }
 
+    if (submittedName.length > MAX_NAME_LENGTH) {
+      setError(`Name must be ${MAX_NAME_LENGTH} characters or fewer.`);
+      setSuccess(null);
+      return;
+    }
+
     setError(null);
     setSuccess(null);
     setIsPending(true);
 
     try {
-      const response = await fetch("/api/account/name", {
+      // Calling authClient.updateUser() from the client is required because
+      // it hits the /update-user path which triggers Better Auth's session
+      // atom listeners, causing useSession() consumers (like Menu) to
+      // automatically receive the refreshed user data. A server-side
+      // auth.updateUser() call or manual refetchSession() does not do this.
+      const authResult = await authClient.updateUser({ name: submittedName });
+
+      if (authResult.error) {
+        setError(authResult.error.message ?? "Unable to update your name.");
+        return;
+      }
+
+      // Separately sync recipes.ownerDisplayName in the DB and revalidate
+      // Next.js caches. This call intentionally does not re-run auth.updateUser.
+      const response = await fetch("/api/account/name/sync", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name: submittedName }),
       });
 
@@ -66,13 +85,6 @@ export function AccountProfileSection({
       setCurrentName(result.data.name);
       setDraftName(result.data.name);
       setIsEditing(false);
-
-      await refetchSession({
-        query: {
-          disableCookieCache: true,
-        },
-      });
-
       setSuccess("Name updated.");
     } catch (err) {
       setError(
