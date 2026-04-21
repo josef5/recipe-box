@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useMemo, useRef, useState, useTransition } from "react";
+import { useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useFormStatus } from "react-dom";
 
@@ -534,21 +534,24 @@ export function DeleteButton({
   action: () => string | void | Promise<string | void>;
 }) {
   const router = useRouter();
-  const [isPending, startTransition] = useTransition();
+  const [isPending, setIsPending] = useState(false);
 
   return (
     <button
       type="button"
       disabled={isPending}
-      onClick={() => {
+      onClick={async () => {
         if (!window.confirm("Delete this recipe? This cannot be undone.")) {
           return;
         }
 
-        startTransition(async () => {
+        setIsPending(true);
+        try {
           const destination = await action();
-          router.replace(destination ?? "/");
-        });
+          router.push(destination ?? "/");
+        } finally {
+          setIsPending(false);
+        }
       }}
       className="rounded-md border border-red-300 px-4 py-2 text-sm text-red-700 disabled:cursor-not-allowed disabled:opacity-70"
     >
