@@ -6,10 +6,19 @@ const authMocks = vi.hoisted(() => ({
   updateUser: vi.fn(),
 }));
 
+const navigationMocks = vi.hoisted(() => ({
+  refresh: vi.fn(),
+  useRouter: vi.fn(),
+}));
+
 vi.mock("@/lib/auth/client", () => ({
   authClient: {
     updateUser: authMocks.updateUser,
   },
+}));
+
+vi.mock("next/navigation", () => ({
+  useRouter: navigationMocks.useRouter,
 }));
 
 const syncResponse = (body: object, status = 200) =>
@@ -23,6 +32,10 @@ describe("account profile section", () => {
     vi.restoreAllMocks();
     authMocks.updateUser.mockReset();
     authMocks.updateUser.mockResolvedValue({ error: null });
+    navigationMocks.refresh.mockReset();
+    navigationMocks.useRouter.mockReturnValue({
+      refresh: navigationMocks.refresh,
+    });
 
     vi.spyOn(globalThis, "fetch").mockResolvedValue(
       syncResponse({ ok: true, data: { name: "Updated Name" } }),
@@ -82,6 +95,7 @@ describe("account profile section", () => {
 
     expect(await screen.findByText("Name updated.")).toBeInTheDocument();
     expect(screen.getByText("Updated Name")).toBeInTheDocument();
+    expect(navigationMocks.refresh).toHaveBeenCalled();
   });
 
   it("shows auth error when authClient.updateUser fails", async () => {
