@@ -10,7 +10,7 @@ type AccountProfileSectionProps = {
   initialName: string | null;
 };
 
-export function AccountProfileSection({
+export function EditableAccountName({
   initialName,
 }: AccountProfileSectionProps) {
   const router = useRouter();

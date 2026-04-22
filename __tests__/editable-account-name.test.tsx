@@ -1,4 +1,4 @@
-import { AccountProfileSection } from "@/components/account-profile-section";
+import { EditableAccountName } from "@/components/editable-account-name";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -43,7 +43,7 @@ describe("account profile section", () => {
   });
 
   it("renders current name and enters edit mode", () => {
-    render(<AccountProfileSection initialName="Current Name" />);
+    render(<EditableAccountName initialName="Current Name" />);
 
     expect(screen.getByText("Current Name")).toBeInTheDocument();
 
@@ -55,7 +55,7 @@ describe("account profile section", () => {
   });
 
   it("cancels editing without submitting", () => {
-    render(<AccountProfileSection initialName="Current Name" />);
+    render(<EditableAccountName initialName="Current Name" />);
 
     fireEvent.click(screen.getByRole("button", { name: "Edit" }));
     fireEvent.change(screen.getByLabelText("Name"), {
@@ -69,7 +69,7 @@ describe("account profile section", () => {
   });
 
   it("calls authClient.updateUser then syncs DB and shows success", async () => {
-    render(<AccountProfileSection initialName="Current Name" />);
+    render(<EditableAccountName initialName="Current Name" />);
 
     fireEvent.click(screen.getByRole("button", { name: "Edit" }));
     fireEvent.change(screen.getByLabelText("Name"), {
@@ -103,7 +103,7 @@ describe("account profile section", () => {
       error: { message: "Auth update failed." },
     });
 
-    render(<AccountProfileSection initialName="Current Name" />);
+    render(<EditableAccountName initialName="Current Name" />);
 
     fireEvent.click(screen.getByRole("button", { name: "Edit" }));
     fireEvent.change(screen.getByLabelText("Name"), {
@@ -122,7 +122,7 @@ describe("account profile section", () => {
       syncResponse({ ok: false, error: "Unable to update your name." }, 400),
     );
 
-    render(<AccountProfileSection initialName="Current Name" />);
+    render(<EditableAccountName initialName="Current Name" />);
 
     fireEvent.click(screen.getByRole("button", { name: "Edit" }));
     fireEvent.change(screen.getByLabelText("Name"), {
