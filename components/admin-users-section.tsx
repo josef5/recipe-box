@@ -4,6 +4,7 @@ import { type ManagedUser } from "@/actions/admin-users";
 import { formatStableDate } from "@/lib/utils";
 import { useEffect, useRef, useState } from "react";
 import { Accordion } from "./ui/accordion";
+import { Dialog } from "./ui/dialog";
 
 type ClientActionResult<T = void> =
   | { ok: true; data: T }
@@ -121,6 +122,7 @@ export function AdminUsersSection({
   const [deletingUserId, setDeletingUserId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+  const dialogRef = useRef<HTMLDialogElement | null>(null);
   const accordionRef = useRef<{
     open: () => void;
     close: () => void;
@@ -172,7 +174,6 @@ export function AdminUsersSection({
   async function handleDeleteUser(userId: string) {
     setError(null);
     setSuccess(null);
-    setDeletingUserId(userId);
 
     const result = await deleteManagedUserApi({ userId });
 
@@ -186,6 +187,7 @@ export function AdminUsersSection({
       currentUsers.filter((user) => user.id !== result.data.userId),
     );
     setDeletingUserId(null);
+    dialogRef.current?.close();
   }
 
   return (
@@ -294,7 +296,10 @@ export function AdminUsersSection({
                     <button
                       type="button"
                       disabled={isCurrentUser || isDeleting}
-                      onClick={() => void handleDeleteUser(user.id)}
+                      onClick={() => {
+                        setDeletingUserId(user.id);
+                        dialogRef.current?.showModal();
+                      }}
                       className="rounded border px-2 py-1 text-xs disabled:opacity-50"
                     >
                       {isCurrentUser
@@ -310,6 +315,11 @@ export function AdminUsersSection({
           </tbody>
         </table>
       </div>
+      <Dialog
+        title="Delete this user? This action cannot be undone."
+        onConfirm={() => deletingUserId && handleDeleteUser(deletingUserId)}
+        dialogRef={dialogRef}
+      />
     </section>
   );
 }
