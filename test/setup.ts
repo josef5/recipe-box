@@ -9,6 +9,20 @@ import {
 } from "react";
 import { afterEach, vi } from "vitest";
 
+Object.defineProperty(HTMLDialogElement.prototype, "showModal", {
+  configurable: true,
+  value: vi.fn(function showModal(this: HTMLDialogElement) {
+    this.setAttribute("open", "");
+  }),
+});
+
+Object.defineProperty(HTMLDialogElement.prototype, "close", {
+  configurable: true,
+  value: vi.fn(function close(this: HTMLDialogElement) {
+    this.removeAttribute("open");
+  }),
+});
+
 vi.mock("next/link", () => ({
   default: ({
     href,

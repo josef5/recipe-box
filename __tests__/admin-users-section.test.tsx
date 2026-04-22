@@ -137,6 +137,7 @@ describe("admin users section", () => {
     );
 
     fireEvent.click(screen.getAllByRole("button", { name: "Delete" })[0]);
+    fireEvent.click(screen.getByRole("button", { name: "Confirm" }));
 
     await waitFor(() => {
       expect(screen.queryByText("family@example.com")).not.toBeInTheDocument();
