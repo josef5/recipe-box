@@ -1,6 +1,6 @@
 import { getManagedUsersForAccountPage } from "@/actions/admin-users";
 import { AdminUsersSection } from "@/components/admin-users-section";
-import { EditableAccountName } from "@/components/editable-account-name";
+import { EditableAccountName } from "@/components/ui/editable-account-name";
 import { ChangePasswordForm } from "@/components/change-password-form";
 import { Accordion } from "@/components/ui/accordion";
 import {

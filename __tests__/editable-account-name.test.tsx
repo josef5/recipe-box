@@ -1,4 +1,4 @@
-import { EditableAccountName } from "@/components/editable-account-name";
+import { EditableAccountName } from "@/components/ui/editable-account-name";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
