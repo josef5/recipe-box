@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useFormStatus } from "react-dom";
+import { Dialog } from "./ui/dialog";
 
 type IngredientSuggestion = {
   name: string;
@@ -543,42 +544,27 @@ export function DeleteButton({
         type="button"
         disabled={isPending}
         onClick={async () => {
-          setIsPending(true);
           dialogRef.current?.showModal();
         }}
         className="rounded-md border border-red-300 px-4 py-2 text-sm text-red-700 disabled:cursor-not-allowed disabled:opacity-70"
       >
         {isPending ? "Deleting..." : "Delete"}
       </button>
-      <dialog
-        ref={dialogRef}
-        className="backdrop:bg-opacity-70 m-auto rounded-md border p-6 backdrop:bg-gray-900 backdrop:opacity-70"
-        popover="auto"
-      >
-        Delete this recipe? This cannot be undone.
-        <div className="mt-4 flex justify-end gap-3">
-          <button
-            type="button"
-            onClick={() => dialogRef.current?.close()}
-            className="rounded-md border px-4 py-2 text-sm"
-          >
-            Cancel
-          </button>
-          <button
-            onClick={async () => {
-              try {
-                const destination = await action();
-                router.push(destination ?? "/");
-              } finally {
-                setIsPending(false);
-              }
-            }}
-            className="rounded-md bg-red-500 px-4 py-2 text-sm font-semibold text-white hover:bg-red-400"
-          >
-            Delete
-          </button>
-        </div>
-      </dialog>
+      <Dialog
+        title="Delete this recipe? This cannot be undone."
+        onConfirm={async () => {
+          setIsPending(true);
+
+          try {
+            const destination = await action();
+            router.push(destination ?? "/");
+          } finally {
+            setIsPending(false);
+          }
+        }}
+        dialogRef={dialogRef}
+        confirmButtonText="Delete"
+      />
     </>
   );
 }
