@@ -122,4 +122,75 @@ describe("sign-in page", () => {
       await screen.findByText("Invalid email or password"),
     ).toBeInTheDocument();
   });
+
+  it("shows a validation error for an invalid email", async () => {
+    render(<SignInPage />);
+
+    fireEvent.change(screen.getByLabelText("Email"), {
+      target: { value: "not-an-email" },
+    });
+    fireEvent.change(screen.getByLabelText("Password"), {
+      target: { value: "secret-pass" },
+    });
+
+    fireEvent.submit(
+      screen.getByRole("button", { name: "Sign in" }).closest("form")!,
+    );
+
+    expect(
+      await screen.findByText("Enter a valid email address."),
+    ).toBeInTheDocument();
+    expect(mocks.signInEmail).not.toHaveBeenCalled();
+  });
+
+  it("shows a validation error when password is missing", async () => {
+    render(<SignInPage />);
+
+    fireEvent.change(screen.getByLabelText("Email"), {
+      target: { value: "cook@example.com" },
+    });
+
+    fireEvent.submit(
+      screen.getByRole("button", { name: "Sign in" }).closest("form")!,
+    );
+
+    expect(
+      await screen.findByText("Password is required."),
+    ).toBeInTheDocument();
+    expect(mocks.signInEmail).not.toHaveBeenCalled();
+  });
+
+  it("shows all client-side validation errors for an empty submit", async () => {
+    render(<SignInPage />);
+
+    fireEvent.submit(
+      screen.getByRole("button", { name: "Sign in" }).closest("form")!,
+    );
+
+    expect(await screen.findByText("Email is required.")).toBeInTheDocument();
+    expect(
+      await screen.findByText("Password is required."),
+    ).toBeInTheDocument();
+    expect(mocks.signInEmail).not.toHaveBeenCalled();
+  });
+
+  it("disables submit until the form is valid", () => {
+    render(<SignInPage />);
+
+    const submitButton = screen.getByRole("button", { name: "Sign in" });
+
+    expect(submitButton).toBeDisabled();
+
+    fireEvent.change(screen.getByLabelText("Email"), {
+      target: { value: "cook@example.com" },
+    });
+
+    expect(submitButton).toBeDisabled();
+
+    fireEvent.change(screen.getByLabelText("Password"), {
+      target: { value: "secret-pass" },
+    });
+
+    expect(submitButton).toBeEnabled();
+  });
 });

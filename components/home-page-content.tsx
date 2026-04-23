@@ -24,7 +24,7 @@ export function HomePageContent({
   return (
     <>
       <aside className="sm:col-start-2 sm:row-start-1">
-        <form action="/" method="get" className="flex gap-2">
+        <form action="/" method="get" noValidate className="flex gap-2">
           <input
             type="search"
             name="q"

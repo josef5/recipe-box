@@ -27,9 +27,6 @@ describe("change password form", () => {
     fireEvent.change(screen.getByLabelText("New password"), {
       target: { value: "new-pass-123" },
     });
-    fireEvent.change(screen.getByLabelText("Confirm new password"), {
-      target: { value: "new-pass-123" },
-    });
 
     fireEvent.submit(
       screen.getByRole("button", { name: "Update password" }).closest("form")!,
@@ -46,29 +43,6 @@ describe("change password form", () => {
     expect(await screen.findByText("Password updated.")).toBeInTheDocument();
   });
 
-  it("does not submit when confirmation does not match", async () => {
-    render(<ChangePasswordForm />);
-
-    fireEvent.change(screen.getByLabelText("Current password"), {
-      target: { value: "old-pass-123" },
-    });
-    fireEvent.change(screen.getByLabelText("New password"), {
-      target: { value: "new-pass-123" },
-    });
-    fireEvent.change(screen.getByLabelText("Confirm new password"), {
-      target: { value: "different-pass" },
-    });
-
-    fireEvent.submit(
-      screen.getByRole("button", { name: "Update password" }).closest("form")!,
-    );
-
-    expect(
-      await screen.findByText("New password and confirmation do not match."),
-    ).toBeInTheDocument();
-    expect(authMocks.changePassword).not.toHaveBeenCalled();
-  });
-
   it("shows auth errors from the API", async () => {
     authMocks.changePassword.mockResolvedValueOnce({
       error: { message: "Current password is incorrect" },
@@ -82,9 +56,6 @@ describe("change password form", () => {
     fireEvent.change(screen.getByLabelText("New password"), {
       target: { value: "new-pass-123" },
     });
-    fireEvent.change(screen.getByLabelText("Confirm new password"), {
-      target: { value: "new-pass-123" },
-    });
 
     fireEvent.submit(
       screen.getByRole("button", { name: "Update password" }).closest("form")!,
@@ -93,5 +64,80 @@ describe("change password form", () => {
     expect(
       await screen.findByText("Current password is incorrect"),
     ).toBeInTheDocument();
+  });
+
+  it("shows a validation error when current password is missing", async () => {
+    render(<ChangePasswordForm />);
+
+    fireEvent.change(screen.getByLabelText("New password"), {
+      target: { value: "new-pass-123" },
+    });
+
+    fireEvent.submit(
+      screen.getByRole("button", { name: "Update password" }).closest("form")!,
+    );
+
+    expect(
+      await screen.findByText("Current password is required."),
+    ).toBeInTheDocument();
+    expect(authMocks.changePassword).not.toHaveBeenCalled();
+  });
+
+  it("shows a validation error when new password is too short", async () => {
+    render(<ChangePasswordForm />);
+
+    fireEvent.change(screen.getByLabelText("Current password"), {
+      target: { value: "old-pass-123" },
+    });
+    fireEvent.change(screen.getByLabelText("New password"), {
+      target: { value: "short" },
+    });
+
+    fireEvent.submit(
+      screen.getByRole("button", { name: "Update password" }).closest("form")!,
+    );
+
+    expect(
+      await screen.findByText("New password must be at least 8 characters."),
+    ).toBeInTheDocument();
+    expect(authMocks.changePassword).not.toHaveBeenCalled();
+  });
+
+  it("shows all client-side validation errors for an empty submit", async () => {
+    render(<ChangePasswordForm />);
+
+    fireEvent.submit(
+      screen.getByRole("button", { name: "Update password" }).closest("form")!,
+    );
+
+    expect(
+      await screen.findByText("Current password is required."),
+    ).toBeInTheDocument();
+    expect(
+      await screen.findByText("New password must be at least 8 characters."),
+    ).toBeInTheDocument();
+    expect(authMocks.changePassword).not.toHaveBeenCalled();
+  });
+
+  it("disables submit until the form is valid", () => {
+    render(<ChangePasswordForm />);
+
+    const submitButton = screen.getByRole("button", {
+      name: "Update password",
+    });
+
+    expect(submitButton).toBeDisabled();
+
+    fireEvent.change(screen.getByLabelText("Current password"), {
+      target: { value: "old-pass-123" },
+    });
+
+    expect(submitButton).toBeDisabled();
+
+    fireEvent.change(screen.getByLabelText("New password"), {
+      target: { value: "new-pass-123" },
+    });
+
+    expect(submitButton).toBeEnabled();
   });
 });

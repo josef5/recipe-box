@@ -1,6 +1,11 @@
 "use client";
 
 import { authClient } from "@/lib/auth/client";
+import {
+  SignInSchema,
+  type SignInFieldErrors,
+  validateSignInFormData,
+} from "@/lib/validation/auth";
 import { useSearchParams } from "next/navigation";
 import { Suspense, useState } from "react";
 
@@ -23,16 +28,20 @@ function SignInForm() {
   const [isPending, setIsPending] = useState(false);
   const searchParams = useSearchParams();
   const callbackURL = getSafeRedirectPath(searchParams.get("redirectTo"));
+  const isFormValid = SignInSchema.safeParse({ email, password }).success;
 
   async function handleSubmit(formData: FormData) {
-    const email = formData.get("email");
-    const password = formData.get("password");
+    const validated = validateSignInFormData(formData);
 
-    if (typeof email !== "string" || typeof password !== "string") {
-      setError("Invalid form submission.");
+    if (!validated.success) {
+      setFieldErrors(validated.errors);
+      setError(null);
       return;
     }
 
+    const { email, password } = validated.data;
+
+    setFieldErrors({});
     setError(null);
     setIsPending(true);
 
@@ -56,6 +65,7 @@ function SignInForm() {
   return (
     <form
       action={handleSubmit}
+      noValidate
       className="flex min-h-screen flex-col items-center justify-center gap-5"
     >
       <h1 className="text-2xl font-bold">Sign in to recipe-box</h1>
@@ -68,10 +78,17 @@ function SignInForm() {
           id="email"
           name="email"
           type="email"
-          required
+          value={email}
+          onChange={(event) => {
+            setEmail(event.target.value);
+            setFieldErrors((current) => ({ ...current, email: undefined }));
+          }}
           placeholder="you@example.com"
           className="rounded-md border px-3 py-2 text-sm"
         />
+        {fieldErrors.email ? (
+          <p className="text-sm text-red-600">{fieldErrors.email}</p>
+        ) : null}
       </div>
 
       <div className="flex w-80 flex-col gap-1.5">
@@ -82,17 +99,24 @@ function SignInForm() {
           id="password"
           name="password"
           type="password"
-          required
+          value={password}
+          onChange={(event) => {
+            setPassword(event.target.value);
+            setFieldErrors((current) => ({ ...current, password: undefined }));
+          }}
           placeholder="*****"
           className="rounded-md border px-3 py-2 text-sm"
         />
+        {fieldErrors.password ? (
+          <p className="text-sm text-red-600">{fieldErrors.password}</p>
+        ) : null}
       </div>
 
       {error ? <p className="text-sm text-red-500">{error}</p> : null}
 
       <button
         type="submit"
-        disabled={isPending}
+        disabled={isPending || !isFormValid}
         className="w-80 rounded-md bg-indigo-500 px-3 py-2 text-sm font-semibold text-white hover:bg-indigo-400 disabled:opacity-50"
       >
         {isPending ? "Signing in..." : "Sign in"}

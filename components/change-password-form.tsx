@@ -1,44 +1,38 @@
 "use client";
 
 import { authClient } from "@/lib/auth/client";
+import {
+  ChangePasswordSchema,
+  type ChangePasswordFieldErrors,
+  validateChangePasswordFormData,
+} from "@/lib/validation/auth";
 import { useState } from "react";
 
-const MIN_PASSWORD_LENGTH = 8;
-
 export function ChangePasswordForm({ onSuccess }: { onSuccess?: () => void }) {
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [fieldErrors, setFieldErrors] = useState<ChangePasswordFieldErrors>({});
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [isPending, setIsPending] = useState(false);
+  const isFormValid = ChangePasswordSchema.safeParse({
+    currentPassword,
+    newPassword,
+  }).success;
 
   async function handleSubmit(formData: FormData) {
-    const currentPassword = formData.get("currentPassword");
-    const newPassword = formData.get("newPassword");
-    const confirmPassword = formData.get("confirmPassword");
+    const validated = validateChangePasswordFormData(formData);
 
-    if (
-      typeof currentPassword !== "string" ||
-      typeof newPassword !== "string" ||
-      typeof confirmPassword !== "string"
-    ) {
-      setError("Invalid form submission.");
+    if (!validated.success) {
+      setFieldErrors(validated.errors);
+      setError(null);
       setSuccess(null);
       return;
     }
 
-    if (newPassword.length < MIN_PASSWORD_LENGTH) {
-      setError(
-        `New password must be at least ${MIN_PASSWORD_LENGTH} characters.`,
-      );
-      setSuccess(null);
-      return;
-    }
+    const { currentPassword, newPassword } = validated.data;
 
-    if (newPassword !== confirmPassword) {
-      setError("New password and confirmation do not match.");
-      setSuccess(null);
-      return;
-    }
-
+    setFieldErrors({});
     setError(null);
     setSuccess(null);
     setIsPending(true);
@@ -68,7 +62,7 @@ export function ChangePasswordForm({ onSuccess }: { onSuccess?: () => void }) {
   }
 
   return (
-    <form action={handleSubmit} className="mt-4 grid gap-4">
+    <form action={handleSubmit} noValidate className="mt-4 grid gap-4">
       <div className="grid gap-1.5">
         <label htmlFor="currentPassword" className="text-sm font-medium">
           Current password
@@ -77,10 +71,20 @@ export function ChangePasswordForm({ onSuccess }: { onSuccess?: () => void }) {
           id="currentPassword"
           name="currentPassword"
           type="password"
-          required
+          value={currentPassword}
+          onChange={(event) => {
+            setCurrentPassword(event.target.value);
+            setFieldErrors((current) => ({
+              ...current,
+              currentPassword: undefined,
+            }));
+          }}
           className="rounded-md border px-3 py-2 text-sm"
           autoComplete="current-password"
         />
+        {fieldErrors.currentPassword ? (
+          <p className="text-sm text-red-600">{fieldErrors.currentPassword}</p>
+        ) : null}
       </div>
 
       <div className="grid gap-1.5">
@@ -91,26 +95,20 @@ export function ChangePasswordForm({ onSuccess }: { onSuccess?: () => void }) {
           id="newPassword"
           name="newPassword"
           type="password"
-          required
-          minLength={MIN_PASSWORD_LENGTH}
+          value={newPassword}
+          onChange={(event) => {
+            setNewPassword(event.target.value);
+            setFieldErrors((current) => ({
+              ...current,
+              newPassword: undefined,
+            }));
+          }}
           className="rounded-md border px-3 py-2 text-sm"
           autoComplete="new-password"
         />
-      </div>
-
-      <div className="grid gap-1.5">
-        <label htmlFor="confirmPassword" className="text-sm font-medium">
-          Confirm new password
-        </label>
-        <input
-          id="confirmPassword"
-          name="confirmPassword"
-          type="password"
-          required
-          minLength={MIN_PASSWORD_LENGTH}
-          className="rounded-md border px-3 py-2 text-sm"
-          autoComplete="new-password"
-        />
+        {fieldErrors.newPassword ? (
+          <p className="text-sm text-red-600">{fieldErrors.newPassword}</p>
+        ) : null}
       </div>
 
       {error ? <p className="text-sm text-red-500">{error}</p> : null}
@@ -118,7 +116,7 @@ export function ChangePasswordForm({ onSuccess }: { onSuccess?: () => void }) {
 
       <button
         type="submit"
-        disabled={isPending}
+        disabled={isPending || !isFormValid}
         className="w-full rounded-md bg-indigo-500 px-3 py-2 text-sm font-semibold text-white hover:bg-indigo-400 disabled:opacity-50 sm:w-auto"
       >
         {isPending ? "Updating..." : "Update password"}

@@ -1,10 +1,14 @@
 "use client";
 
 import Image from "next/image";
-import { useMemo, useRef, useState } from "react";
+import { useActionState, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useFormStatus } from "react-dom";
 import { Dialog } from "./ui/dialog";
+import {
+  type RecipeFormState,
+  validateRecipeFormData,
+} from "@/lib/validation/recipes";
 
 type IngredientSuggestion = {
   name: string;
@@ -41,12 +45,18 @@ export function RecipeForm({
   ingredientSuggestions,
   initialValues,
 }: {
-  action: (formData: FormData) => string | void | Promise<string | void>;
+  action: (
+    prevState: RecipeFormState,
+    formData: FormData,
+  ) => Promise<RecipeFormState>;
   ingredientSuggestions: IngredientSuggestion[];
   initialValues?: RecipeFormValues;
   deleteAction?: () => void | Promise<void>;
 } & React.ComponentProps<"div">) {
   const router = useRouter();
+  const [state, formAction] = useActionState(action, null);
+  const formRef = useRef<HTMLFormElement>(null);
+  const [isClientValid, setIsClientValid] = useState(false);
   const [ingredients, setIngredients] = useState<IngredientField[]>(
     initialValues?.ingredients.length
       ? initialValues.ingredients
@@ -101,6 +111,34 @@ export function RecipeForm({
       return next;
     });
   }
+
+  function syncClientValidity() {
+    const form = formRef.current;
+
+    if (!form) {
+      return;
+    }
+
+    const validated = validateRecipeFormData(new FormData(form));
+    const nextIsValid = validated.success;
+
+    setIsClientValid(nextIsValid);
+    form.dataset.clientValid = nextIsValid ? "true" : "false";
+  }
+
+  function scheduleClientValiditySync() {
+    if (typeof window === "undefined") {
+      return;
+    }
+
+    window.requestAnimationFrame(() => {
+      syncClientValidity();
+    });
+  }
+
+  useEffect(() => {
+    syncClientValidity();
+  }, [ingredients, steps]);
 
   async function uploadSelectedImage() {
     if (!selectedImageFile || isUploadingImage) {
@@ -200,8 +238,19 @@ export function RecipeForm({
           }
         }}
         id="recipe-form"
+        noValidate
+        data-client-valid={isClientValid ? "true" : "false"}
+        onInput={scheduleClientValiditySync}
         className="flex max-w-3xl flex-col gap-8"
       >
+        {state?.errors._form && (
+          <p
+            role="alert"
+            className="rounded-md bg-red-50 px-4 py-3 text-sm text-red-700"
+          >
+            {state.errors._form}
+          </p>
+        )}
         <section className="flex flex-col gap-4">
           <div className="flex flex-col gap-1.5">
             <label htmlFor="title" className="text-sm font-medium">
@@ -210,10 +259,12 @@ export function RecipeForm({
             <input
               id="title"
               name="title"
-              required
               defaultValue={initialValues?.title ?? ""}
               className="rounded-md border px-3 py-2 text-sm"
             />
+            {state?.errors.title && (
+              <p className="text-sm text-red-600">{state.errors.title}</p>
+            )}
           </div>
           <div className="flex flex-col gap-1.5">
             <label htmlFor="description" className="text-sm font-medium">
@@ -236,10 +287,12 @@ export function RecipeForm({
                 id="servings"
                 name="servings"
                 type="number"
-                min="1"
                 defaultValue={initialValues?.servings ?? ""}
                 className="rounded-md border px-3 py-2 text-sm"
               />
+              {state?.errors.servings && (
+                <p className="text-sm text-red-600">{state.errors.servings}</p>
+              )}
             </div>
             <div className="flex flex-col gap-1.5">
               <label htmlFor="prepTimeMins" className="text-sm font-medium">
@@ -249,10 +302,14 @@ export function RecipeForm({
                 id="prepTimeMins"
                 name="prepTimeMins"
                 type="number"
-                min="0"
                 defaultValue={initialValues?.prepTimeMins ?? ""}
                 className="rounded-md border px-3 py-2 text-sm"
               />
+              {state?.errors.prepTimeMins && (
+                <p className="text-sm text-red-600">
+                  {state.errors.prepTimeMins}
+                </p>
+              )}
             </div>
             <div className="flex flex-col gap-1.5">
               <label htmlFor="cookTimeMins" className="text-sm font-medium">
@@ -262,10 +319,14 @@ export function RecipeForm({
                 id="cookTimeMins"
                 name="cookTimeMins"
                 type="number"
-                min="0"
                 defaultValue={initialValues?.cookTimeMins ?? ""}
                 className="rounded-md border px-3 py-2 text-sm"
               />
+              {state?.errors.cookTimeMins && (
+                <p className="text-sm text-red-600">
+                  {state.errors.cookTimeMins}
+                </p>
+              )}
             </div>
           </div>
           <div className="grid gap-4 md:grid-cols-2">
@@ -291,6 +352,9 @@ export function RecipeForm({
                 defaultValue={initialValues?.sourceUrl ?? ""}
                 className="rounded-md border px-3 py-2 text-sm"
               />
+              {state?.errors.sourceUrl && (
+                <p className="text-sm text-red-600">{state.errors.sourceUrl}</p>
+              )}
             </div>
           </div>
           <div className="flex flex-col gap-1.5">
@@ -359,6 +423,9 @@ export function RecipeForm({
                 className="mt-2 max-h-64 w-full rounded-md border object-cover"
               />
             ) : null}
+            {state?.errors.imageUrl && (
+              <p className="text-sm text-red-600">{state.errors.imageUrl}</p>
+            )}
           </div>
         </section>
         <section className="flex flex-col gap-4">
@@ -403,8 +470,6 @@ export function RecipeForm({
                     <input
                       name="ingredientAmount"
                       type="number"
-                      step="0.01"
-                      min="0"
                       value={ingredient.amount}
                       onChange={(event) =>
                         updateIngredient(index, "amount", event.target.value)
@@ -511,17 +576,50 @@ export function RecipeForm({
 export function SubmitButton({
   label,
   form,
+  disabled = false,
 }: {
   label: string;
   form?: string;
+  disabled?: boolean;
 }) {
   const { pending } = useFormStatus();
+  const [isFormValid, setIsFormValid] = useState(!form);
+
+  useEffect(() => {
+    if (!form) {
+      return;
+    }
+
+    const formElement = document.getElementById(form);
+
+    if (!(formElement instanceof HTMLFormElement)) {
+      return;
+    }
+
+    const updateFormValidity = () => {
+      setIsFormValid(formElement.dataset.clientValid === "true");
+    };
+
+    queueMicrotask(updateFormValidity);
+
+    const observer = new MutationObserver(updateFormValidity);
+    observer.observe(formElement, {
+      attributes: true,
+      attributeFilter: ["data-client-valid"],
+    });
+
+    return () => {
+      observer.disconnect();
+    };
+  }, [form]);
+
+  const isDisabled = pending || disabled || (form ? !isFormValid : false);
 
   return (
     <button
       type="submit"
       form={form}
-      disabled={pending}
+      disabled={isDisabled}
       className="rounded-md bg-indigo-500 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-400 disabled:cursor-not-allowed disabled:opacity-70"
     >
       {pending ? "Saving..." : label}

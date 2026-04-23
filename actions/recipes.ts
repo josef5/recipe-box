@@ -12,6 +12,11 @@ import {
   requireCurrentUser,
   userHasAdminRole,
 } from "@/lib/auth/session";
+import {
+  type RecipeRawInput,
+  type RecipeFormState,
+  validateRecipeFormData,
+} from "@/lib/validation/recipes";
 import { destroyCloudinaryImage } from "@/lib/cloudinary";
 
 export type RecipeFormData = {
@@ -35,42 +40,6 @@ export type RecipeFormData = {
     instruction: string;
   }[];
 };
-
-/**
- * Retrieves an optional string value from the form data.
- * If the value is not a string or is empty after trimming, it returns undefined.
- * @param formData The FormData object from the recipe form.
- * @param key The key of the form field to retrieve.
- * @returns The trimmed string value or undefined.
- */
-function getOptionalString(formData: FormData, key: string) {
-  const value = formData.get(key);
-
-  if (typeof value !== "string") {
-    return undefined;
-  }
-
-  const trimmed = value.trim();
-  return trimmed.length > 0 ? trimmed : undefined;
-}
-
-/**
- * Retrieves an optional numeric value from the form data.
- * If the value is not a valid number, it returns undefined.
- * @param formData The FormData object from the recipe form.
- * @param key The key of the form field to retrieve.
- * @returns The numeric value or undefined.
- */
-function getOptionalNumber(formData: FormData, key: string) {
-  const value = getOptionalString(formData, key);
-
-  if (!value) {
-    return undefined;
-  }
-
-  const parsed = Number(value);
-  return Number.isFinite(parsed) ? parsed : undefined;
-}
 
 /**
  * Retrieves the ID of an ingredient by name. If the ingredient does not exist, it creates a new one.
@@ -114,40 +83,36 @@ async function getOrCreateIngredientId(name: string, defaultUnit?: string) {
 }
 
 /**
- * Parses the form data from a recipe form and returns a structured RecipeFormData object.
- * This function handles optional fields, type conversions, and ingredient creation.
- * @param formData The FormData object from the recipe form.
- * @returns A Promise that resolves to a RecipeFormData object.
+ * Resolves the ingredient and step arrays from FormData into a full RecipeFormData
+ * object.  Should only be called after validateRecipeFormData() has succeeded so
+ * DB side effects (getOrCreateIngredientId) never run on invalid submissions.
  */
-async function parseRecipeFormData(
+async function buildRecipeFormData(
+  validated: RecipeRawInput,
   formData: FormData,
 ): Promise<RecipeFormData> {
   const ingredientNames = formData
     .getAll("ingredientName")
-    .map((value) => value.toString().trim());
+    .map((v) => v.toString().trim());
   const ingredientAmounts = formData
     .getAll("ingredientAmount")
-    .map((value) => value.toString().trim());
+    .map((v) => v.toString().trim());
   const ingredientUnits = formData
     .getAll("ingredientUnit")
-    .map((value) => value.toString().trim());
+    .map((v) => v.toString().trim());
   const ingredientNotes = formData
     .getAll("ingredientNotes")
-    .map((value) => value.toString().trim());
+    .map((v) => v.toString().trim());
   const stepInstructions = formData
     .getAll("stepInstruction")
-    .map((value) => value.toString().trim());
+    .map((v) => v.toString().trim());
 
   const ingredientData = await Promise.all(
     ingredientNames.map(async (name, index) => {
-      if (!name) {
-        return null;
-      }
-
+      if (!name) return null;
       const unit = ingredientUnits[index] || undefined;
       const amountValue = ingredientAmounts[index];
       const amount = amountValue ? Number(amountValue) : undefined;
-
       return {
         ingredientId: await getOrCreateIngredientId(name, unit),
         amount: Number.isFinite(amount) ? amount : undefined,
@@ -170,10 +135,7 @@ async function parseRecipeFormData(
     ingredients: ingredientData.filter((ingredient) => ingredient !== null),
     steps: stepInstructions
       .filter((instruction) => instruction.length > 0)
-      .map((instruction, index) => ({
-        stepNumber: index + 1,
-        instruction,
-      })),
+      .map((instruction, index) => ({ stepNumber: index + 1, instruction })),
   };
 }
 

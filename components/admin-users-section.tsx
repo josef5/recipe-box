@@ -1,6 +1,12 @@
 "use client";
 
-import { type ManagedUser } from "@/actions/admin-users";
+import {
+  createManagedUserAction,
+  deleteManagedUserAction,
+  listManagedUsersAction,
+  type ManagedUser,
+} from "@/actions/admin-users";
+import { CreateAdminUserSchema } from "@/lib/validation/admin-users";
 import { formatStableDate } from "@/lib/utils";
 import { useEffect, useRef, useState } from "react";
 import { Accordion } from "./ui/accordion";
@@ -110,6 +116,10 @@ type AdminUsersSectionProps = {
   currentUserId: string;
 };
 
+type CreateUserFieldErrors = Partial<
+  Record<"name" | "email" | "provisionalPassword", string>
+>;
+
 export function AdminUsersSection({
   initialUsers,
   currentUserId,
@@ -120,6 +130,8 @@ export function AdminUsersSection({
   const [provisionalPassword, setProvisionalPassword] = useState("");
   const [isCreating, setIsCreating] = useState(false);
   const [deletingUserId, setDeletingUserId] = useState<string | null>(null);
+  const [createUserFieldErrors, setCreateUserFieldErrors] =
+    useState<CreateUserFieldErrors>({});
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const dialogRef = useRef<HTMLDialogElement | null>(null);
@@ -127,6 +139,11 @@ export function AdminUsersSection({
     open: () => void;
     close: () => void;
   }>(null);
+  const isCreateUserValid = CreateAdminUserSchema.safeParse({
+    name,
+    email,
+    provisionalPassword,
+  }).success;
 
   useEffect(() => {
     setUsers(initialUsers);
@@ -147,7 +164,6 @@ export function AdminUsersSection({
     event.preventDefault();
     setError(null);
     setSuccess(null);
-    setIsCreating(true);
 
     const result = await createManagedUserApi({
       name,
@@ -203,7 +219,11 @@ export function AdminUsersSection({
         ref={accordionRef}
       >
         <>
-          <form onSubmit={handleCreateUser} className="mt-4 grid gap-4">
+          <form
+            onSubmit={handleCreateUser}
+            noValidate
+            className="mt-4 grid gap-4"
+          >
             <div className="grid gap-1.5">
               <label htmlFor="adminUserName" className="text-sm font-medium">
                 Name
@@ -212,11 +232,21 @@ export function AdminUsersSection({
                 id="adminUserName"
                 name="name"
                 type="text"
-                required
                 value={name}
-                onChange={(event) => setName(event.target.value)}
+                onChange={(event) => {
+                  setName(event.target.value);
+                  setCreateUserFieldErrors((current) => ({
+                    ...current,
+                    name: undefined,
+                  }));
+                }}
                 className="rounded-md border px-3 py-2 text-sm"
               />
+              {createUserFieldErrors.name ? (
+                <p className="text-sm text-red-600">
+                  {createUserFieldErrors.name}
+                </p>
+              ) : null}
             </div>
 
             <div className="grid gap-1.5">
@@ -227,11 +257,21 @@ export function AdminUsersSection({
                 id="adminUserEmail"
                 name="email"
                 type="email"
-                required
                 value={email}
-                onChange={(event) => setEmail(event.target.value)}
+                onChange={(event) => {
+                  setEmail(event.target.value);
+                  setCreateUserFieldErrors((current) => ({
+                    ...current,
+                    email: undefined,
+                  }));
+                }}
                 className="rounded-md border px-3 py-2 text-sm"
               />
+              {createUserFieldErrors.email ? (
+                <p className="text-sm text-red-600">
+                  {createUserFieldErrors.email}
+                </p>
+              ) : null}
             </div>
 
             <div className="grid gap-1.5">
@@ -245,18 +285,27 @@ export function AdminUsersSection({
                 id="adminUserProvisionalPassword"
                 name="provisionalPassword"
                 type="password"
-                required
-                minLength={8}
                 value={provisionalPassword}
-                onChange={(event) => setProvisionalPassword(event.target.value)}
+                onChange={(event) => {
+                  setProvisionalPassword(event.target.value);
+                  setCreateUserFieldErrors((current) => ({
+                    ...current,
+                    provisionalPassword: undefined,
+                  }));
+                }}
                 className="rounded-md border px-3 py-2 text-sm"
                 autoComplete="new-password"
               />
+              {createUserFieldErrors.provisionalPassword ? (
+                <p className="text-sm text-red-600">
+                  {createUserFieldErrors.provisionalPassword}
+                </p>
+              ) : null}
             </div>
 
             <button
               type="submit"
-              disabled={isCreating}
+              disabled={isCreating || !isCreateUserValid}
               className="w-full rounded-md bg-indigo-500 px-3 py-2 text-sm font-semibold text-white hover:bg-indigo-400 disabled:opacity-50 sm:w-auto"
             >
               {isCreating ? "Creating..." : "Create user"}
