@@ -1,17 +1,11 @@
 import { getManagedUsersForAccountPage } from "@/actions/admin-users";
+import { AccountProfileSection } from "@/components/account-profile-section";
 import { AdminUsersSection } from "@/components/admin-users-section";
-import { EditableAccountName } from "@/components/ui/editable-account-name";
-import { ChangePasswordForm } from "@/components/change-password-form";
-import { Accordion } from "@/components/ui/accordion";
-import {
-  deriveRole,
-  requireCurrentUser,
-  userHasAdminRole,
-} from "@/lib/auth/session";
+import { requireCurrentUser, userHasAdminRole } from "@/lib/auth/session";
 
 export const dynamic = "force-dynamic";
 
-// TODO: Close change pw accordion on success -> decompose to client component
+// TODO: Close change pw accordion on success
 
 export default async function AccountPage() {
   const user = await requireCurrentUser({ redirectTo: "/account" });
@@ -28,23 +22,7 @@ export default async function AccountPage() {
             {user.name ?? user.email ?? "your profile"}.
           </p>
         </header>
-        <section className="rounded-lg border p-4">
-          <dl className="grid gap-3 sm:grid-cols-[140px_1fr]">
-            <EditableAccountName initialName={user.name ?? null} />
-            <dt className="font-medium">Email</dt>
-            <dd>{user.email ?? "Not available"}</dd>
-            <dt className="font-medium">Role</dt>
-            <dd>{deriveRole(user).join(", ") ?? "user"}</dd>
-            <dt className="font-medium">User ID</dt>
-            <dd className="text-sm break-all text-gray-600">{user.id}</dd>
-          </dl>
-          <Accordion
-            titleNode={<h2 className="font-medium">Change Password</h2>}
-            className="border-none px-0"
-          >
-            <ChangePasswordForm />
-          </Accordion>
-        </section>
+        <AccountProfileSection user={user} />
 
         {isAdmin ? (
           <AdminUsersSection
