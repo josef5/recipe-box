@@ -5,8 +5,14 @@ import type { User } from "@/types";
 import { ChangePasswordForm } from "./change-password-form";
 import { Accordion } from "./ui/accordion";
 import { EditableAccountName } from "./ui/editable-account-name";
+import { useRef } from "react";
 
 export function AccountProfileSection({ user }: { user: User }) {
+  const accordionRef = useRef<{
+    open: () => void;
+    close: () => void;
+  }>(null);
+
   return (
     <section className="rounded-lg border p-4">
       <dl className="grid gap-3 sm:grid-cols-[140px_1fr]">
@@ -21,8 +27,13 @@ export function AccountProfileSection({ user }: { user: User }) {
       <Accordion
         titleNode={<h2 className="font-medium">Change Password</h2>}
         className="border-none px-0"
+        ref={accordionRef}
       >
-        <ChangePasswordForm />
+        <ChangePasswordForm
+          onSuccess={() => {
+            accordionRef.current?.close();
+          }}
+        />
       </Accordion>
     </section>
   );
