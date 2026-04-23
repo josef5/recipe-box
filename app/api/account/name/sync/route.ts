@@ -37,6 +37,7 @@ export async function POST(
     }
 
     const ownerDisplayName = getUserDisplayName({
+      id: user.id,
       name,
       email: user.email,
     });
