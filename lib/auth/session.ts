@@ -123,35 +123,6 @@ export function userHasAdminRole(user: unknown) {
 }
 
 /**
- * Derives the roles for a user. Supports multiple potential sources and formats for role data.
- * @param user The auth user or partial user data.
- * @returns An array of roles.
- */
-export function deriveRole(user: unknown): string[] {
-  if (!user || typeof user !== "object") return [];
-
-  const u = user as {
-    role?: unknown;
-    roles?: unknown;
-    app_metadata?: { role?: unknown; roles?: unknown };
-    user_metadata?: { role?: unknown; roles?: unknown };
-  };
-
-  const candidate =
-    u.role ??
-    u.roles ??
-    u.app_metadata?.role ??
-    u.app_metadata?.roles ??
-    u.user_metadata?.role ??
-    u.user_metadata?.roles;
-
-  if (typeof candidate === "string") return [candidate];
-  if (Array.isArray(candidate))
-    return candidate.filter((v): v is string => typeof v === "string");
-  return [];
-}
-
-/**
  * Ensures the current signed-in user has admin privileges.
  * Throws a 403 if the user is signed in but not an admin.
  * @returns The current admin user.
