@@ -1,12 +1,9 @@
 import { auth } from "@/lib/auth/server";
-import { forbidden } from "next/navigation";
-import { redirect } from "next/navigation";
+import type { User } from "@/types";
+import { forbidden, redirect } from "next/navigation";
 
 type GetSessionOptions = Parameters<typeof auth.getSession>[0];
-type UserDisplaySource = {
-  name?: string | null;
-  email?: string | null;
-};
+
 type RequireUserOptions = {
   redirectTo?: string;
 };
@@ -33,7 +30,7 @@ function toSignInPath(redirectTo?: string) {
  * Retrieves the current signed-in user from Neon Auth.
  * @returns The current user or null if no session exists.
  */
-export async function getCurrentUser() {
+export async function getCurrentUser(): Promise<User | null> {
   const { data: session } = await auth.getSession(freshSessionOptions);
   return session?.user ?? null;
 }
@@ -43,7 +40,7 @@ export async function getCurrentUser() {
  * @param user The auth user or partial user data.
  * @returns A stable display label suitable for recipe ownership UI.
  */
-export function getUserDisplayName(user: UserDisplaySource | null | undefined) {
+export function getUserDisplayName(user: User | null | undefined) {
   const trimmedName = user?.name?.trim();
 
   if (trimmedName) {
@@ -103,7 +100,7 @@ export async function requireCurrentUserId(options?: RequireUserOptions) {
  * Supports role values represented as either a string or a string array.
  * @param user The auth user or partial user data.
  */
-export function userHasAdminRole(user: unknown) {
+export function userHasAdminRole(user: User | null | undefined) {
   if (!user || typeof user !== "object" || !("role" in user)) {
     return false;
   }
