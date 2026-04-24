@@ -53,7 +53,6 @@ export function RecipeForm({
   initialValues?: RecipeFormValues;
   deleteAction?: () => void | Promise<void>;
 } & React.ComponentProps<"div">) {
-  const router = useRouter();
   const [state, formAction] = useActionState(action, null);
   const formRef = useRef<HTMLFormElement>(null);
   const [isClientValid, setIsClientValid] = useState(false);
@@ -230,13 +229,8 @@ export function RecipeForm({
   return (
     <>
       <form
-        action={async (formData) => {
-          const destination = await action(formData);
-
-          if (destination) {
-            router.push(destination);
-          }
-        }}
+        ref={formRef}
+        action={formAction}
         id="recipe-form"
         noValidate
         data-client-valid={isClientValid ? "true" : "false"}
