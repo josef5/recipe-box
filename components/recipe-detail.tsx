@@ -2,8 +2,7 @@ import Image from "next/image";
 import { EditRecipeButton } from "./ui/edit-recipe-button";
 import { FALLBACK_RECIPE_IMAGE_SRC } from "@/constants";
 
-// TODO: Calculate servings and allow users to adjust servings
-// TODO: Calculate total time prep/cooking etc
+// TODO: Calculate amounts per serving and allow users to adjust by servings
 
 type RecipeDetailData = {
   title: string;
