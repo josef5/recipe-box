@@ -24,6 +24,9 @@ function getSafeRedirectPath(redirectTo: string | null) {
 }
 
 function SignInForm() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [fieldErrors, setFieldErrors] = useState<SignInFieldErrors>({});
   const [error, setError] = useState<string | null>(null);
   const [isPending, setIsPending] = useState(false);
   const searchParams = useSearchParams();
