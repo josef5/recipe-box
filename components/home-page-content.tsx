@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { formatStableDate } from "@/lib/utils";
 import { NewRecipeButton } from "./ui/new-recipe-button";
+import { FALLBACK_RECIPE_IMAGE_SRC } from "@/constants";
 
 type HomeRecipe = {
   id: string;
@@ -70,18 +71,16 @@ function RecipeCard({ recipe }: { recipe: HomeRecipe }) {
         href={`/recipes/${recipe.slug}`}
         className="block rounded-md px-4 py-3"
       >
-        {recipe.imageUrl ? (
-          <Image
-            src={recipe.imageUrl}
-            alt={`${recipe.title} photo`}
-            width={1200}
-            height={800}
-            sizes="(max-width: 640px) 100vw, 720px"
-            unoptimized
-            loading="eager"
-            className="mb-3 max-h-56 w-full rounded-md border object-cover"
-          />
-        ) : null}
+        <Image
+          src={recipe.imageUrl ?? FALLBACK_RECIPE_IMAGE_SRC}
+          alt={`${recipe.title} photo`}
+          width={1200}
+          height={800}
+          sizes="(max-width: 640px) 100vw, 720px"
+          unoptimized
+          loading="eager"
+          className="mb-3 max-h-56 w-full rounded-md border object-cover"
+        />
         <h2>{recipe.title}</h2>
         {recipe.description ? (
           <div className="">{recipe.description}</div>
