@@ -214,7 +214,7 @@ export function AdminUsersSection({
       </p>
 
       <Accordion
-        titleNode={<h2 className="font-medium">Create new user</h2>}
+        headingNode={<h2 className="font-medium">Create new user</h2>}
         className="border-none px-0"
         ref={accordionRef}
       >

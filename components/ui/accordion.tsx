@@ -1,19 +1,24 @@
 "use client";
 
-import React, { useState, useImperativeHandle } from "react";
+import React, {
+  useState,
+  useImperativeHandle,
+  ComponentPropsWithoutRef,
+} from "react";
 import { cn } from "@/lib/utils";
 
 export function Accordion({
-  title,
-  titleNode,
+  heading,
+  headingNode,
   children,
   className,
   ref,
+  ...props
 }: {
-  title?: string;
-  titleNode?: React.ReactNode;
+  heading?: string;
+  headingNode?: React.ReactNode;
   children: React.ReactNode;
-} & React.HTMLAttributes<HTMLDivElement> &
+} & ComponentPropsWithoutRef<"div"> &
   React.RefAttributes<{
     open: () => void;
     close: () => void;
@@ -26,12 +31,12 @@ export function Accordion({
   }));
 
   return (
-    <div className={cn("rounded-lg border p-4", className)}>
+    <div className={cn("rounded-lg border p-4", className)} {...props}>
       <button onClick={() => setIsOpen((prev) => !prev)}>
-        {titleNode ? (
-          titleNode
-        ) : title ? (
-          <h2 className="text-lg font-semibold">{title}</h2>
+        {headingNode ? (
+          headingNode
+        ) : heading ? (
+          <h2 className="text-lg font-semibold">{heading}</h2>
         ) : null}
       </button>
       {isOpen && children}

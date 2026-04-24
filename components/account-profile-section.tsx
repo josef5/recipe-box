@@ -25,7 +25,7 @@ export function AccountProfileSection({ user }: { user: User }) {
         <dd className="text-sm break-all text-gray-600">{user.id}</dd>
       </dl>
       <Accordion
-        titleNode={<h2 className="font-medium">Change Password</h2>}
+        headingNode={<h2 className="font-medium">Change Password</h2>}
         className="border-none px-0"
         ref={accordionRef}
       >
