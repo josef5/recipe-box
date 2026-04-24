@@ -1,6 +1,10 @@
 import Image from "next/image";
 import { EditRecipeButton } from "./ui/edit-recipe-button";
 
+// TODO: Add fallback image
+// TODO: Calculate servings and allow users to adjust servings
+// TODO: Calculate total time prep/cooking etc
+
 type RecipeDetailData = {
   title: string;
   slug: string;
