@@ -5,7 +5,7 @@ import { ingredients, recipes, recipeIngredients, steps } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { revalidatePath, revalidateTag } from "next/cache";
 import { generateSlug } from "@/lib/slug";
-import { forbidden } from "next/navigation";
+import { forbidden, redirect } from "next/navigation";
 import { desc, ilike, or } from "drizzle-orm";
 import {
   getUserDisplayName,
@@ -40,6 +40,33 @@ export type RecipeFormData = {
     instruction: string;
   }[];
 };
+
+function getOptionalString(formData: FormData, key: string) {
+  const value = formData.get(key);
+
+  if (typeof value !== "string") {
+    return undefined;
+  }
+
+  const trimmedValue = value.trim();
+  return trimmedValue.length > 0 ? trimmedValue : undefined;
+}
+
+function getOptionalNumber(formData: FormData, key: string) {
+  const value = formData.get(key);
+
+  if (typeof value !== "string") {
+    return undefined;
+  }
+
+  const trimmedValue = value.trim();
+  if (!trimmedValue) {
+    return undefined;
+  }
+
+  const numberValue = Number(trimmedValue);
+  return Number.isFinite(numberValue) ? numberValue : undefined;
+}
 
 /**
  * Retrieves the ID of an ingredient by name. If the ingredient does not exist, it creates a new one.
@@ -137,6 +164,22 @@ async function buildRecipeFormData(
       .filter((instruction) => instruction.length > 0)
       .map((instruction, index) => ({ stepNumber: index + 1, instruction })),
   };
+}
+
+async function parseRecipeFormData(
+  formData: FormData,
+): Promise<
+  | { success: true; data: RecipeFormData }
+  | { success: false; state: RecipeFormState }
+> {
+  const validated = validateRecipeFormData(formData);
+
+  if (!validated.success) {
+    return { success: false, state: { errors: validated.errors } };
+  }
+
+  const data = await buildRecipeFormData(validated.data, formData);
+  return { success: true, data };
 }
 
 /**
@@ -292,10 +335,18 @@ export async function createRecipe(data: RecipeFormData) {
   return recipe;
 }
 
-export async function createRecipeFromForm(formData: FormData) {
-  const recipe = await createRecipe(await parseRecipeFormData(formData));
+export async function createRecipeFromForm(
+  _prevState: RecipeFormState,
+  formData: FormData,
+): Promise<RecipeFormState> {
+  const parsed = await parseRecipeFormData(formData);
 
-  return `/recipes/${recipe.slug}`;
+  if (!parsed.success) {
+    return parsed.state;
+  }
+
+  const recipe = await createRecipe(parsed.data);
+  redirect(`/recipes/${recipe.slug}`);
 }
 
 /**
@@ -379,10 +430,19 @@ export async function updateRecipe(id: string, data: RecipeFormData) {
  * @param formData The form data containing the updated recipe information.
  * @returns A Promise that resolves to the canonical recipe URL.
  */
-export async function updateRecipeFromForm(id: string, formData: FormData) {
-  const recipe = await updateRecipe(id, await parseRecipeFormData(formData));
+export async function updateRecipeFromForm(
+  id: string,
+  _prevState: RecipeFormState,
+  formData: FormData,
+): Promise<RecipeFormState> {
+  const parsed = await parseRecipeFormData(formData);
 
-  return `/recipes/${recipe.slug}`;
+  if (!parsed.success) {
+    return parsed.state;
+  }
+
+  const recipe = await updateRecipe(id, parsed.data);
+  redirect(`/recipes/${recipe.slug}`);
 }
 
 /**
