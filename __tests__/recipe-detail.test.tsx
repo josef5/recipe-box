@@ -107,5 +107,8 @@ describe("RecipeDetail", () => {
     expect(screen.queryByText(/^Serves:/)).not.toBeInTheDocument();
     expect(screen.queryByText(/^Source:/)).not.toBeInTheDocument();
     expect(screen.getByText("By Unknown cook")).toBeVisible();
+    expect(
+      screen.getByRole("img", { name: "Plain Rice photo" }),
+    ).toHaveAttribute("src", "/placeholder-1024x768.jpg");
   });
 });

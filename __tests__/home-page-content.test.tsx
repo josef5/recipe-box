@@ -58,6 +58,10 @@ describe("HomePageContent", () => {
     expect(
       screen.getByRole("img", { name: "Tomato Soup photo" }),
     ).toBeVisible();
+    expect(screen.getByRole("img", { name: "Toast photo" })).toHaveAttribute(
+      "src",
+      "/placeholder-1024x768.jpg",
+    );
     expect(screen.getByText("By Jamie Oliver")).toBeVisible();
     expect(screen.getByText("By Unknown cook")).toBeVisible();
   });
