@@ -10,6 +10,14 @@ vi.mock("next/navigation", () => ({
 }));
 
 describe("RecipeForm", () => {
+  it("defaults servings to 4 for new recipes", () => {
+    const action = vi.fn();
+
+    render(<RecipeForm action={action} ingredientSuggestions={[]} />);
+
+    expect(screen.getByLabelText("Servings")).toHaveValue(4);
+  });
+
   it("resets uncontrolled and controlled fields when remounted with a new key", () => {
     const action = vi.fn();
 

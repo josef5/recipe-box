@@ -1,5 +1,5 @@
 import { RecipeDetail } from "@/components/recipe-detail";
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 
 vi.mock("@/components/menu", () => ({
@@ -71,6 +71,7 @@ describe("RecipeDetail", () => {
     expect(screen.getByText("Prep: 25m")).toBeVisible();
     expect(screen.getByText("Cook: 35m")).toBeVisible();
     expect(screen.getByText("Serves: 8")).toBeVisible();
+    expect(screen.getByLabelText("Servings")).toHaveValue("8");
     expect(
       screen.getByRole("link", { name: "Grandma's Notes" }),
     ).toHaveAttribute("href", "https://example.com/chocolate-cake");
@@ -79,6 +80,34 @@ describe("RecipeDetail", () => {
     expect(screen.getByText("(sifted)")).toBeVisible();
     expect(screen.getByText("Mix the dry ingredients.")).toBeVisible();
     expect(screen.getByText("Bake until set.")).toBeVisible();
+
+    fireEvent.change(screen.getByLabelText("Servings"), {
+      target: { value: "4" },
+    });
+
+    expect(
+      screen.getByText((_, element) => {
+        if (!element) {
+          return false;
+        }
+
+        return (
+          element.textContent?.replace(/\s+/g, " ").trim() ===
+          "1 cups Flour (sifted)"
+        );
+      }),
+    ).toBeVisible();
+    expect(
+      screen.getByText((_, element) => {
+        if (!element) {
+          return false;
+        }
+
+        return (
+          element.textContent?.replace(/\s+/g, " ").trim() === "0.5 cup Sugar"
+        );
+      }),
+    ).toBeVisible();
   });
 
   it("omits optional metadata when it is not provided", () => {
@@ -104,7 +133,8 @@ describe("RecipeDetail", () => {
 
     expect(screen.queryByText(/^Prep:/)).not.toBeInTheDocument();
     expect(screen.queryByText(/^Cook:/)).not.toBeInTheDocument();
-    expect(screen.queryByText(/^Serves:/)).not.toBeInTheDocument();
+    expect(screen.getByText("Serves: 4")).toBeVisible();
+    expect(screen.getByLabelText("Servings")).toHaveValue("4");
     expect(screen.queryByText(/^Source:/)).not.toBeInTheDocument();
     expect(screen.getByText("By Unknown cook")).toBeVisible();
     expect(
