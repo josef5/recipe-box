@@ -281,7 +281,7 @@ export function RecipeForm({
                 id="servings"
                 name="servings"
                 type="number"
-                defaultValue={initialValues?.servings ?? ""}
+                defaultValue={initialValues?.servings ?? 4}
                 className="rounded-md border px-3 py-2 text-sm"
               />
               {state?.errors.servings && (

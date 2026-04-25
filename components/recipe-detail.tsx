@@ -1,8 +1,7 @@
 import Image from "next/image";
+import { ScaledIngredientsList } from "./scaled-ingredients-list";
 import { EditRecipeButton } from "./ui/edit-recipe-button";
 import { FALLBACK_RECIPE_IMAGE_SRC } from "@/constants";
-
-// TODO: Calculate amounts per serving and allow users to adjust by servings
 
 type RecipeDetailData = {
   title: string;
@@ -32,6 +31,8 @@ type RecipeDetailData = {
 };
 
 export function RecipeDetail({ recipe }: { recipe: RecipeDetailData }) {
+  const baseServings = recipe.servings ?? 4;
+
   return (
     <>
       <aside className="sm:col-start-2 sm:row-start-1">
@@ -56,7 +57,7 @@ export function RecipeDetail({ recipe }: { recipe: RecipeDetailData }) {
         <div>
           {recipe.prepTimeMins && <span>Prep: {recipe.prepTimeMins}m</span>}
           {recipe.cookTimeMins && <span>Cook: {recipe.cookTimeMins}m</span>}
-          {recipe.servings && <span>Serves: {recipe.servings}</span>}
+          <span>Serves: {baseServings}</span>
         </div>
         {recipe.sourceName && (
           <p>
@@ -76,16 +77,10 @@ export function RecipeDetail({ recipe }: { recipe: RecipeDetailData }) {
         )}
         <section>
           <h2>Ingredients</h2>
-          <ul>
-            {recipe.recipeIngredients.map((ri) => (
-              <li key={ri.id}>
-                {ri.amount && <span>{ri.amount}</span>}
-                {ri.unit && <span>{ri.unit}</span>}
-                <span>{ri.ingredient.name}</span>
-                {ri.notes && <span>({ri.notes})</span>}
-              </li>
-            ))}
-          </ul>
+          <ScaledIngredientsList
+            recipeIngredients={recipe.recipeIngredients}
+            baseServings={recipe.servings}
+          />
         </section>
         <section>
           <h2>Steps</h2>
