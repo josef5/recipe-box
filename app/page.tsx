@@ -3,7 +3,6 @@ import { getPublicRecipes } from "@/lib/recipes";
 
 // TODO: Add My Recipes filter toggle?
 // TODO: Main component?
-// TODO: A11y
 
 export default async function Home({
   searchParams,
