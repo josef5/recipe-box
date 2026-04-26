@@ -79,11 +79,17 @@ export function ChangePasswordForm({ onSuccess }: { onSuccess?: () => void }) {
               currentPassword: undefined,
             }));
           }}
+          aria-describedby={
+            fieldErrors.currentPassword ? "current-password-error" : undefined
+          }
+          aria-invalid={fieldErrors.currentPassword ? true : undefined}
           className="rounded-md border px-3 py-2 text-sm"
           autoComplete="current-password"
         />
         {fieldErrors.currentPassword ? (
-          <p className="text-sm text-red-600">{fieldErrors.currentPassword}</p>
+          <p id="current-password-error" className="text-sm text-red-600">
+            {fieldErrors.currentPassword}
+          </p>
         ) : null}
       </div>
 
@@ -103,16 +109,32 @@ export function ChangePasswordForm({ onSuccess }: { onSuccess?: () => void }) {
               newPassword: undefined,
             }));
           }}
+          aria-describedby={
+            fieldErrors.newPassword ? "new-password-error" : undefined
+          }
+          aria-invalid={fieldErrors.newPassword ? true : undefined}
           className="rounded-md border px-3 py-2 text-sm"
           autoComplete="new-password"
         />
         {fieldErrors.newPassword ? (
-          <p className="text-sm text-red-600">{fieldErrors.newPassword}</p>
+          <p id="new-password-error" className="text-sm text-red-600">
+            {fieldErrors.newPassword}
+          </p>
         ) : null}
       </div>
 
-      {error ? <p className="text-sm text-red-500">{error}</p> : null}
-      {success ? <p className="text-sm text-green-700">{success}</p> : null}
+      <div aria-live="polite" className="grid gap-2">
+        {error ? (
+          <p role="alert" className="text-sm text-red-500">
+            {error}
+          </p>
+        ) : null}
+        {success ? (
+          <p role="status" className="text-sm text-green-700">
+            {success}
+          </p>
+        ) : null}
+      </div>
 
       <button
         type="submit"
