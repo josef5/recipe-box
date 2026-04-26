@@ -239,6 +239,7 @@ export function RecipeForm({
       >
         {state?.errors._form && (
           <p
+            id="recipe-form-error"
             role="alert"
             className="rounded-md bg-red-50 px-4 py-3 text-sm text-red-700"
           >
@@ -254,10 +255,14 @@ export function RecipeForm({
               id="title"
               name="title"
               defaultValue={initialValues?.title ?? ""}
+              aria-describedby={state?.errors.title ? "title-error" : undefined}
+              aria-invalid={state?.errors.title ? true : undefined}
               className="rounded-md border px-3 py-2 text-sm"
             />
             {state?.errors.title && (
-              <p className="text-sm text-red-600">{state.errors.title}</p>
+              <p id="title-error" className="text-sm text-red-600">
+                {state.errors.title}
+              </p>
             )}
           </div>
           <div className="flex flex-col gap-1.5">
@@ -282,10 +287,16 @@ export function RecipeForm({
                 name="servings"
                 type="number"
                 defaultValue={initialValues?.servings ?? 4}
+                aria-describedby={
+                  state?.errors.servings ? "servings-error" : undefined
+                }
+                aria-invalid={state?.errors.servings ? true : undefined}
                 className="rounded-md border px-3 py-2 text-sm"
               />
               {state?.errors.servings && (
-                <p className="text-sm text-red-600">{state.errors.servings}</p>
+                <p id="servings-error" className="text-sm text-red-600">
+                  {state.errors.servings}
+                </p>
               )}
             </div>
             <div className="flex flex-col gap-1.5">
@@ -297,10 +308,14 @@ export function RecipeForm({
                 name="prepTimeMins"
                 type="number"
                 defaultValue={initialValues?.prepTimeMins ?? ""}
+                aria-describedby={
+                  state?.errors.prepTimeMins ? "prep-time-error" : undefined
+                }
+                aria-invalid={state?.errors.prepTimeMins ? true : undefined}
                 className="rounded-md border px-3 py-2 text-sm"
               />
               {state?.errors.prepTimeMins && (
-                <p className="text-sm text-red-600">
+                <p id="prep-time-error" className="text-sm text-red-600">
                   {state.errors.prepTimeMins}
                 </p>
               )}
@@ -314,10 +329,14 @@ export function RecipeForm({
                 name="cookTimeMins"
                 type="number"
                 defaultValue={initialValues?.cookTimeMins ?? ""}
+                aria-describedby={
+                  state?.errors.cookTimeMins ? "cook-time-error" : undefined
+                }
+                aria-invalid={state?.errors.cookTimeMins ? true : undefined}
                 className="rounded-md border px-3 py-2 text-sm"
               />
               {state?.errors.cookTimeMins && (
-                <p className="text-sm text-red-600">
+                <p id="cook-time-error" className="text-sm text-red-600">
                   {state.errors.cookTimeMins}
                 </p>
               )}
@@ -344,10 +363,16 @@ export function RecipeForm({
                 name="sourceUrl"
                 type="url"
                 defaultValue={initialValues?.sourceUrl ?? ""}
+                aria-describedby={
+                  state?.errors.sourceUrl ? "source-url-error" : undefined
+                }
+                aria-invalid={state?.errors.sourceUrl ? true : undefined}
                 className="rounded-md border px-3 py-2 text-sm"
               />
               {state?.errors.sourceUrl && (
-                <p className="text-sm text-red-600">{state.errors.sourceUrl}</p>
+                <p id="source-url-error" className="text-sm text-red-600">
+                  {state.errors.sourceUrl}
+                </p>
               )}
             </div>
           </div>
@@ -364,14 +389,28 @@ export function RecipeForm({
                 setImageUrl(event.target.value);
                 setImagePublicId("");
               }}
+              aria-describedby={
+                state?.errors.imageUrl ? "image-url-error" : "image-url-help"
+              }
+              aria-invalid={state?.errors.imageUrl ? true : undefined}
               className="rounded-md border px-3 py-2 text-sm"
             />
             <input name="imagePublicId" type="hidden" value={imagePublicId} />
-            <p className="text-xs text-gray-600">
+            <p id="image-url-help" className="text-xs text-gray-600">
               Upload to Cloudinary or paste any external image URL.
             </p>
-            <div className="flex flex-wrap items-center gap-3">
+            <div
+              aria-live="polite"
+              className="flex flex-wrap items-center gap-3"
+            >
+              <label
+                htmlFor="recipe-image-file"
+                className="text-sm font-medium"
+              >
+                Upload image file
+              </label>
               <input
+                id="recipe-image-file"
                 ref={imageInputRef}
                 type="file"
                 accept="image/*"
@@ -385,6 +424,7 @@ export function RecipeForm({
                 type="button"
                 disabled={!selectedImageFile || isUploadingImage}
                 onClick={uploadSelectedImage}
+                aria-busy={isUploadingImage}
                 className="rounded-md border px-3 py-2 text-sm disabled:cursor-not-allowed disabled:opacity-70"
               >
                 {isUploadingImage ? "Uploading..." : "Upload image"}
@@ -404,7 +444,9 @@ export function RecipeForm({
               ) : null}
             </div>
             {imageUploadError ? (
-              <p className="text-sm text-red-700">{imageUploadError}</p>
+              <p role="alert" className="text-sm text-red-700">
+                {imageUploadError}
+              </p>
             ) : null}
             {imageUrl ? (
               <Image
@@ -418,7 +460,9 @@ export function RecipeForm({
               />
             ) : null}
             {state?.errors.imageUrl && (
-              <p className="text-sm text-red-600">{state.errors.imageUrl}</p>
+              <p id="image-url-error" className="text-sm text-red-600">
+                {state.errors.imageUrl}
+              </p>
             )}
           </div>
         </section>
@@ -448,8 +492,14 @@ export function RecipeForm({
               <div key={index} className="rounded-lg border p-4">
                 <div className="grid gap-4 md:grid-cols-[2fr_1fr_1fr]">
                   <div className="flex flex-col gap-1.5">
-                    <label className="text-sm font-medium">Ingredient</label>
+                    <label
+                      htmlFor={`ingredient-name-${index}`}
+                      className="text-sm font-medium"
+                    >
+                      Ingredient
+                    </label>
                     <input
+                      id={`ingredient-name-${index}`}
                       name="ingredientName"
                       list="ingredient-suggestions"
                       value={ingredient.name}
@@ -460,8 +510,14 @@ export function RecipeForm({
                     />
                   </div>
                   <div className="flex flex-col gap-1.5">
-                    <label className="text-sm font-medium">Amount</label>
+                    <label
+                      htmlFor={`ingredient-amount-${index}`}
+                      className="text-sm font-medium"
+                    >
+                      Amount
+                    </label>
                     <input
+                      id={`ingredient-amount-${index}`}
                       name="ingredientAmount"
                       type="number"
                       value={ingredient.amount}
@@ -472,8 +528,14 @@ export function RecipeForm({
                     />
                   </div>
                   <div className="flex flex-col gap-1.5">
-                    <label className="text-sm font-medium">Unit</label>
+                    <label
+                      htmlFor={`ingredient-unit-${index}`}
+                      className="text-sm font-medium"
+                    >
+                      Unit
+                    </label>
                     <input
+                      id={`ingredient-unit-${index}`}
                       name="ingredientUnit"
                       value={ingredient.unit}
                       onChange={(event) =>
@@ -484,9 +546,15 @@ export function RecipeForm({
                   </div>
                 </div>
                 <div className="mt-4 flex flex-col gap-1.5">
-                  <label className="text-sm font-medium">Notes</label>
+                  <label
+                    htmlFor={`ingredient-notes-${index}`}
+                    className="text-sm font-medium"
+                  >
+                    Notes
+                  </label>
                   <div className="flex gap-3">
                     <input
+                      id={`ingredient-notes-${index}`}
                       name="ingredientNotes"
                       value={ingredient.notes}
                       onChange={(event) =>
@@ -505,6 +573,7 @@ export function RecipeForm({
                               ),
                         )
                       }
+                      aria-label={`Remove ingredient ${index + 1}`}
                       className="rounded-md border px-3 py-2 text-sm"
                     >
                       Remove
@@ -531,11 +600,15 @@ export function RecipeForm({
           <div className="flex flex-col gap-4">
             {steps.map((step, index) => (
               <div key={index} className="rounded-lg border p-4">
-                <label className="mb-2 block text-sm font-medium">
+                <label
+                  htmlFor={`step-instruction-${index}`}
+                  className="mb-2 block text-sm font-medium"
+                >
                   Step {index + 1}
                 </label>
                 <div className="flex gap-3">
                   <textarea
+                    id={`step-instruction-${index}`}
                     name="stepInstruction"
                     rows={3}
                     value={step.instruction}
@@ -553,6 +626,7 @@ export function RecipeForm({
                             ),
                       )
                     }
+                    aria-label={`Remove step ${index + 1}`}
                     className="h-fit rounded-md border px-3 py-2 text-sm"
                   >
                     Remove
