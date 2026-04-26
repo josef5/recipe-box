@@ -24,9 +24,29 @@ export function HomePageContent({
 }) {
   return (
     <>
+      <div className="flex flex-col gap-4 sm:col-start-1 sm:row-start-1">
+        <div className="flex items-start justify-between gap-4">
+          <h1>Recipes</h1>
+        </div>
+        {recipes.length === 0 ? (
+          <p className="text-sm text-gray-600">
+            {query ? `No recipes found for "${query}".` : "No recipes yet."}
+          </p>
+        ) : (
+          <ul className="flex flex-col gap-4">
+            {recipes.map((recipe) => (
+              <RecipeCard key={recipe.id} recipe={recipe} />
+            ))}
+          </ul>
+        )}
+      </div>
       <aside className="sm:col-start-2 sm:row-start-1">
         <form action="/" method="get" noValidate className="flex gap-2">
+          <label htmlFor="recipe-search" className="sr-only">
+            Search recipes
+          </label>
           <input
+            id="recipe-search"
             type="search"
             name="q"
             defaultValue={query}
@@ -44,22 +64,6 @@ export function HomePageContent({
         </form>
         <NewRecipeButton />
       </aside>
-      <div className="flex flex-col gap-4 sm:col-start-1 sm:row-start-1">
-        <div className="flex items-start justify-between gap-4">
-          <h1>Recipes</h1>
-        </div>
-        {recipes.length === 0 ? (
-          <p className="text-sm text-gray-600">
-            {query ? `No recipes found for "${query}".` : "No recipes yet."}
-          </p>
-        ) : (
-          <ul className="flex flex-col gap-4">
-            {recipes.map((recipe) => (
-              <RecipeCard key={recipe.id} recipe={recipe} />
-            ))}
-          </ul>
-        )}
-      </div>
     </>
   );
 }
