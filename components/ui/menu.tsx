@@ -22,9 +22,13 @@ export function Menu() {
             : "home";
 
   return (
-    <nav className="mb-8 flex items-center justify-between" data-testid="menu">
+    <nav
+      aria-label="Primary"
+      className="mb-8 flex items-center justify-between"
+      data-testid="menu"
+    >
       <Link href={"/"}>
-        <h1>Recipe Box</h1>
+        <span className="text-2xl font-bold">Recipe Box</span>
       </Link>
       {variant !== "auth" && (
         <div className="flex items-center space-x-4">
