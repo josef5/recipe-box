@@ -7,7 +7,18 @@ const eslintConfig = defineConfig([
   ...nextVitals,
   ...nextTs,
   {
-    rules: jsxA11y.flatConfigs.recommended.rules,
+    rules: {
+      ...jsxA11y.flatConfigs.recommended.rules,
+      // <dialog> has an implicit ARIA role of "dialog" (an interactive widget),
+      // but jsx-a11y doesn't recognise it as interactive. Explicitly allow the
+      // handlers needed for backdrop-click-to-close and focus-trap.
+      "jsx-a11y/no-noninteractive-element-interactions": [
+        "error",
+        {
+          dialog: ["onClick", "onKeyDown", "onKeyUp", "onKeyPress", "onToggle"],
+        },
+      ],
+    },
   },
   // Override default ignores of eslint-config-next.
   globalIgnores([
