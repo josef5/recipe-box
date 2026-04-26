@@ -1,17 +1,28 @@
 import { HomePageContent } from "@/components/home-page-content";
 import { render, screen } from "@testing-library/react";
+import { axe } from "jest-axe";
 import { describe, expect, it } from "vitest";
 
 describe("HomePageContent", () => {
   it("shows the empty-state message for a filtered search", () => {
     render(<HomePageContent recipes={[]} query="pasta" />);
     expect(screen.getByRole("heading", { name: "Recipes" })).toBeVisible();
-    expect(screen.getByRole("searchbox", { name: "" })).toHaveValue("pasta");
+    expect(
+      screen.getByRole("searchbox", { name: "Search recipes" }),
+    ).toHaveValue("pasta");
     expect(screen.getByRole("link", { name: "Clear" })).toHaveAttribute(
       "href",
       "/",
     );
     expect(screen.getByText('No recipes found for "pasta".')).toBeVisible();
+  });
+
+  it("has no accessibility violations", async () => {
+    const { container } = render(
+      <HomePageContent recipes={[]} query="pasta" />,
+    );
+
+    expect(await axe(container)).toHaveNoViolations();
   });
 
   it("renders recipe links and the default empty query state", () => {

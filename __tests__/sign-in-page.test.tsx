@@ -1,5 +1,6 @@
 import SignInPage from "@/app/auth/sign-in/page";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { axe } from "jest-axe";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const mocks = vi.hoisted(() => ({
@@ -192,5 +193,11 @@ describe("sign-in page", () => {
     });
 
     expect(submitButton).toBeEnabled();
+  });
+
+  it("has no accessibility violations", async () => {
+    const { container } = render(<SignInPage />);
+
+    expect(await axe(container)).toHaveNoViolations();
   });
 });

@@ -1,5 +1,6 @@
 import { ChangePasswordForm } from "@/components/change-password-form";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { axe } from "jest-axe";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const authMocks = vi.hoisted(() => ({
@@ -139,5 +140,11 @@ describe("change password form", () => {
     });
 
     expect(submitButton).toBeEnabled();
+  });
+
+  it("has no accessibility violations", async () => {
+    const { container } = render(<ChangePasswordForm />);
+
+    expect(await axe(container)).toHaveNoViolations();
   });
 });
