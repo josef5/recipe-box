@@ -15,7 +15,10 @@ export default async function Home({
   const recipes = await getPublicRecipes(query);
 
   return (
-    <main className="grid grid-cols-1 gap-8 sm:grid-cols-[3fr_1fr]">
+    <main
+      id="main-content"
+      className="grid grid-cols-1 gap-8 sm:grid-cols-[3fr_1fr]"
+    >
       <HomePageContent recipes={recipes} query={query} />
     </main>
   );

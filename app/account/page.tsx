@@ -11,7 +11,10 @@ export default async function AccountPage() {
   const adminUsers = isAdmin ? await getManagedUsersForAccountPage() : [];
 
   return (
-    <main className="grid items-start gap-8 sm:grid-cols-[3fr_1fr]">
+    <main
+      id="main-content"
+      className="grid items-start gap-8 sm:grid-cols-[3fr_1fr]"
+    >
       <div className="flex flex-col gap-8">
         <header className="flex flex-col gap-2">
           <h1 className="text-2xl font-bold">Account</h1>
