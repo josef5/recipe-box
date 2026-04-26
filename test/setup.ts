@@ -1,13 +1,14 @@
 import "@testing-library/jest-dom/vitest";
 
 import { cleanup } from "@testing-library/react";
+import { toHaveNoViolations } from "jest-axe";
 import {
   createElement,
   type AnchorHTMLAttributes,
   type ImgHTMLAttributes,
   type ReactNode,
 } from "react";
-import { afterEach, vi } from "vitest";
+import { afterEach, expect, vi } from "vitest";
 
 Object.defineProperty(HTMLDialogElement.prototype, "showModal", {
   configurable: true,
@@ -73,3 +74,7 @@ afterEach(() => {
   cleanup();
   vi.unstubAllGlobals();
 });
+
+expect.extend(
+  toHaveNoViolations as unknown as Parameters<typeof expect.extend>[0],
+);
