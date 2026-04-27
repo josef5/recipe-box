@@ -1,5 +1,6 @@
 import { db } from "@/db";
 import { recipes } from "@/db/schema";
+import { Recipe } from "@/types";
 import { desc, eq, ilike, or } from "drizzle-orm";
 import { unstable_cache } from "next/cache";
 
@@ -13,7 +14,7 @@ export const RECIPE_PAGE_REVALIDATE_SECONDS = 300;
  * @returns A list of public recipes matching the search criteria, ordered by creation date.
  */
 export const getPublicRecipes = unstable_cache(
-  async (query?: string) => {
+  async (query?: string): Promise<Recipe[]> => {
     const trimmedQuery = query?.trim();
 
     if (!trimmedQuery) {
@@ -43,7 +44,7 @@ export const getPublicRecipes = unstable_cache(
  * @returns The recipe matching the slug, or null if not found. Includes related ingredients and steps.
  */
 export const getPublicRecipeBySlug = unstable_cache(
-  async (slug: string) => {
+  async (slug: string): Promise<Recipe | null | undefined> => {
     return db.query.recipes.findFirst({
       where: eq(recipes.slug, slug),
       with: {
