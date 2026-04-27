@@ -1,14 +1,15 @@
 import {
-  DeleteButton,
-  RecipeForm,
-  SubmitButton,
-} from "@/components/recipe-form";
-import {
   deleteRecipeFromForm,
   getIngredients,
   getRecipeBySlug,
   updateRecipeFromForm,
 } from "@/actions/recipes";
+import Main from "@/components/main";
+import {
+  DeleteButton,
+  RecipeForm,
+  SubmitButton,
+} from "@/components/recipe-form";
 import { HistoryBackButton } from "@/components/ui/history-back-button";
 import { requireCurrentUser, userHasAdminRole } from "@/lib/auth/session";
 import { notFound } from "next/navigation";
@@ -38,10 +39,7 @@ export default async function EditRecipePage({
   const deleteAction = deleteRecipeFromForm.bind(null, recipe.id);
 
   return (
-    <main
-      id="main-content"
-      className="grid items-start gap-8 sm:grid-cols-[3fr_1fr]"
-    >
+    <Main>
       <div className="space-y-2 sm:col-start-1 sm:row-start-1">
         <h1 className="text-2xl font-bold">Edit recipe</h1>
         <p className="text-sm text-gray-600">
@@ -83,6 +81,6 @@ export default async function EditRecipePage({
         </HistoryBackButton>
         <DeleteButton action={deleteAction} />
       </aside>
-    </main>
+    </Main>
   );
 }

@@ -1,4 +1,5 @@
 import { HomePageContent } from "@/components/home-page-content";
+import Main from "@/components/main";
 import { getPublicRecipes } from "@/lib/recipes";
 
 // TODO: Add My Recipes filter toggle?
@@ -14,11 +15,8 @@ export default async function Home({
   const recipes = await getPublicRecipes(query);
 
   return (
-    <main
-      id="main-content"
-      className="grid grid-cols-1 gap-8 sm:grid-cols-[3fr_1fr]"
-    >
+    <Main>
       <HomePageContent recipes={recipes} query={query} />
-    </main>
+    </Main>
   );
 }

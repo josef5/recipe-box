@@ -1,3 +1,4 @@
+import Main from "@/components/main";
 import { RecipeDetail } from "@/components/recipe-detail";
 import { getPublicRecipeBySlug, getRecipeSlugs } from "@/lib/recipes";
 import { notFound } from "next/navigation";
@@ -22,8 +23,8 @@ export default async function RecipePage({
   if (!recipe) notFound();
 
   return (
-    <main id="main-content" className="grid gap-8 sm:grid-cols-[3fr_1fr]">
+    <Main>
       <RecipeDetail recipe={recipe} />
-    </main>
+    </Main>
   );
 }

@@ -1,5 +1,6 @@
 "use client";
 
+import Main from "@/components/main";
 import { authClient } from "@/lib/auth/client";
 import {
   SignInSchema,
@@ -66,10 +67,7 @@ function SignInForm() {
   }
 
   return (
-    <main
-      id="main-content"
-      className="flex min-h-screen flex-col items-center justify-center gap-5"
-    >
+    <Main>
       <form
         action={handleSubmit}
         noValidate
@@ -150,7 +148,7 @@ function SignInForm() {
           {isPending ? "Signing in..." : "Sign in"}
         </button>
       </form>
-    </main>
+    </Main>
   );
 }
 
