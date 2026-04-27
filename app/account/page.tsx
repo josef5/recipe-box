@@ -3,15 +3,15 @@ import { AccountProfileSection } from "@/components/account-profile-section";
 import { AdminUsersSection } from "@/components/admin-users-section";
 import Main from "@/components/main";
 import { requireCurrentUser, userHasAdminRole } from "@/lib/auth/session";
+import { getPublicRecipes } from "@/lib/recipes";
 
 export const dynamic = "force-dynamic";
-
-// TODO: List users recipes
 
 export default async function AccountPage() {
   const user = await requireCurrentUser({ redirectTo: "/account" });
   const isAdmin = userHasAdminRole(user);
   const adminUsers = isAdmin ? await getManagedUsersForAccountPage() : [];
+  const recipes = await getPublicRecipes();
 
   return (
     <Main>
@@ -23,7 +23,7 @@ export default async function AccountPage() {
             {user.name ?? user.email ?? "your profile"}.
           </p>
         </header>
-        <AccountProfileSection user={user} />
+        <AccountProfileSection user={user} recipes={recipes} />
 
         {isAdmin ? (
           <AdminUsersSection

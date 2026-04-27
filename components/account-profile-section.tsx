@@ -1,13 +1,20 @@
 "use client";
 
 import { getRoles } from "@/lib/auth/roles";
-import type { User } from "@/types";
+import type { User, Recipe } from "@/types";
 import { ChangePasswordForm } from "./change-password-form";
 import { Accordion } from "./ui/accordion";
 import { EditableAccountName } from "./ui/editable-account-name";
 import { useRef } from "react";
+import Link from "next/link";
 
-export function AccountProfileSection({ user }: { user: User }) {
+export function AccountProfileSection({
+  user,
+  recipes = [],
+}: {
+  user: User;
+  recipes: Recipe[];
+}) {
   const accordionRef = useRef<{
     open: () => void;
     close: () => void;
@@ -35,6 +42,18 @@ export function AccountProfileSection({ user }: { user: User }) {
           }}
         />
       </Accordion>
+      {recipes.length > 0 ? (
+        <div className="mt-6">
+          <h2 className="font-medium">Your Recipes</h2>
+          <ul className="list-inside list-disc">
+            {recipes.map((recipe) => (
+              <li key={recipe.id}>
+                <Link href={`/recipes/${recipe.slug}`}>{recipe.title}</Link>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ) : null}
     </section>
   );
 }
