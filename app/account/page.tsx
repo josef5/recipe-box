@@ -6,6 +6,8 @@ import { requireCurrentUser, userHasAdminRole } from "@/lib/auth/session";
 
 export const dynamic = "force-dynamic";
 
+// TODO: List users recipes
+
 export default async function AccountPage() {
   const user = await requireCurrentUser({ redirectTo: "/account" });
   const isAdmin = userHasAdminRole(user);

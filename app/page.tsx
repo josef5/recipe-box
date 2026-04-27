@@ -2,8 +2,9 @@ import { HomePageContent } from "@/components/home-page-content";
 import Main from "@/components/main";
 import { getPublicRecipes } from "@/lib/recipes";
 
-// TODO: Add My Recipes filter toggle?
-// TODO: Main component?
+// TODO: Use Suspense etc
+// TODO: Use error boundaries
+// TODO: Image caching?
 
 export default async function Home({
   searchParams,
