@@ -1,22 +1,13 @@
 "use client";
 
 import { useMemo, useState } from "react";
-
-type RecipeIngredient = {
-  id: string;
-  amount: string | null;
-  unit: string | null;
-  notes: string | null;
-  ingredient: {
-    name: string;
-  };
-};
+import { RecipeIngredient } from "@/types";
 
 const DEFAULT_SERVINGS = 4;
 const MIN_DROPDOWN_SERVINGS = 1;
 const MAX_DROPDOWN_SERVINGS = 16;
 
-function normalizeBaseServings(servings: number | null) {
+function normalizeBaseServings(servings: number | null | undefined) {
   if (!servings || servings < 1) {
     return DEFAULT_SERVINGS;
   }
@@ -36,8 +27,8 @@ function formatScaledAmount(value: number) {
 
 function scaleIngredientAmount(
   amount: string | null,
-  selectedServings: number,
-  baseServings: number,
+  baseServings: number | null | undefined,
+  selectedServings?: number,
 ) {
   if (!amount) {
     return null;
@@ -49,15 +40,18 @@ function scaleIngredientAmount(
     return amount;
   }
 
-  return formatScaledAmount((parsedAmount * selectedServings) / baseServings);
+  return formatScaledAmount(
+    (parsedAmount * (selectedServings ?? baseServings ?? DEFAULT_SERVINGS)) /
+      (baseServings ?? DEFAULT_SERVINGS),
+  );
 }
 
 export function ScaledIngredientsList({
   recipeIngredients,
   baseServings,
 }: {
-  recipeIngredients: RecipeIngredient[];
-  baseServings: number | null;
+  recipeIngredients?: RecipeIngredient[];
+  baseServings: number | null | undefined;
 }) {
   const normalizedBaseServings = normalizeBaseServings(baseServings);
   const [selectedServings, setSelectedServings] = useState(
@@ -100,11 +94,11 @@ export function ScaledIngredientsList({
         </select>
       </div>
       <ul>
-        {recipeIngredients.map((recipeIngredient) => {
+        {recipeIngredients?.map((recipeIngredient) => {
           const scaledAmount = scaleIngredientAmount(
             recipeIngredient.amount,
-            selectedServings,
             normalizedBaseServings,
+            selectedServings,
           );
 
           return (

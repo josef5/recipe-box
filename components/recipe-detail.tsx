@@ -2,35 +2,9 @@ import Image from "next/image";
 import { ScaledIngredientsList } from "./scaled-ingredients-list";
 import { EditRecipeButton } from "./ui/edit-recipe-button";
 import { FALLBACK_RECIPE_IMAGE_SRC } from "@/constants";
+import { Recipe } from "@/types";
 
-type RecipeDetailData = {
-  title: string;
-  slug: string;
-  description: string | null;
-  imageUrl: string | null;
-  ownerDisplayName: string | null;
-  userId: string | null;
-  prepTimeMins: number | null;
-  cookTimeMins: number | null;
-  servings: number | null;
-  sourceName: string | null;
-  sourceUrl: string | null;
-  recipeIngredients: Array<{
-    id: string;
-    amount: string | null;
-    unit: string | null;
-    notes: string | null;
-    ingredient: {
-      name: string;
-    };
-  }>;
-  steps: Array<{
-    id: string;
-    instruction: string;
-  }>;
-};
-
-export function RecipeDetail({ recipe }: { recipe: RecipeDetailData }) {
+export function RecipeDetail({ recipe }: { recipe: Recipe }) {
   const baseServings = recipe.servings ?? 4;
 
   return (
@@ -85,9 +59,10 @@ export function RecipeDetail({ recipe }: { recipe: RecipeDetailData }) {
         <section>
           <h2>Steps</h2>
           <ol>
-            {recipe.steps.map((step) => (
-              <li key={step.id}>{step.instruction}</li>
-            ))}
+            {recipe.steps &&
+              recipe.steps.map((step) => (
+                <li key={step.id}>{step.instruction}</li>
+              ))}
           </ol>
         </section>
       </div>
