@@ -50,7 +50,7 @@ export function ScaledIngredientsList({
   recipeIngredients,
   baseServings,
 }: {
-  recipeIngredients?: RecipeIngredient[];
+  recipeIngredients: RecipeIngredient[];
   baseServings: number | null | undefined;
 }) {
   const normalizedBaseServings = normalizeBaseServings(baseServings);
@@ -94,7 +94,7 @@ export function ScaledIngredientsList({
         </select>
       </div>
       <ul>
-        {recipeIngredients?.map((recipeIngredient) => {
+        {recipeIngredients.map((recipeIngredient) => {
           const scaledAmount = scaleIngredientAmount(
             recipeIngredient.amount,
             normalizedBaseServings,
