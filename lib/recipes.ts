@@ -14,12 +14,21 @@ export const RECIPE_PAGE_REVALIDATE_SECONDS = 300;
  * @returns A list of public recipes matching the search criteria, ordered by creation date.
  */
 export const getPublicRecipes = unstable_cache(
-  async (query?: string): Promise<Recipe[]> => {
+  async (query?: string) => {
     const trimmedQuery = query?.trim();
 
     if (!trimmedQuery) {
       return db.query.recipes.findMany({
         orderBy: desc(recipes.createdAt),
+        with: {
+          recipeIngredients: {
+            with: { ingredient: true },
+            orderBy: (ri, { asc }) => [asc(ri.sortOrder)],
+          },
+          steps: {
+            orderBy: (step, { asc }) => [asc(step.stepNumber)],
+          },
+        },
       });
     }
 
@@ -29,6 +38,15 @@ export const getPublicRecipes = unstable_cache(
         ilike(recipes.description, `%${trimmedQuery}%`),
       ),
       orderBy: desc(recipes.createdAt),
+      with: {
+        recipeIngredients: {
+          with: { ingredient: true },
+          orderBy: (ri, { asc }) => [asc(ri.sortOrder)],
+        },
+        steps: {
+          orderBy: (step, { asc }) => [asc(step.stepNumber)],
+        },
+      },
     });
   },
   ["public-recipes"],
