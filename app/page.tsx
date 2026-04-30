@@ -4,7 +4,6 @@ import { getPublicRecipes } from "@/lib/recipes";
 
 // TODO: Use Suspense etc
 // TODO: Use error boundaries
-// TODO: Image caching?
 
 export default async function Home({
   searchParams,
