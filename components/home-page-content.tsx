@@ -1,25 +1,15 @@
+import { FALLBACK_RECIPE_IMAGE_SRC } from "@/constants";
+import { formatStableDate } from "@/lib/utils";
+import { Recipe } from "@/types";
 import Image from "next/image";
 import Link from "next/link";
-import { formatStableDate } from "@/lib/utils";
 import { NewRecipeButton } from "./ui/new-recipe-button";
-import { FALLBACK_RECIPE_IMAGE_SRC } from "@/constants";
-
-type HomeRecipe = {
-  id: string;
-  slug: string;
-  title: string;
-  description: string | null;
-  imageUrl: string | null;
-  ownerDisplayName: string | null;
-  createdAt: Date | string | number;
-  updatedAt: Date;
-};
 
 export function HomePageContent({
   recipes,
   query,
 }: {
-  recipes: HomeRecipe[];
+  recipes: Recipe[];
   query: string;
 }) {
   return (
@@ -68,7 +58,7 @@ export function HomePageContent({
   );
 }
 
-function RecipeCard({ recipe }: { recipe: HomeRecipe }) {
+function RecipeCard({ recipe }: { recipe: Recipe }) {
   return (
     <li key={recipe.id} className="rounded-md border border-white">
       <Link
