@@ -24,7 +24,6 @@ export function RecipeDetail({ recipe }: { recipe: Recipe }) {
           width={1600}
           height={1066}
           sizes="(max-width: 640px) 100vw, 900px"
-          unoptimized
           className="mt-3 max-h-112 w-full rounded-md border object-cover"
         />
         {recipe.description && <p>{recipe.description}</p>}
