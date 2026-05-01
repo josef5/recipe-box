@@ -3,7 +3,6 @@ import Main from "@/components/main";
 import { getPublicRecipes } from "@/lib/recipes";
 
 // TODO: Use Suspense etc
-// TODO: Use error boundaries
 
 export default async function Home({
   searchParams,
