@@ -1,31 +1,30 @@
 import { HomePageContent } from "@/components/home-page-content";
-import { act, render, screen } from "@testing-library/react";
+import { createFulfilledThenable } from "@/test/fulfilled-thenable";
+import { render, screen } from "@testing-library/react";
 import { axe } from "jest-axe";
-import { Suspense } from "react";
 import { describe, expect, it } from "vitest";
 
-async function renderHomePageContent(
-  recipesPromise: Promise<Parameters<typeof HomePageContent>[0]["recipesPromise"] extends Promise<infer T> ? T : never>,
-  query: string,
-) {
-  let renderResult: ReturnType<typeof render> | null = null;
+type HomePageRecipes =
+  Parameters<typeof HomePageContent>[0]["recipesPromise"] extends Promise<
+    infer T
+  >
+    ? T
+    : never;
 
-  await act(async () => {
-    renderResult = render(
-      <Suspense fallback={<div>Loading recipes...</div>}>
-        <HomePageContent recipesPromise={recipesPromise} query={query} />
-      </Suspense>,
-    );
-  });
-
-  return renderResult;
+function renderHomePageContent(recipes: HomePageRecipes, query: string) {
+  return render(
+    <HomePageContent
+      recipesPromise={createFulfilledThenable(recipes)}
+      query={query}
+    />,
+  );
 }
 
 describe("HomePageContent", () => {
-  it("shows the empty-state message for a filtered search", async () => {
-    await renderHomePageContent(Promise.resolve([]), "pasta");
-    
-    expect(await screen.findByRole("heading", { name: "Recipes" })).toBeVisible();
+  it("shows the empty-state message for a filtered search", () => {
+    renderHomePageContent([], "pasta");
+
+    expect(screen.getByRole("heading", { name: "Recipes" })).toBeVisible();
     expect(
       screen.getByRole("searchbox", { name: "Search recipes" }),
     ).toHaveValue("pasta");
@@ -37,17 +36,15 @@ describe("HomePageContent", () => {
   });
 
   it("has no accessibility violations", async () => {
-    const renderResult = await renderHomePageContent(Promise.resolve([]), "pasta");
-    if (!renderResult) throw new Error("Render result is null");
+    const renderResult = renderHomePageContent([], "pasta");
     const { container } = renderResult;
-    await screen.findByRole("heading", { name: "Recipes" });
 
     expect(await axe(container)).toHaveNoViolations();
   });
 
-  it("renders recipe links and the default empty query state", async () => {
-    await renderHomePageContent(
-      Promise.resolve([
+  it("renders recipe links and the default empty query state", () => {
+    renderHomePageContent(
+      [
         {
           id: "recipe-1",
           slug: "tomato-soup",
@@ -74,11 +71,9 @@ describe("HomePageContent", () => {
           recipeIngredients: [],
           steps: [],
         },
-      ]),
+      ],
       "",
     );
-
-    await screen.findByRole("link", { name: /Tomato Soup/i });
 
     expect(
       screen.queryByRole("link", { name: "Clear" }),

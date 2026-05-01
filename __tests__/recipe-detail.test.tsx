@@ -1,18 +1,7 @@
 import { RecipeDetail } from "@/components/recipe-detail";
+import { createFulfilledThenable } from "@/test/fulfilled-thenable";
 import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
-
-function createFulfilledThenable<T>(value: T): Promise<T> {
-  const thenable = Promise.resolve(value) as Promise<T> & {
-    status?: "fulfilled";
-    value?: T;
-  };
-
-  thenable.status = "fulfilled";
-  thenable.value = value;
-
-  return thenable;
-}
 
 vi.mock("@/components/menu", () => ({
   Menu: ({ variant }: { variant: string }) => (
