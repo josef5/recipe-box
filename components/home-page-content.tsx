@@ -3,15 +3,18 @@ import { formatStableDate } from "@/lib/utils";
 import { Recipe } from "@/types";
 import Image from "next/image";
 import Link from "next/link";
+import { use } from "react";
 import { NewRecipeButton } from "./ui/new-recipe-button";
 
 export function HomePageContent({
-  recipes,
+  recipesPromise,
   query,
 }: {
-  recipes: Recipe[];
+  recipesPromise: Promise<Recipe[]>;
   query: string;
 }) {
+  const recipes = use(recipesPromise);
+
   return (
     <>
       <div className="flex flex-col gap-4 sm:col-start-1 sm:row-start-1">

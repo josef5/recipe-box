@@ -1,8 +1,7 @@
 import { HomePageContent } from "@/components/home-page-content";
 import Main from "@/components/main";
 import { getPublicRecipes } from "@/lib/recipes";
-
-// TODO: Use Suspense etc
+import { Suspense } from "react";
 
 export default async function Home({
   searchParams,
@@ -11,11 +10,13 @@ export default async function Home({
 }) {
   const params = searchParams ? await searchParams : undefined;
   const query = params?.q?.trim() ?? "";
-  const recipes = await getPublicRecipes(query);
+  const recipesPromise = getPublicRecipes(query);
 
   return (
     <Main>
-      <HomePageContent recipes={recipes} query={query} />
+      <Suspense fallback={<p>Loading recipes...</p>}>
+        <HomePageContent recipesPromise={recipesPromise} query={query} />
+      </Suspense>
     </Main>
   );
 }
