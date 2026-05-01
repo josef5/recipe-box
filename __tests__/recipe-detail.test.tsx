@@ -2,6 +2,18 @@ import { RecipeDetail } from "@/components/recipe-detail";
 import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 
+function createFulfilledThenable<T>(value: T): Promise<T> {
+  const thenable = Promise.resolve(value) as Promise<T> & {
+    status?: "fulfilled";
+    value?: T;
+  };
+
+  thenable.status = "fulfilled";
+  thenable.value = value;
+
+  return thenable;
+}
+
 vi.mock("@/components/menu", () => ({
   Menu: ({ variant }: { variant: string }) => (
     <div data-testid="menu">{variant}</div>
@@ -12,7 +24,8 @@ describe("RecipeDetail", () => {
   it("renders recipe metadata, ingredients, and steps", () => {
     render(
       <RecipeDetail
-        recipe={{
+        recipePromise={createFulfilledThenable({
+          id: "recipe-1",
           title: "Chocolate Cake",
           slug: "chocolate-cake",
           userId: "user-1",
@@ -24,6 +37,8 @@ describe("RecipeDetail", () => {
           servings: 8,
           sourceName: "Grandma's Notes",
           sourceUrl: "https://example.com/chocolate-cake",
+          createdAt: new Date(),
+          updatedAt: new Date(),
           recipeIngredients: [
             {
               id: "ingredient-1",
@@ -48,13 +63,17 @@ describe("RecipeDetail", () => {
             {
               id: "step-1",
               instruction: "Mix the dry ingredients.",
+              recipeId: "recipe-1",
+              stepNumber: 1,
             },
             {
               id: "step-2",
               instruction: "Bake until set.",
+              recipeId: "recipe-1",
+              stepNumber: 2,
             },
           ],
-        }}
+        })}
       />,
     );
 
@@ -113,7 +132,8 @@ describe("RecipeDetail", () => {
   it("omits optional metadata when it is not provided", () => {
     render(
       <RecipeDetail
-        recipe={{
+        recipePromise={createFulfilledThenable({
+          id: "recipe-2",
           title: "Plain Rice",
           slug: "plain-rice",
           userId: null,
@@ -127,7 +147,9 @@ describe("RecipeDetail", () => {
           sourceUrl: null,
           recipeIngredients: [],
           steps: [],
-        }}
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        })}
       />,
     );
 
