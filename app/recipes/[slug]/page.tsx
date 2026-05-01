@@ -1,7 +1,7 @@
 import Main from "@/components/main";
 import { RecipeDetail } from "@/components/recipe-detail";
 import { getPublicRecipeBySlug, getRecipeSlugs } from "@/lib/recipes";
-import { notFound } from "next/navigation";
+import { Suspense } from "react";
 
 export const dynamic = "force-static";
 export const revalidate = 300;
@@ -18,13 +18,13 @@ export default async function RecipePage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const recipe = await getPublicRecipeBySlug(slug);
-
-  if (!recipe) notFound();
+  const recipePromise = getPublicRecipeBySlug(slug);
 
   return (
     <Main>
-      <RecipeDetail recipe={recipe} />
+      <Suspense fallback={<p>Loading recipe...</p>}>
+        <RecipeDetail recipePromise={recipePromise} />
+      </Suspense>
     </Main>
   );
 }

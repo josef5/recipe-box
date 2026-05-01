@@ -1,10 +1,19 @@
-import Image from "next/image";
-import { ScaledIngredientsList } from "./scaled-ingredients-list";
-import { EditRecipeButton } from "./ui/edit-recipe-button";
 import { FALLBACK_RECIPE_IMAGE_SRC } from "@/constants";
 import { Recipe } from "@/types";
+import Image from "next/image";
+import { notFound } from "next/navigation";
+import { use } from "react";
+import { ScaledIngredientsList } from "./scaled-ingredients-list";
+import { EditRecipeButton } from "./ui/edit-recipe-button";
 
-export function RecipeDetail({ recipe }: { recipe: Recipe }) {
+export function RecipeDetail({
+  recipePromise,
+}: {
+  recipePromise: Promise<Recipe | null | undefined>;
+}) {
+  const recipe = use(recipePromise);
+  if (!recipe) notFound();
+
   const baseServings = recipe.servings ?? 4;
 
   return (
