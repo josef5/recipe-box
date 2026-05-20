@@ -63,7 +63,7 @@ export function HomePageContent({
 
 function RecipeCard({ recipe }: { recipe: Recipe }) {
   return (
-    <li key={recipe.id} className="rounded-md border border-white">
+    <li key={recipe.id} className="bg-surface rounded-md">
       <Link
         href={`/recipes/${recipe.slug}`}
         className="block rounded-md px-4 py-3"
