@@ -24,11 +24,11 @@ export function Menu() {
   return (
     <nav
       aria-label="Primary"
-      className="mb-8 flex items-center justify-between"
+      className="my-6 flex items-center justify-between font-bold"
       data-testid="menu"
     >
       <Link href={"/"}>
-        <span className="text-2xl font-bold">Recipe Box</span>
+        <span className="text-2xl">Recipe Box</span>
       </Link>
       {variant !== "auth" && (
         <div className="flex items-center space-x-4">
