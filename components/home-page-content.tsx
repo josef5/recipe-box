@@ -63,7 +63,7 @@ export function HomePageContent({
 
 function RecipeCard({ recipe }: { recipe: Recipe }) {
   return (
-    <li key={recipe.id} className="bg-surface rounded-4xl">
+    <li key={recipe.id} className="bg-surface rounded-3xl drop-shadow-lg">
       <Link href={`/recipes/${recipe.slug}`} className="block p-4">
         <Image
           src={recipe.imageUrl ?? FALLBACK_RECIPE_IMAGE_SRC}
@@ -72,13 +72,13 @@ function RecipeCard({ recipe }: { recipe: Recipe }) {
           height={800}
           sizes="(max-width: 640px) 100vw, 720px"
           loading="eager"
-          className="mb-6 max-h-56 w-full rounded-lg border object-cover"
+          className="mb-3 h-61 w-full rounded-lg border object-cover"
         />
         <h2 className="mb-2 font-bold">{recipe.title}</h2>
         {recipe.description ? (
           <div className="mb-4 text-xs">{recipe.description}</div>
         ) : null}
-        <div className="mb-2 flex gap-4 text-xs">
+        <div className="text-foreground-muted mb-3 flex gap-4 text-xs">
           <p className="">By {recipe.ownerDisplayName ?? "Unknown cook"}</p>
           <p className="">Created: {formatStableDate(recipe.createdAt)}</p>
         </div>
