@@ -35,25 +35,33 @@ export function HomePageContent({
       </div>
       <aside className="sm:col-start-2 sm:row-start-1">
         <form action="/" method="get" noValidate className="flex gap-2">
-          <label htmlFor="recipe-search" className="sr-only">
-            Search recipes
-          </label>
-          <input
-            id="recipe-search"
-            type="search"
-            name="q"
-            defaultValue={query}
-            placeholder="Search recipes"
-            className="w-full rounded-md border px-3 py-2"
-          />
-          <button type="submit" className="rounded-md border px-4 py-2">
-            Search
-          </button>
-          {query ? (
-            <Link href="/" className="rounded-md border px-4 py-2">
-              Clear
-            </Link>
-          ) : null}
+          <div className="mt-10 flex flex-col gap-2 text-sm">
+            <label htmlFor="recipe-search" className="sr-only">
+              Search recipes
+            </label>
+            <input
+              id="recipe-search"
+              type="search"
+              name="q"
+              defaultValue={query}
+              placeholder="Search recipes"
+              className="bg-surface text-foreground placeholder:text-foreground-muted focus:ring-foreground w-full rounded-md px-3 py-2 focus:ring-1 focus:ring-offset-2 focus:outline-none"
+            />
+            <button
+              type="submit"
+              className="bg-foreground text-surface rounded-md px-8 py-2 font-bold"
+            >
+              Search
+            </button>
+            {query ? (
+              <Link
+                href="/"
+                className="bg-foreground text-surface rounded-md px-8 py-2 text-sm font-bold"
+              >
+                Clear
+              </Link>
+            ) : null}
+          </div>
         </form>
         <NewRecipeButton />
       </aside>
