@@ -33,7 +33,7 @@ export function HomePageContent({
           </ul>
         )}
       </div>
-      <aside className="sm:col-start-2 sm:row-start-1">
+      <aside className="flex flex-col gap-2 sm:col-start-2 sm:row-start-1">
         <form action="/" method="get" noValidate className="flex gap-2">
           <div className="mt-10 flex flex-col gap-2 text-sm">
             <label htmlFor="recipe-search" className="sr-only">
@@ -45,22 +45,24 @@ export function HomePageContent({
               name="q"
               defaultValue={query}
               placeholder="Search recipes"
-              className="bg-surface text-foreground placeholder:text-foreground-muted focus:ring-foreground w-full rounded-md px-3 py-2 focus:ring-1 focus:ring-offset-2 focus:outline-none"
+              className="bg-surface text-foreground placeholder:text-foreground-muted focus:ring-foreground rounded-md px-3 py-2 focus:ring-1 focus:ring-offset-2 focus:outline-none"
             />
-            <button
-              type="submit"
-              className="bg-foreground text-surface rounded-md px-8 py-2 font-bold"
-            >
-              Search
-            </button>
-            {query ? (
-              <Link
-                href="/"
-                className="bg-foreground text-surface rounded-md px-8 py-2 text-sm font-bold"
+            <div className="flex gap-2">
+              <button
+                type="submit"
+                className="bg-foreground text-surface rounded-md px-8 py-2 font-bold"
               >
-                Clear
-              </Link>
-            ) : null}
+                Search
+              </button>
+              {query ? (
+                <Link
+                  href="/"
+                  className="bg-foreground text-surface flex items-center justify-center rounded-md px-8 py-2 text-sm font-bold"
+                >
+                  Clear
+                </Link>
+              ) : null}
+            </div>
           </div>
         </form>
         <NewRecipeButton />
