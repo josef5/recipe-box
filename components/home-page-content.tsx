@@ -19,7 +19,7 @@ export function HomePageContent({
     <>
       <div className="flex flex-col gap-4 sm:col-start-1 sm:row-start-1">
         <div className="flex items-start justify-between gap-4">
-          <h1>Recipes</h1>
+          <h1 className="font-bold">Recipes</h1>
         </div>
         {recipes.length === 0 ? (
           <p className="text-sm text-gray-600">
