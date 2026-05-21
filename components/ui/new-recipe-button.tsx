@@ -11,13 +11,11 @@ export function NewRecipeButton() {
   }
 
   return (
-    <div className="flex items-center gap-3">
-      <Link
-        href="/recipes/new"
-        className="rounded-md border px-4 py-2 text-sm font-medium"
-      >
-        New Recipe
-      </Link>
-    </div>
+    <Link
+      href="/recipes/new"
+      className="flex items-center justify-center gap-3 rounded-md border px-8 py-2 text-sm font-medium"
+    >
+      New Recipe
+    </Link>
   );
 }
