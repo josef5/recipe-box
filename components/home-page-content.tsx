@@ -63,11 +63,8 @@ export function HomePageContent({
 
 function RecipeCard({ recipe }: { recipe: Recipe }) {
   return (
-    <li key={recipe.id} className="bg-surface rounded-md">
-      <Link
-        href={`/recipes/${recipe.slug}`}
-        className="block rounded-md px-4 py-3"
-      >
+    <li key={recipe.id} className="bg-surface rounded-4xl">
+      <Link href={`/recipes/${recipe.slug}`} className="block p-4">
         <Image
           src={recipe.imageUrl ?? FALLBACK_RECIPE_IMAGE_SRC}
           alt={`${recipe.title} photo`}
@@ -75,14 +72,16 @@ function RecipeCard({ recipe }: { recipe: Recipe }) {
           height={800}
           sizes="(max-width: 640px) 100vw, 720px"
           loading="eager"
-          className="mb-3 max-h-56 w-full rounded-md border object-cover"
+          className="mb-6 max-h-56 w-full rounded-lg border object-cover"
         />
-        <h2>{recipe.title}</h2>
+        <h2 className="mb-2 font-bold">{recipe.title}</h2>
         {recipe.description ? (
-          <div className="">{recipe.description}</div>
+          <div className="mb-4 text-xs">{recipe.description}</div>
         ) : null}
-        <div className="">By {recipe.ownerDisplayName ?? "Unknown cook"}</div>
-        <div>Created: {formatStableDate(recipe.createdAt)}</div>
+        <div className="mb-2 flex gap-4 text-xs">
+          <p className="">By {recipe.ownerDisplayName ?? "Unknown cook"}</p>
+          <p className="">Created: {formatStableDate(recipe.createdAt)}</p>
+        </div>
       </Link>
     </li>
   );
