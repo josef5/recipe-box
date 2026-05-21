@@ -3,12 +3,14 @@
 :root {
   --background: hsl(0, 0%, 85%);
   --foreground: hsl(0, 0%, 25%);
+  --foreground-muted: hsl(0, 0%, 50%);
   --surface: hsl(0, 0%, 100%);
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-foreground-muted: var(--foreground-muted);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
   --color-surface: var(--surface);
