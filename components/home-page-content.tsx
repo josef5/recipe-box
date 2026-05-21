@@ -17,7 +17,7 @@ export function HomePageContent({
 
   return (
     <>
-      <div className="flex flex-col gap-4 sm:col-start-1 sm:row-start-1">
+      <div className="mb-24 flex flex-col gap-4 sm:col-start-1 sm:row-start-1">
         <div className="flex items-start justify-between gap-4">
           <h1 className="font-bold">Recipes</h1>
         </div>
