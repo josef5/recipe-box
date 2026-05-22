@@ -18,10 +18,10 @@ export function HomePageContent({
 
   return (
     <>
-      <div className="mb-24 flex flex-col gap-4 sm:col-start-1 sm:row-start-1">
-        <div className="flex items-start justify-between gap-4">
-          <h1 className="font-bold">Recipes</h1>
-        </div>
+      <div className="col-span-full flex items-start justify-between gap-4 sm:row-start-1">
+        <h1 className="font-bold">Recipes</h1>
+      </div>
+      <div className="mb-24 flex flex-col gap-4 sm:col-start-1 sm:row-start-2">
         {recipes.length === 0 ? (
           <p className="text-sm text-gray-600">
             {query ? `No recipes found for "${query}".` : "No recipes yet."}
@@ -34,14 +34,14 @@ export function HomePageContent({
           </ul>
         )}
       </div>
-      <aside className="flex flex-col gap-2 sm:col-start-2 sm:row-start-1">
+      <aside className="row-start-2 flex flex-col gap-2 sm:col-start-2 sm:row-start-2">
         <form
           action="/"
           method="get"
           noValidate
           className="flex flex-col gap-2"
         >
-          <div className="mt-10 flex flex-col gap-2 text-sm">
+          <div className="flex flex-col gap-2 text-sm">
             <label htmlFor="recipe-search" className="sr-only">
               Search recipes
             </label>
