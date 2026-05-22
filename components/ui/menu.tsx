@@ -28,7 +28,7 @@ export function Menu() {
       data-testid="menu"
     >
       <Link href={"/"}>
-        <span className="text-2xl">Recipe Box</span>
+        <h1 className="text-2xl">Recipe Box</h1>
       </Link>
       {variant !== "auth" && (
         <div className="flex items-center space-x-4">
