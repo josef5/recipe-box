@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { use } from "react";
 import { NewRecipeButton } from "./ui/new-recipe-button";
+import Button from "./ui/button";
 
 export function HomePageContent({
   recipesPromise,
@@ -34,7 +35,12 @@ export function HomePageContent({
         )}
       </div>
       <aside className="flex flex-col gap-2 sm:col-start-2 sm:row-start-1">
-        <form action="/" method="get" noValidate className="flex gap-2">
+        <form
+          action="/"
+          method="get"
+          noValidate
+          className="flex flex-col gap-2"
+        >
           <div className="mt-10 flex flex-col gap-2 text-sm">
             <label htmlFor="recipe-search" className="sr-only">
               Search recipes
@@ -48,20 +54,20 @@ export function HomePageContent({
               className="bg-surface text-foreground placeholder:text-foreground-muted focus:ring-foreground rounded-md px-3 py-2 focus:ring-1 focus:ring-offset-2 focus:outline-none"
             />
             <div className="flex gap-2">
-              <button
+              <Button
+                label="Search"
                 type="submit"
-                className="bg-foreground text-surface rounded-md px-8 py-2 font-bold"
-              >
-                Search
-              </button>
-              {query ? (
-                <Link
+                variant="primary"
+                className="flex-1"
+              />
+              {query && (
+                <Button
+                  label="Clear"
                   href="/"
-                  className="bg-foreground text-surface flex items-center justify-center rounded-md px-8 py-2 text-sm font-bold"
-                >
-                  Clear
-                </Link>
-              ) : null}
+                  variant="secondary"
+                  className="shrink"
+                />
+              )}
             </div>
           </div>
         </form>
