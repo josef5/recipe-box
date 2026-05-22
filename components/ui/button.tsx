@@ -5,7 +5,7 @@ import { cva, type VariantProps } from "class-variance-authority";
 import Link from "next/link";
 
 const buttonVariants = cva(
-  "px-8 py-2 rounded-md font-bold cursor-pointer items-center justify-center text-center",
+  "px-8 py-2 rounded-md font-bold cursor-pointer items-center justify-center text-center text-sm",
   {
     variants: {
       variant: {
