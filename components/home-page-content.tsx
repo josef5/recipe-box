@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { use } from "react";
 import { NewRecipeButton } from "./ui/new-recipe-button";
-import Button from "./ui/button";
+import { Button } from "./ui/button";
 
 export function HomePageContent({
   recipesPromise,

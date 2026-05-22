@@ -17,7 +17,7 @@ const buttonVariants = cva(
   },
 );
 
-export default function Button({
+export function Button({
   label,
   href,
   variant,
