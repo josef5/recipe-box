@@ -28,7 +28,7 @@ export default function RootLayout({
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="mx-auto flex min-h-full max-w-4xl flex-col px-6">
+      <body className="mx-auto flex min-h-full max-w-4xl flex-col px-4 sm:px-6">
         <a href="#main-content" className="skip-link">
           Skip to main content
         </a>
