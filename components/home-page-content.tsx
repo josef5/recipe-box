@@ -51,7 +51,7 @@ export function HomePageContent({
               name="q"
               defaultValue={query}
               placeholder="Search recipes"
-              className="bg-surface text-foreground placeholder:text-foreground-muted focus:ring-foreground rounded-md px-3 py-2 focus:ring-1 focus:ring-offset-2 focus:outline-none"
+              className="bg-surface text-foreground placeholder:text-foreground-muted focus:ring-foreground min-w-0 flex-1 rounded-md px-3 py-2 focus:ring-1 focus:ring-offset-2 focus:outline-none"
             />
             <div className="flex gap-2">
               <Button
