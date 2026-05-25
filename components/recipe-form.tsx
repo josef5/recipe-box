@@ -9,6 +9,7 @@ import {
   type RecipeFormState,
   validateRecipeFormData,
 } from "@/lib/validation/recipes";
+import { Input } from "./ui/input";
 
 type IngredientSuggestion = {
   name: string;
@@ -235,7 +236,7 @@ export function RecipeForm({
         noValidate
         data-client-valid={isClientValid ? "true" : "false"}
         onInput={scheduleClientValiditySync}
-        className="flex max-w-3xl flex-col gap-8"
+        className="bg-surface flex max-w-3xl flex-col gap-8 rounded-lg p-4"
       >
         {state?.errors._form && (
           <p
@@ -251,13 +252,12 @@ export function RecipeForm({
             <label htmlFor="title" className="text-sm font-medium">
               Title
             </label>
-            <input
+            <Input
               id="title"
               name="title"
               defaultValue={initialValues?.title ?? ""}
               aria-describedby={state?.errors.title ? "title-error" : undefined}
               aria-invalid={state?.errors.title ? true : undefined}
-              className="rounded-md border px-3 py-2 text-sm"
             />
             {state?.errors.title && (
               <p id="title-error" className="text-sm text-red-600">
@@ -269,12 +269,13 @@ export function RecipeForm({
             <label htmlFor="description" className="text-sm font-medium">
               Description
             </label>
+            {/* TODO: Set word limit */}
             <textarea
               id="description"
               name="description"
               rows={4}
               defaultValue={initialValues?.description ?? ""}
-              className="rounded-md border px-3 py-2 text-sm"
+              className="bg-input rounded-md p-3 text-sm"
             />
           </div>
           <div className="grid gap-4 md:grid-cols-3">
@@ -282,7 +283,7 @@ export function RecipeForm({
               <label htmlFor="servings" className="text-sm font-medium">
                 Servings
               </label>
-              <input
+              <Input
                 id="servings"
                 name="servings"
                 type="number"
@@ -291,7 +292,6 @@ export function RecipeForm({
                   state?.errors.servings ? "servings-error" : undefined
                 }
                 aria-invalid={state?.errors.servings ? true : undefined}
-                className="rounded-md border px-3 py-2 text-sm"
               />
               {state?.errors.servings && (
                 <p id="servings-error" className="text-sm text-red-600">
@@ -303,7 +303,7 @@ export function RecipeForm({
               <label htmlFor="prepTimeMins" className="text-sm font-medium">
                 Prep time (mins)
               </label>
-              <input
+              <Input
                 id="prepTimeMins"
                 name="prepTimeMins"
                 type="number"
@@ -312,7 +312,6 @@ export function RecipeForm({
                   state?.errors.prepTimeMins ? "prep-time-error" : undefined
                 }
                 aria-invalid={state?.errors.prepTimeMins ? true : undefined}
-                className="rounded-md border px-3 py-2 text-sm"
               />
               {state?.errors.prepTimeMins && (
                 <p id="prep-time-error" className="text-sm text-red-600">
@@ -324,7 +323,7 @@ export function RecipeForm({
               <label htmlFor="cookTimeMins" className="text-sm font-medium">
                 Cook time (mins)
               </label>
-              <input
+              <Input
                 id="cookTimeMins"
                 name="cookTimeMins"
                 type="number"
@@ -333,7 +332,6 @@ export function RecipeForm({
                   state?.errors.cookTimeMins ? "cook-time-error" : undefined
                 }
                 aria-invalid={state?.errors.cookTimeMins ? true : undefined}
-                className="rounded-md border px-3 py-2 text-sm"
               />
               {state?.errors.cookTimeMins && (
                 <p id="cook-time-error" className="text-sm text-red-600">
@@ -347,18 +345,17 @@ export function RecipeForm({
               <label htmlFor="sourceName" className="text-sm font-medium">
                 Source name
               </label>
-              <input
+              <Input
                 id="sourceName"
                 name="sourceName"
                 defaultValue={initialValues?.sourceName ?? ""}
-                className="rounded-md border px-3 py-2 text-sm"
               />
             </div>
             <div className="flex flex-col gap-1.5">
               <label htmlFor="sourceUrl" className="text-sm font-medium">
                 Source URL
               </label>
-              <input
+              <Input
                 id="sourceUrl"
                 name="sourceUrl"
                 type="url"
@@ -367,7 +364,6 @@ export function RecipeForm({
                   state?.errors.sourceUrl ? "source-url-error" : undefined
                 }
                 aria-invalid={state?.errors.sourceUrl ? true : undefined}
-                className="rounded-md border px-3 py-2 text-sm"
               />
               {state?.errors.sourceUrl && (
                 <p id="source-url-error" className="text-sm text-red-600">
@@ -380,7 +376,7 @@ export function RecipeForm({
             <label htmlFor="imageUrl" className="text-sm font-medium">
               Image URL
             </label>
-            <input
+            <Input
               id="imageUrl"
               name="imageUrl"
               type="url"
@@ -393,7 +389,6 @@ export function RecipeForm({
                 state?.errors.imageUrl ? "image-url-error" : "image-url-help"
               }
               aria-invalid={state?.errors.imageUrl ? true : undefined}
-              className="rounded-md border px-3 py-2 text-sm"
             />
             <input name="imagePublicId" type="hidden" value={imagePublicId} />
             <p id="image-url-help" className="text-xs text-gray-600">
@@ -409,7 +404,7 @@ export function RecipeForm({
               >
                 Upload image file
               </label>
-              <input
+              <Input
                 id="recipe-image-file"
                 ref={imageInputRef}
                 type="file"
@@ -489,7 +484,7 @@ export function RecipeForm({
           </datalist>
           <div className="flex flex-col gap-4">
             {ingredients.map((ingredient, index) => (
-              <div key={index} className="rounded-lg border p-4">
+              <div key={index} className="">
                 <div className="grid gap-4 md:grid-cols-[2fr_1fr_1fr]">
                   <div className="flex flex-col gap-1.5">
                     <label
@@ -498,7 +493,7 @@ export function RecipeForm({
                     >
                       Ingredient
                     </label>
-                    <input
+                    <Input
                       id={`ingredient-name-${index}`}
                       name="ingredientName"
                       list="ingredient-suggestions"
@@ -506,7 +501,6 @@ export function RecipeForm({
                       onChange={(event) =>
                         updateIngredient(index, "name", event.target.value)
                       }
-                      className="rounded-md border px-3 py-2 text-sm"
                     />
                   </div>
                   <div className="flex flex-col gap-1.5">
@@ -516,7 +510,7 @@ export function RecipeForm({
                     >
                       Amount
                     </label>
-                    <input
+                    <Input
                       id={`ingredient-amount-${index}`}
                       name="ingredientAmount"
                       type="number"
@@ -524,7 +518,6 @@ export function RecipeForm({
                       onChange={(event) =>
                         updateIngredient(index, "amount", event.target.value)
                       }
-                      className="rounded-md border px-3 py-2 text-sm"
                     />
                   </div>
                   <div className="flex flex-col gap-1.5">
@@ -534,14 +527,13 @@ export function RecipeForm({
                     >
                       Unit
                     </label>
-                    <input
+                    <Input
                       id={`ingredient-unit-${index}`}
                       name="ingredientUnit"
                       value={ingredient.unit}
                       onChange={(event) =>
                         updateIngredient(index, "unit", event.target.value)
                       }
-                      className="rounded-md border px-3 py-2 text-sm"
                     />
                   </div>
                 </div>
@@ -553,14 +545,14 @@ export function RecipeForm({
                     Notes
                   </label>
                   <div className="flex gap-3">
-                    <input
+                    <Input
                       id={`ingredient-notes-${index}`}
                       name="ingredientNotes"
                       value={ingredient.notes}
                       onChange={(event) =>
                         updateIngredient(index, "notes", event.target.value)
                       }
-                      className="flex-1 rounded-md border px-3 py-2 text-sm"
+                      className="flex-1"
                     />
                     <button
                       type="button"
@@ -599,7 +591,7 @@ export function RecipeForm({
           </div>
           <div className="flex flex-col gap-4">
             {steps.map((step, index) => (
-              <div key={index} className="rounded-lg border p-4">
+              <div key={index} className="">
                 <label
                   htmlFor={`step-instruction-${index}`}
                   className="mb-2 block text-sm font-medium"
@@ -613,7 +605,7 @@ export function RecipeForm({
                     rows={3}
                     value={step.instruction}
                     onChange={(event) => updateStep(index, event.target.value)}
-                    className="flex-1 rounded-md border px-3 py-2 text-sm"
+                    className="bg-input flex-1 rounded-md px-3 py-2 text-sm"
                   />
                   <button
                     type="button"
