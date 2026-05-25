@@ -468,7 +468,7 @@ export function RecipeForm({
         </section>
         <section className="flex flex-col gap-4">
           <div className="flex items-center justify-between gap-4">
-            <h2 className="text-lg font-semibold">Ingredients</h2>
+            <h2 className="font-semibold">Ingredients</h2>
             <button
               type="button"
               onClick={() =>
@@ -586,7 +586,7 @@ export function RecipeForm({
         </section>
         <section className="flex flex-col gap-4">
           <div className="flex items-center justify-between gap-4">
-            <h2 className="text-lg font-semibold">Steps</h2>
+            <h2 className="font-semibold">Steps</h2>
             <button
               type="button"
               onClick={() =>
