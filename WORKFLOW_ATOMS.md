@@ -6,10 +6,14 @@ Elements: atomic workflow units that may overlap in implementation
 - Type System
 - Authentication
 - Authorization & Roles
+- Tests
 - Data Access Layer
 - Middleware / Route Protection
 - Error Handling
 - Form Handling & Validation
+- Tests
 - Routing & Navigation
-- Testing
+- Tests
+- A11y
+- Tests
 - Styling
