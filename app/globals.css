@@ -6,6 +6,7 @@
   --foreground-muted: hsl(0, 0%, 50%);
   --surface: hsl(0, 0%, 100%);
   --input: hsl(0, 0%, 95%);
+  --danger: hsl(0, 100%, 40%);
 }
 
 @theme inline {
@@ -16,6 +17,7 @@
   --font-mono: var(--font-geist-mono);
   --color-surface: var(--surface);
   --color-input: var(--input);
+  --color-danger: var(--danger);
 }
 
 /* @media (prefers-color-scheme: dark) {
