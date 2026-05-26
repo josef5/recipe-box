@@ -4,6 +4,7 @@ import {
   getRecipeBySlug,
   updateRecipeFromForm,
 } from "@/actions/recipes";
+import Footer from "@/components/footer";
 import Main from "@/components/main";
 import {
   DeleteButton,
@@ -83,6 +84,7 @@ export default async function EditRecipePage({
         </HistoryBackButton>
         <DeleteButton action={deleteAction} />
       </aside>
+      <Footer />
     </Main>
   );
 }
