@@ -6,11 +6,13 @@ import {
 } from "@/actions/recipes";
 import Footer from "@/components/footer";
 import Main from "@/components/main";
+import PageTitle from "@/components/page-title";
 import {
   DeleteButton,
   RecipeForm,
   SubmitButton,
 } from "@/components/recipe-form";
+import Sidebar from "@/components/sidebar";
 import { BackButton } from "@/components/ui/back-button";
 import { requireCurrentUser, userHasAdminRole } from "@/lib/auth/session";
 import { notFound } from "next/navigation";
@@ -41,12 +43,10 @@ export default async function EditRecipePage({
 
   return (
     <Main>
-      <div className="col-span-full flex flex-col items-start justify-between sm:row-start-1">
-        <h1 className="font-bold">Edit recipe</h1>
-        <p className="text-sm text-gray-600">
-          Update details, ingredients, and steps.
-        </p>
-      </div>
+      <PageTitle
+        title="Edit recipe"
+        description="Update details, ingredients, and steps."
+      />
       <div className="space-y-2 sm:col-start-1 sm:row-start-2">
         <RecipeForm
           key={recipe.id}
@@ -74,7 +74,7 @@ export default async function EditRecipePage({
           }}
         />
       </div>
-      <aside className="flex flex-col items-start gap-2 sm:col-start-2 sm:row-start-2 sm:max-w-40 sm:flex-col">
+      <Sidebar>
         <SubmitButton
           label="Save recipe"
           form="recipe-form"
@@ -89,7 +89,7 @@ export default async function EditRecipePage({
           </BackButton>
           <DeleteButton action={deleteAction} className="w-full" />
         </div>
-      </aside>
+      </Sidebar>
       <Footer />
     </Main>
   );

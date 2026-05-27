@@ -1,7 +1,9 @@
 import { createRecipeFromForm, getIngredients } from "@/actions/recipes";
 import Footer from "@/components/footer";
 import Main from "@/components/main";
+import PageTitle from "@/components/page-title";
 import { RecipeForm, SubmitButton } from "@/components/recipe-form";
+import Sidebar from "@/components/sidebar";
 import { BackButton } from "@/components/ui/back-button";
 import { requireCurrentUserId } from "@/lib/auth/session";
 
@@ -13,19 +15,17 @@ export default async function NewRecipePage() {
 
   return (
     <Main>
-      <div className="col-span-full flex flex-col items-start justify-between sm:row-start-1">
-        <h1 className="font-bold">Add recipe</h1>
-        <p className="text-sm text-gray-600">
-          Create a new recipe with ingredients and ordered steps.
-        </p>
-      </div>
+      <PageTitle
+        title="Add recipe"
+        description="Create a new recipe with ingredients and ordered steps."
+      />
       <div className="space-y-2 sm:col-start-1 sm:row-start-2">
         <RecipeForm
           action={createRecipeFromForm}
           ingredientSuggestions={ingredients}
         />
       </div>
-      <aside className="flex items-start gap-2 sm:col-start-2 sm:row-start-2 sm:max-h-40 sm:flex-col">
+      <Sidebar>
         <SubmitButton
           label="Save recipe"
           form="recipe-form"
@@ -34,7 +34,7 @@ export default async function NewRecipePage() {
         <BackButton fallbackHref="/" className="w-full">
           Cancel
         </BackButton>
-      </aside>
+      </Sidebar>
       <Footer />
     </Main>
   );
