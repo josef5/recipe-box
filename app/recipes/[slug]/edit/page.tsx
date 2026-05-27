@@ -74,15 +74,21 @@ export default async function EditRecipePage({
           }}
         />
       </div>
-      <aside className="flex items-start gap-3 sm:col-start-2 sm:row-start-2 sm:flex-col">
-        <SubmitButton label="Save recipe" form="recipe-form" />
-        <BackButton
-          fallbackHref={`/recipes/${recipe.slug}`}
-          className="rounded-md border px-4 py-2 text-sm"
-        >
-          Cancel
-        </BackButton>
-        <DeleteButton action={deleteAction} />
+      <aside className="flex flex-col items-start gap-3 sm:col-start-2 sm:row-start-2 sm:flex-col">
+        <SubmitButton
+          label="Save recipe"
+          form="recipe-form"
+          className="w-full"
+        />
+        <div className="flex w-full gap-2 sm:flex-col">
+          <BackButton
+            fallbackHref={`/recipes/${recipe.slug}`}
+            className="w-full"
+          >
+            Cancel
+          </BackButton>
+          <DeleteButton action={deleteAction} className="w-full" />
+        </div>
       </aside>
       <Footer />
     </Main>

@@ -10,6 +10,7 @@ import {
   validateRecipeFormData,
 } from "@/lib/validation/recipes";
 import { Input } from "./ui/input";
+import { Button } from "./ui/button";
 
 type IngredientSuggestion = {
   name: string;
@@ -637,11 +638,12 @@ export function SubmitButton({
   label,
   form,
   disabled = false,
+  ...props
 }: {
   label: string;
   form?: string;
   disabled?: boolean;
-}) {
+} & React.ComponentProps<typeof Button>) {
   const { pending } = useFormStatus();
   const [isFormValid, setIsFormValid] = useState(!form);
 
@@ -676,38 +678,41 @@ export function SubmitButton({
   const isDisabled = pending || disabled || (form ? !isFormValid : false);
 
   return (
-    <button
+    <Button
       type="submit"
       form={form}
       disabled={isDisabled}
-      className="rounded-md bg-indigo-500 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-400 disabled:cursor-not-allowed disabled:opacity-70"
+      variant="primary"
+      {...props}
     >
       {pending ? "Saving..." : label}
-    </button>
+    </Button>
   );
 }
 
 export function DeleteButton({
   action,
+  ...props
 }: {
   action: () => string | void | Promise<string | void>;
-}) {
+} & React.ComponentProps<typeof Button>) {
   const router = useRouter();
   const [isPending, setIsPending] = useState(false);
   const dialogRef = useRef<HTMLDialogElement>(null);
 
   return (
     <>
-      <button
+      <Button
         type="button"
         disabled={isPending}
         onClick={async () => {
           dialogRef.current?.showModal();
         }}
-        className="rounded-md border border-red-300 px-4 py-2 text-sm text-red-700 disabled:cursor-not-allowed disabled:opacity-70"
+        variant="danger"
+        {...props}
       >
         {isPending ? "Deleting..." : "Delete"}
-      </button>
+      </Button>
       <Dialog
         title="Delete this recipe? This cannot be undone."
         onConfirm={async () => {
