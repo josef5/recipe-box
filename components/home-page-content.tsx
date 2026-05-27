@@ -34,7 +34,7 @@ export function HomePageContent({
           </ul>
         )}
       </div>
-      <aside className="row-start-2 flex flex-col gap-2 sm:col-start-2 sm:row-start-2">
+      <aside className="row-start-2 flex flex-col gap-2 sm:col-start-2 sm:row-start-2 sm:max-w-40">
         <form
           action="/"
           method="get"

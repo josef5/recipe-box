@@ -74,7 +74,7 @@ export default async function EditRecipePage({
           }}
         />
       </div>
-      <aside className="flex flex-col items-start gap-3 sm:col-start-2 sm:row-start-2 sm:flex-col">
+      <aside className="flex flex-col items-start gap-2 sm:col-start-2 sm:row-start-2 sm:max-w-40 sm:flex-col">
         <SubmitButton
           label="Save recipe"
           form="recipe-form"
