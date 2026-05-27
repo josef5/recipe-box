@@ -416,27 +416,27 @@ export function RecipeForm({
                 }}
                 className="text-sm"
               />
-              <button
+              <Button
                 type="button"
+                variant="secondary"
                 disabled={!selectedImageFile || isUploadingImage}
                 onClick={uploadSelectedImage}
                 aria-busy={isUploadingImage}
-                className="rounded-md border px-3 py-2 text-sm disabled:cursor-not-allowed disabled:opacity-70"
               >
                 {isUploadingImage ? "Uploading..." : "Upload image"}
-              </button>
+              </Button>
               {imageUrl ? (
-                <button
+                <Button
                   type="button"
+                  variant="danger-secondary"
                   onClick={() => {
                     setImageUrl("");
                     setImagePublicId("");
                     setImageUploadError(null);
                   }}
-                  className="rounded-md border px-3 py-2 text-sm"
                 >
                   Remove image
-                </button>
+                </Button>
               ) : null}
             </div>
             {imageUploadError ? (
@@ -465,18 +465,18 @@ export function RecipeForm({
         <section className="flex flex-col gap-4">
           <div className="flex items-center justify-between gap-4">
             <h2 className="font-semibold">Ingredients</h2>
-            <button
+            <Button
               type="button"
+              variant="secondary"
               onClick={() =>
                 setIngredients((current) => [
                   ...current,
                   { name: "", amount: "", unit: "", notes: "" },
                 ])
               }
-              className="rounded-md border px-3 py-2 text-sm"
             >
               Add ingredient
-            </button>
+            </Button>
           </div>
           <datalist id="ingredient-suggestions">
             {ingredientSuggestions.map((ingredient) => (
@@ -555,7 +555,7 @@ export function RecipeForm({
                       }
                       className="flex-1"
                     />
-                    <button
+                    <Button
                       type="button"
                       onClick={() =>
                         setIngredients((current) =>
@@ -567,10 +567,10 @@ export function RecipeForm({
                         )
                       }
                       aria-label={`Remove ingredient ${index + 1}`}
-                      className="rounded-md border px-3 py-2 text-sm"
+                      variant="danger-secondary"
                     >
                       Remove
-                    </button>
+                    </Button>
                   </div>
                 </div>
               </div>
@@ -580,15 +580,15 @@ export function RecipeForm({
         <section className="flex flex-col gap-4">
           <div className="flex items-center justify-between gap-4">
             <h2 className="font-semibold">Steps</h2>
-            <button
+            <Button
               type="button"
               onClick={() =>
                 setSteps((current) => [...current, { instruction: "" }])
               }
-              className="rounded-md border px-3 py-2 text-sm"
+              variant="secondary"
             >
               Add step
-            </button>
+            </Button>
           </div>
           <div className="flex flex-col gap-4">
             {steps.map((step, index) => (
@@ -599,7 +599,7 @@ export function RecipeForm({
                 >
                   Step {index + 1}
                 </label>
-                <div className="flex gap-3">
+                <div className="flex items-start gap-3">
                   <textarea
                     id={`step-instruction-${index}`}
                     name="stepInstruction"
@@ -608,8 +608,9 @@ export function RecipeForm({
                     onChange={(event) => updateStep(index, event.target.value)}
                     className="bg-input flex-1 rounded-md px-3 py-2 text-sm"
                   />
-                  <button
+                  <Button
                     type="button"
+                    variant="danger-secondary"
                     onClick={() =>
                       setSteps((current) =>
                         current.length === 1
@@ -620,10 +621,9 @@ export function RecipeForm({
                       )
                     }
                     aria-label={`Remove step ${index + 1}`}
-                    className="h-fit rounded-md border px-3 py-2 text-sm"
                   >
                     Remove
-                  </button>
+                  </Button>
                 </div>
               </div>
             ))}
