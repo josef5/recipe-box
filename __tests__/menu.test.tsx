@@ -40,7 +40,7 @@ describe("Menu", () => {
       "href",
       "/",
     );
-    expect(screen.getByRole("link", { name: "Sign In" })).toHaveAttribute(
+    expect(screen.getByRole("link", { name: "Sign in" })).toHaveAttribute(
       "href",
       "/auth/sign-in",
     );
@@ -48,7 +48,7 @@ describe("Menu", () => {
       screen.queryByRole("link", { name: mockUserName }),
     ).not.toBeInTheDocument();
     expect(
-      screen.queryByRole("button", { name: "Sign Out" }),
+      screen.queryByRole("button", { name: "Sign out" }),
     ).not.toBeInTheDocument();
   });
 
@@ -74,6 +74,6 @@ describe("Menu", () => {
       "href",
       "/account",
     );
-    expect(screen.getByRole("button", { name: "Sign Out" })).toBeVisible();
+    expect(screen.getByRole("button", { name: "Sign out" })).toBeVisible();
   });
 });
