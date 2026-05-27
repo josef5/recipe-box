@@ -1,7 +1,7 @@
 import { createRecipeFromForm, getIngredients } from "@/actions/recipes";
 import Main from "@/components/main";
 import { RecipeForm, SubmitButton } from "@/components/recipe-form";
-import { HistoryBackButton } from "@/components/ui/history-back-button";
+import { BackButton } from "@/components/ui/back-button";
 import { requireCurrentUserId } from "@/lib/auth/session";
 
 export const dynamic = "force-dynamic";
@@ -24,12 +24,12 @@ export default async function NewRecipePage() {
       </div>
       <aside className="flex items-start gap-3 sm:col-start-2 sm:row-start-1 sm:flex-col">
         <SubmitButton label="Save recipe" form="recipe-form" />
-        <HistoryBackButton
+        <BackButton
           fallbackHref="/"
           className="rounded-md border px-4 py-2 text-sm"
         >
           Cancel
-        </HistoryBackButton>
+        </BackButton>
       </aside>
     </Main>
   );

@@ -11,7 +11,7 @@ import {
   RecipeForm,
   SubmitButton,
 } from "@/components/recipe-form";
-import { HistoryBackButton } from "@/components/ui/history-back-button";
+import { BackButton } from "@/components/ui/back-button";
 import { requireCurrentUser, userHasAdminRole } from "@/lib/auth/session";
 import { notFound } from "next/navigation";
 
@@ -76,12 +76,12 @@ export default async function EditRecipePage({
       </div>
       <aside className="flex items-start gap-3 sm:col-start-2 sm:row-start-2 sm:flex-col">
         <SubmitButton label="Save recipe" form="recipe-form" />
-        <HistoryBackButton
+        <BackButton
           fallbackHref={`/recipes/${recipe.slug}`}
           className="rounded-md border px-4 py-2 text-sm"
         >
           Cancel
-        </HistoryBackButton>
+        </BackButton>
         <DeleteButton action={deleteAction} />
       </aside>
       <Footer />

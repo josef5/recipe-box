@@ -1,4 +1,4 @@
-import { navigateBackOrFallback } from "@/components/ui/history-back-button";
+import { navigateBackOrFallback } from "@/components/ui/back-button";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 describe("navigateBackOrFallback", () => {

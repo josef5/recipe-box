@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import type { ReactNode } from "react";
+import { Button } from "./button";
 
 type RouterLike = {
   back: () => void;
@@ -29,7 +30,7 @@ export function navigateBackOrFallback(
   router.push(fallbackHref);
 }
 
-export function HistoryBackButton({
+export function BackButton({
   fallbackHref,
   className,
   children,
@@ -41,12 +42,13 @@ export function HistoryBackButton({
   const router = useRouter();
 
   return (
-    <button
+    <Button
       type="button"
+      variant="secondary"
       onClick={() => navigateBackOrFallback(router, fallbackHref)}
       className={className}
     >
       {children}
-    </button>
+    </Button>
   );
 }
