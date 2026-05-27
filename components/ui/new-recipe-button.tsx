@@ -10,5 +10,5 @@ export function NewRecipeButton() {
     return null;
   }
 
-  return <Button label="New Recipe" href="/recipes/new" variant="secondary" />;
+  return <Button label="New recipe" href="/recipes/new" variant="secondary" />;
 }

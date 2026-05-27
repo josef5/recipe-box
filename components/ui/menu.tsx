@@ -45,7 +45,7 @@ export function Menu() {
               <SignOutButton />
             </>
           ) : (
-            <Link href="/auth/sign-in">Sign In</Link>
+            <Link href="/auth/sign-in">Sign in</Link>
           )}
         </div>
       )}
