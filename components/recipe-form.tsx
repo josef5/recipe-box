@@ -279,7 +279,7 @@ export function RecipeForm({
               className="bg-input rounded-md p-3 text-sm"
             />
           </div>
-          <div className="grid gap-4 md:grid-cols-3">
+          <div className="grid grid-cols-3 gap-4">
             <div className="flex flex-col gap-1.5">
               <label htmlFor="servings" className="text-sm font-medium">
                 Servings
@@ -301,7 +301,10 @@ export function RecipeForm({
               )}
             </div>
             <div className="flex flex-col gap-1.5">
-              <label htmlFor="prepTimeMins" className="text-sm font-medium">
+              <label
+                htmlFor="prepTimeMins"
+                className="truncate text-sm font-medium"
+              >
                 Prep time (mins)
               </label>
               <Input
@@ -321,7 +324,10 @@ export function RecipeForm({
               )}
             </div>
             <div className="flex flex-col gap-1.5">
-              <label htmlFor="cookTimeMins" className="text-sm font-medium">
+              <label
+                htmlFor="cookTimeMins"
+                className="truncate text-sm font-medium"
+              >
                 Cook time (mins)
               </label>
               <Input
@@ -414,7 +420,7 @@ export function RecipeForm({
                   setSelectedImageFile(event.target.files?.[0] ?? null);
                   setImageUploadError(null);
                 }}
-                className="text-sm"
+                className="w-full"
               />
               <Button
                 type="button"
@@ -440,7 +446,7 @@ export function RecipeForm({
               ) : null}
             </div>
             {imageUploadError ? (
-              <p role="alert" className="text-sm text-red-700">
+              <p role="alert" className="text-danger text-sm">
                 {imageUploadError}
               </p>
             ) : null}
@@ -456,7 +462,7 @@ export function RecipeForm({
               />
             ) : null}
             {state?.errors.imageUrl && (
-              <p id="image-url-error" className="text-sm text-red-600">
+              <p id="image-url-error" className="text-danger text-sm">
                 {state.errors.imageUrl}
               </p>
             )}
@@ -486,8 +492,8 @@ export function RecipeForm({
           <div className="flex flex-col gap-4">
             {ingredients.map((ingredient, index) => (
               <div key={index} className="">
-                <div className="grid gap-4 md:grid-cols-[2fr_1fr_1fr]">
-                  <div className="flex flex-col gap-1.5">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="col-span-full flex flex-col gap-1.5">
                     <label
                       htmlFor={`ingredient-name-${index}`}
                       className="text-sm font-medium"
@@ -553,7 +559,7 @@ export function RecipeForm({
                       onChange={(event) =>
                         updateIngredient(index, "notes", event.target.value)
                       }
-                      className="flex-1"
+                      className="w-full"
                     />
                     <Button
                       type="button"
