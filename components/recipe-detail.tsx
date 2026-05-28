@@ -5,6 +5,8 @@ import { notFound } from "next/navigation";
 import { use } from "react";
 import { ScaledIngredientsList } from "./scaled-ingredients-list";
 import { EditRecipeButton } from "./ui/edit-recipe-button";
+import Sidebar from "./sidebar";
+import PageTitle from "./page-title";
 
 export function RecipeDetail({
   recipePromise,
@@ -18,22 +20,15 @@ export function RecipeDetail({
 
   return (
     <>
-      <aside className="sm:col-start-2 sm:row-start-1">
-        <EditRecipeButton
-          recipeUserId={recipe.userId}
-          editHref={`/recipes/${recipe.slug}/edit`}
-        />
-        <p>By {recipe.ownerDisplayName ?? "Unknown cook"}</p>
-      </aside>
-      <div className="flex flex-col items-start justify-between sm:col-start-1 sm:row-start-1">
-        <h1>{recipe.title}</h1>
+      <PageTitle title={recipe.title} />
+      <div className="flex flex-col items-start justify-between sm:col-start-1 sm:row-start-2">
         <Image
           src={recipe.imageUrl ?? FALLBACK_RECIPE_IMAGE_SRC}
           alt={`${recipe.title} photo`}
           width={1600}
           height={1066}
           sizes="(max-width: 640px) 100vw, 900px"
-          className="mt-3 max-h-112 w-full rounded-md border object-cover"
+          className="max-h-112 w-full rounded-md border object-cover"
         />
         {recipe.description && <p>{recipe.description}</p>}
         <div>
@@ -74,6 +69,16 @@ export function RecipeDetail({
           </ol>
         </section>
       </div>
+      <Sidebar className="gap-4">
+        <EditRecipeButton
+          recipeUserId={recipe.userId}
+          editHref={`/recipes/${recipe.slug}/edit`}
+          className="w-full"
+        />
+        <p className="text-xs">
+          By {recipe.ownerDisplayName ?? "Unknown cook"}
+        </p>
+      </Sidebar>
     </>
   );
 }
