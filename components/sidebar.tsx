@@ -9,7 +9,7 @@ export default function Sidebar({
   return (
     <aside
       className={cn(
-        "row-start-2 flex flex-col gap-2 sm:col-start-2 sm:row-start-2 sm:max-w-40",
+        "row-start-2 flex flex-col gap-2 sm:col-start-2 sm:row-start-2",
         className,
       )}
       {...props}
