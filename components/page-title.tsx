@@ -12,7 +12,7 @@ export default function PageTitle({
   return (
     <div
       className={cn(
-        "col-span-full flex flex-col items-start justify-between sm:row-start-1",
+        "col-span-full mb-2 flex flex-col items-start justify-between sm:row-start-1",
         className,
       )}
       {...props}
