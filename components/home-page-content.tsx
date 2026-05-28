@@ -8,6 +8,9 @@ import { NewRecipeButton } from "./ui/new-recipe-button";
 import { Button } from "./ui/button";
 import PageTitle from "./page-title";
 import Sidebar from "./sidebar";
+import { Input } from "./ui/input";
+
+// TODO: Decompose to Page?
 
 export function HomePageContent({
   recipesPromise,
@@ -48,13 +51,13 @@ export function HomePageContent({
             <label htmlFor="recipe-search" className="sr-only">
               Search recipes
             </label>
-            <input
+            <Input
               id="recipe-search"
               type="search"
               name="q"
               defaultValue={query}
               placeholder="Search recipes"
-              className="bg-surface text-foreground placeholder:text-foreground-muted focus:ring-foreground min-w-0 flex-1 rounded-md px-3 py-2 focus:ring-1 focus:ring-offset-2 focus:outline-none"
+              className="w-full"
             />
             <div className="flex gap-2">
               <Button
