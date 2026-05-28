@@ -1,7 +1,7 @@
 "use client";
 
 import { authClient } from "@/lib/auth/client";
-import Link from "next/link";
+import { Button } from "./button";
 
 function userHasAdminRole(user: unknown) {
   if (!user || typeof user !== "object") {
@@ -20,10 +20,15 @@ function userHasAdminRole(user: unknown) {
 export function EditRecipeButton({
   recipeUserId,
   editHref,
+  className,
+  ...props
 }: {
   recipeUserId: string | null;
   editHref: string;
-}) {
+} & Omit<
+  React.ComponentPropsWithoutRef<typeof Button>,
+  "href" | "children" | "variant"
+>) {
   const { data: session, isPending } = authClient.useSession();
   const isOwner = !!recipeUserId && session?.user?.id === recipeUserId;
   const isAdmin = userHasAdminRole(session?.user);
@@ -33,13 +38,13 @@ export function EditRecipeButton({
   }
 
   return (
-    <div className="flex items-center gap-3">
-      <Link
-        href={editHref}
-        className="rounded-md border px-4 py-2 text-sm font-medium"
-      >
-        Edit Recipe
-      </Link>
-    </div>
+    <Button
+      variant="secondary"
+      href={editHref}
+      className={className}
+      {...props}
+    >
+      Edit recipe
+    </Button>
   );
 }
