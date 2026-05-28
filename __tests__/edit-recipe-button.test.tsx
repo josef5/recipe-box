@@ -26,7 +26,7 @@ describe("EditRecipeButton", () => {
       />,
     );
 
-    expect(screen.getByRole("link", { name: "Edit Recipe" })).toHaveAttribute(
+    expect(screen.getByRole("link", { name: "Edit recipe" })).toHaveAttribute(
       "href",
       "/recipes/chocolate-cake/edit",
     );
@@ -45,7 +45,7 @@ describe("EditRecipeButton", () => {
       />,
     );
 
-    expect(screen.getByRole("link", { name: "Edit Recipe" })).toBeVisible();
+    expect(screen.getByRole("link", { name: "Edit recipe" })).toBeVisible();
   });
 
   it("hides for non-owner non-admin", () => {
