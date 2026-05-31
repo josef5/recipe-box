@@ -1,4 +1,3 @@
-import Footer from "@/components/footer";
 import Main from "@/components/main";
 import { RecipeDetail } from "@/components/recipe-detail";
 import { getPublicRecipeBySlug, getRecipeSlugs } from "@/lib/recipes";
@@ -26,7 +25,6 @@ export default async function RecipePage({
       <Suspense fallback={<p>Loading recipe...</p>}>
         <RecipeDetail recipePromise={recipePromise} />
       </Suspense>
-      <Footer />
     </Main>
   );
 }

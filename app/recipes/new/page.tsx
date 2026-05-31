@@ -1,5 +1,4 @@
 import { createRecipeFromForm, getIngredients } from "@/actions/recipes";
-import Footer from "@/components/footer";
 import Main from "@/components/main";
 import PageTitle from "@/components/page-title";
 import { RecipeForm, SubmitButton } from "@/components/recipe-form";
@@ -35,7 +34,6 @@ export default async function NewRecipePage() {
           Cancel
         </BackButton>
       </Sidebar>
-      <Footer />
     </Main>
   );
 }

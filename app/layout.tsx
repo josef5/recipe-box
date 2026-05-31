@@ -2,6 +2,7 @@ import { Menu } from "@/components/ui/menu";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import Footer from "@/components/footer";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -28,12 +29,20 @@ export default function RootLayout({
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
+      <head>
+        {/* Temp */}
+        <script
+          src="https://mcp.figma.com/mcp/html-to-design/capture.js"
+          async
+        />
+      </head>
       <body className="mx-auto flex min-h-full max-w-4xl flex-col px-4 sm:px-6">
         <a href="#main-content" className="skip-link">
           Skip to main content
         </a>
         <Menu />
         {children}
+        <Footer />
       </body>
     </html>
   );

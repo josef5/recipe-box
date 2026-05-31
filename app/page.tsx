@@ -1,4 +1,3 @@
-import Footer from "@/components/footer";
 import { HomePageContent } from "@/components/home-page-content";
 import Main from "@/components/main";
 import { getPublicRecipes } from "@/lib/recipes";
@@ -18,7 +17,6 @@ export default async function Home({
       <Suspense fallback={<p>Loading recipes...</p>}>
         <HomePageContent recipesPromise={recipesPromise} query={query} />
       </Suspense>
-      <Footer />
     </Main>
   );
 }
