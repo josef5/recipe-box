@@ -84,7 +84,7 @@ export function ScaledIngredientsList({
           onChange={(event) => {
             setSelectedServings(Number(event.target.value));
           }}
-          className="rounded-md border px-2 py-1 text-sm"
+          className="rounded-md border px-2 py-0.5 text-sm"
         >
           {servingsOptions.map((servingsOption) => (
             <option key={servingsOption} value={servingsOption}>

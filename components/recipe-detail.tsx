@@ -20,54 +20,40 @@ export function RecipeDetail({
 
   return (
     <>
-      <PageTitle title={recipe.title} />
-      <div className="flex flex-col items-start justify-between sm:col-start-1 sm:row-start-2">
+      <PageTitle
+        title={recipe.title}
+        description={`By ${recipe.ownerDisplayName ?? "Unknown cook"}`}
+      />
+      <div className="bg-surface flex flex-col items-start justify-between gap-3 rounded-3xl p-4 pb-10 text-sm drop-shadow-lg sm:col-start-1 sm:row-start-2">
         <Image
           src={recipe.imageUrl ?? FALLBACK_RECIPE_IMAGE_SRC}
           alt={`${recipe.title} photo`}
           width={1600}
           height={1066}
           sizes="(max-width: 640px) 100vw, 900px"
-          className="max-h-112 w-full rounded-md border object-cover"
+          className="mb-2 max-h-112 w-full rounded-md border object-cover"
         />
-        {recipe.description && <p>{recipe.description}</p>}
-        <div>
-          {recipe.prepTimeMins && <span>Prep: {recipe.prepTimeMins}m</span>}
-          {recipe.cookTimeMins && <span>Cook: {recipe.cookTimeMins}m</span>}
-          <span>Serves: {baseServings}</span>
+        <div className="flex flex-col gap-3 px-1">
+          {recipe.description && (
+            <p className="mb-2 text-base">{recipe.description}</p>
+          )}
+          <section>
+            <h2 className="mb-2 font-bold">Ingredients</h2>
+            <ScaledIngredientsList
+              recipeIngredients={recipe.recipeIngredients}
+              baseServings={recipe.servings}
+            />
+          </section>
+          <section>
+            <h2 className="mb-2 font-bold">Steps</h2>
+            <ul className="list-outside list-decimal pl-6.5">
+              {recipe.steps &&
+                recipe.steps.map((step) => (
+                  <li key={step.id}>{step.instruction}</li>
+                ))}
+            </ul>
+          </section>
         </div>
-        {recipe.sourceName && (
-          <p>
-            Source:{" "}
-            {recipe.sourceUrl ? (
-              <a
-                href={recipe.sourceUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                {recipe.sourceName}
-              </a>
-            ) : (
-              recipe.sourceName
-            )}
-          </p>
-        )}
-        <section>
-          <h2>Ingredients</h2>
-          <ScaledIngredientsList
-            recipeIngredients={recipe.recipeIngredients}
-            baseServings={recipe.servings}
-          />
-        </section>
-        <section>
-          <h2>Steps</h2>
-          <ol>
-            {recipe.steps &&
-              recipe.steps.map((step) => (
-                <li key={step.id}>{step.instruction}</li>
-              ))}
-          </ol>
-        </section>
       </div>
       <Sidebar className="gap-4">
         <EditRecipeButton
@@ -75,9 +61,20 @@ export function RecipeDetail({
           editHref={`/recipes/${recipe.slug}/edit`}
           className="w-full"
         />
-        <p className="text-xs">
-          By {recipe.ownerDisplayName ?? "Unknown cook"}
-        </p>
+        <div className="space-y-0.5 text-sm">
+          <p className="">By {recipe.ownerDisplayName ?? "Unknown cook"}</p>{" "}
+          <p className="">Serves: {baseServings}</p>
+          {recipe.prepTimeMins && <p>Prep time: {recipe.prepTimeMins}m</p>}
+          {recipe.cookTimeMins && (
+            <p className="mb-3">Cook time: {recipe.cookTimeMins}m</p>
+          )}
+          <p className="text-xs">
+            Created: {new Date(recipe.createdAt).toLocaleDateString()}
+          </p>
+          <p className="text-xs">
+            Updated: {new Date(recipe.updatedAt).toLocaleDateString()}
+          </p>
+        </div>
       </Sidebar>
     </>
   );
