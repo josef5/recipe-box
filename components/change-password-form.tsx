@@ -7,6 +7,8 @@ import {
   validateChangePasswordFormData,
 } from "@/lib/validation/auth";
 import { useState } from "react";
+import { Input } from "./ui/input";
+import { Button } from "./ui/button";
 
 export function ChangePasswordForm({ onSuccess }: { onSuccess?: () => void }) {
   const [currentPassword, setCurrentPassword] = useState("");
@@ -67,7 +69,7 @@ export function ChangePasswordForm({ onSuccess }: { onSuccess?: () => void }) {
         <label htmlFor="currentPassword" className="text-sm font-medium">
           Current password
         </label>
-        <input
+        <Input
           id="currentPassword"
           name="currentPassword"
           type="password"
@@ -83,7 +85,6 @@ export function ChangePasswordForm({ onSuccess }: { onSuccess?: () => void }) {
             fieldErrors.currentPassword ? "current-password-error" : undefined
           }
           aria-invalid={fieldErrors.currentPassword ? true : undefined}
-          className="rounded-md border px-3 py-2 text-sm"
           autoComplete="current-password"
         />
         {fieldErrors.currentPassword ? (
@@ -97,7 +98,7 @@ export function ChangePasswordForm({ onSuccess }: { onSuccess?: () => void }) {
         <label htmlFor="newPassword" className="text-sm font-medium">
           New password
         </label>
-        <input
+        <Input
           id="newPassword"
           name="newPassword"
           type="password"
@@ -113,7 +114,6 @@ export function ChangePasswordForm({ onSuccess }: { onSuccess?: () => void }) {
             fieldErrors.newPassword ? "new-password-error" : undefined
           }
           aria-invalid={fieldErrors.newPassword ? true : undefined}
-          className="rounded-md border px-3 py-2 text-sm"
           autoComplete="new-password"
         />
         {fieldErrors.newPassword ? (
@@ -123,26 +123,28 @@ export function ChangePasswordForm({ onSuccess }: { onSuccess?: () => void }) {
         ) : null}
       </div>
 
-      <div aria-live="polite" className="grid gap-2">
-        {error ? (
+      {error ? (
+        <div aria-live="polite" className="grid gap-2">
           <p role="alert" className="text-sm text-red-500">
             {error}
           </p>
-        ) : null}
-        {success ? (
+        </div>
+      ) : null}
+      {success ? (
+        <div aria-live="polite" className="grid gap-2">
           <p role="status" className="text-sm text-green-700">
             {success}
           </p>
-        ) : null}
-      </div>
+        </div>
+      ) : null}
 
-      <button
+      <Button
         type="submit"
         disabled={isPending || !isFormValid}
-        className="w-full rounded-md bg-indigo-500 px-3 py-2 text-sm font-semibold text-white hover:bg-indigo-400 disabled:opacity-50 sm:w-auto"
+        className="mt-2"
       >
         {isPending ? "Updating..." : "Update password"}
-      </button>
+      </Button>
     </form>
   );
 }
