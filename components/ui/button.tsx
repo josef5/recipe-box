@@ -13,6 +13,7 @@ const buttonVariants = cva(
         secondary: "text-foreground border",
         danger: "border border-danger text-danger",
         "danger-secondary": "text-danger border border-danger",
+        ghost: "bg-transparent text-foreground border-none",
       },
     },
     defaultVariants: { variant: "primary" },
@@ -28,7 +29,7 @@ export function Button({
 }: {
   label?: string;
   href?: string;
-  variant?: "primary" | "secondary" | "danger" | "danger-secondary";
+  variant?: "primary" | "secondary" | "danger" | "danger-secondary" | "ghost";
 } & VariantProps<typeof buttonVariants> &
   React.ComponentPropsWithoutRef<"a"> &
   React.ComponentPropsWithoutRef<"button">) {
