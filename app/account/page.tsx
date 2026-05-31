@@ -5,6 +5,7 @@ import Main from "@/components/main";
 import Header from "@/components/header";
 import { requireCurrentUser, userHasAdminRole } from "@/lib/auth/session";
 import { getPublicRecipes } from "@/lib/recipes";
+import Sidebar from "@/components/sidebar";
 
 export const dynamic = "force-dynamic";
 
@@ -16,13 +17,12 @@ export default async function AccountPage() {
 
   return (
     <Main>
+      <Header
+        title="Account"
+        description={`Manage your account settings for ${user.name ?? user.email ?? "your profile"}.`}
+      />
       <div className="flex flex-col gap-8">
-        <Header
-          title="Account"
-          description={`Manage your account settings for ${user.name ?? user.email ?? "your profile"}.`}
-        />
         <AccountProfileSection user={user} recipes={recipes} />
-
         {isAdmin ? (
           <AdminUsersSection
             initialUsers={adminUsers}
@@ -30,9 +30,9 @@ export default async function AccountPage() {
           />
         ) : null}
       </div>
-      <aside className="flex items-start gap-3 sm:col-start-2 sm:row-start-1 sm:flex-col">
+      <Sidebar className="flex items-start gap-3 sm:col-start-2 sm:row-start-1 sm:flex-col">
         {/* <SignOutButton /> */}
-      </aside>
+      </Sidebar>
     </Main>
   );
 }
