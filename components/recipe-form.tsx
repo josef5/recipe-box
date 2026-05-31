@@ -42,6 +42,8 @@ type RecipeFormValues = {
   steps: StepField[];
 };
 
+// TODO: Decompose label component?
+
 export function RecipeForm({
   action,
   ingredientSuggestions,

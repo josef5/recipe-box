@@ -8,6 +8,8 @@ import { EditRecipeButton } from "./ui/edit-recipe-button";
 import Sidebar from "./sidebar";
 import Header from "./header";
 
+// TODO: Allow add to favourites
+
 export function RecipeDetail({
   recipePromise,
 }: {

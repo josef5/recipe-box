@@ -10,8 +10,6 @@ import Header from "./header";
 import Sidebar from "./sidebar";
 import { Input } from "./ui/input";
 
-// TODO: Decompose to Page?
-
 export function HomePageContent({
   recipesPromise,
   query,
@@ -51,6 +49,7 @@ export function HomePageContent({
             <label htmlFor="recipe-search" className="sr-only">
               Search recipes
             </label>
+            {/* TODO: Improve search layout */}
             <Input
               id="recipe-search"
               type="search"
@@ -96,13 +95,15 @@ function RecipeCard({ recipe }: { recipe: Recipe }) {
           loading="eager"
           className="mb-3 h-61 w-full rounded-lg border object-cover"
         />
-        <h2 className="mb-2 font-bold">{recipe.title}</h2>
-        {recipe.description ? (
-          <div className="mb-4 text-xs">{recipe.description}</div>
-        ) : null}
-        <div className="text-foreground-muted mb-3 flex gap-4 text-xs">
-          <p className="">By {recipe.ownerDisplayName ?? "Unknown cook"}</p>
-          <p className="">Created: {formatStableDate(recipe.createdAt)}</p>
+        <div className="px-1">
+          <h2 className="mb-2 font-bold">{recipe.title}</h2>
+          {recipe.description ? (
+            <div className="mb-4 text-xs">{recipe.description}</div>
+          ) : null}
+          <div className="text-foreground-muted mb-3 flex gap-4 text-xs">
+            <p className="">By {recipe.ownerDisplayName ?? "Unknown cook"}</p>
+            <p className="">Created: {formatStableDate(recipe.createdAt)}</p>
+          </div>
         </div>
       </Link>
     </li>
