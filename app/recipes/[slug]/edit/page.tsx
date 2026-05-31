@@ -5,7 +5,7 @@ import {
   updateRecipeFromForm,
 } from "@/actions/recipes";
 import Main from "@/components/main";
-import PageTitle from "@/components/page-title";
+import Header from "@/components/header";
 import {
   DeleteButton,
   RecipeForm,
@@ -42,7 +42,7 @@ export default async function EditRecipePage({
 
   return (
     <Main>
-      <PageTitle
+      <Header
         title="Edit recipe"
         description="Update details, ingredients, and steps."
       />

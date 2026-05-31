@@ -1,6 +1,6 @@
 import { cn } from "@/lib/utils";
 
-export default function PageTitle({
+export default function Header({
   title,
   description,
   className,
@@ -8,9 +8,9 @@ export default function PageTitle({
 }: {
   title: string;
   description?: string;
-} & React.ComponentPropsWithoutRef<"div">) {
+} & React.ComponentPropsWithoutRef<"header">) {
   return (
-    <div
+    <header
       className={cn(
         "col-span-full mb-2 flex flex-col items-start justify-between sm:row-start-1",
         className,
@@ -19,6 +19,6 @@ export default function PageTitle({
     >
       <h1 className="font-bold">{title}</h1>
       <p className="text-sm">{description}</p>
-    </div>
+    </header>
   );
 }

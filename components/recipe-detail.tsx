@@ -6,7 +6,7 @@ import { use } from "react";
 import { ScaledIngredientsList } from "./scaled-ingredients-list";
 import { EditRecipeButton } from "./ui/edit-recipe-button";
 import Sidebar from "./sidebar";
-import PageTitle from "./page-title";
+import Header from "./header";
 
 export function RecipeDetail({
   recipePromise,
@@ -20,7 +20,7 @@ export function RecipeDetail({
 
   return (
     <>
-      <PageTitle
+      <Header
         title={recipe.title}
         description={`By ${recipe.ownerDisplayName ?? "Unknown cook"}`}
       />

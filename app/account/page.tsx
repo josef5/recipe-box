@@ -2,6 +2,7 @@ import { getManagedUsersForAccountPage } from "@/actions/admin-users";
 import { AccountProfileSection } from "@/components/account-profile-section";
 import { AdminUsersSection } from "@/components/admin-users-section";
 import Main from "@/components/main";
+import Header from "@/components/header";
 import { requireCurrentUser, userHasAdminRole } from "@/lib/auth/session";
 import { getPublicRecipes } from "@/lib/recipes";
 
@@ -16,13 +17,10 @@ export default async function AccountPage() {
   return (
     <Main>
       <div className="flex flex-col gap-8">
-        <header className="flex flex-col gap-2">
-          <h1 className="text-2xl font-bold">Account</h1>
-          <p className="text-sm text-gray-600">
-            Manage your account settings for{" "}
-            {user.name ?? user.email ?? "your profile"}.
-          </p>
-        </header>
+        <Header
+          title="Account"
+          description={`Manage your account settings for ${user.name ?? user.email ?? "your profile"}.`}
+        />
         <AccountProfileSection user={user} recipes={recipes} />
 
         {isAdmin ? (

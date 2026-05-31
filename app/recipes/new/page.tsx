@@ -1,6 +1,6 @@
 import { createRecipeFromForm, getIngredients } from "@/actions/recipes";
 import Main from "@/components/main";
-import PageTitle from "@/components/page-title";
+import Header from "@/components/header";
 import { RecipeForm, SubmitButton } from "@/components/recipe-form";
 import Sidebar from "@/components/sidebar";
 import { BackButton } from "@/components/ui/back-button";
@@ -14,7 +14,7 @@ export default async function NewRecipePage() {
 
   return (
     <Main>
-      <PageTitle
+      <Header
         title="Add recipe"
         description="Create a new recipe with ingredients and ordered steps."
       />

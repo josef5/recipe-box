@@ -6,7 +6,7 @@ import Link from "next/link";
 import { use } from "react";
 import { NewRecipeButton } from "./ui/new-recipe-button";
 import { Button } from "./ui/button";
-import PageTitle from "./page-title";
+import Header from "./header";
 import Sidebar from "./sidebar";
 import { Input } from "./ui/input";
 
@@ -23,7 +23,7 @@ export function HomePageContent({
 
   return (
     <>
-      <PageTitle
+      <Header
         title="Recipes"
         description="Browse your collection of recipes."
       />
