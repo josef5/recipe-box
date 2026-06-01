@@ -3,6 +3,8 @@
 import { authClient } from "@/lib/auth/client";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { Input } from "./input";
+import { Button } from "./button";
 
 const MAX_NAME_LENGTH = 100;
 
@@ -105,48 +107,56 @@ export function EditableAccountName({
         {isEditing ? (
           <form
             action={handleSubmit}
-            className="flex flex-wrap items-center gap-2"
+            className="flex flex-wrap items-center justify-end gap-2"
           >
             <label htmlFor="name" className="sr-only">
               Name
             </label>
-            <input
+            <Input
               id="name"
               name="name"
               type="text"
               value={draftName}
               onChange={(event) => setDraftName(event.currentTarget.value)}
-              className="min-w-52 rounded-md border px-3 py-2 text-sm"
               autoComplete="name"
               required
               maxLength={100}
+              className="min-w-8 flex-1"
             />
-            <button
-              type="submit"
-              disabled={isPending}
-              className="rounded-md bg-indigo-500 px-3 py-2 text-sm font-semibold text-white hover:bg-indigo-400 disabled:opacity-50"
-            >
-              {isPending ? "Saving..." : "Save"}
-            </button>
-            <button
-              type="button"
-              disabled={isPending}
-              onClick={cancelEditing}
-              className="rounded-md border px-3 py-2 text-sm hover:bg-gray-100 disabled:opacity-50"
-            >
-              Cancel
-            </button>
+            <div className="flex min-h-9 gap-2">
+              <Button
+                type="submit"
+                variant="primary"
+                size="sm"
+                disabled={isPending}
+                className="min-h-full min-w-14"
+              >
+                {isPending ? "Saving..." : "Save"}
+              </Button>
+              <Button
+                type="button"
+                variant="secondary"
+                size="sm"
+                disabled={isPending}
+                onClick={cancelEditing}
+                className="min-h-full min-w-14"
+              >
+                Cancel
+              </Button>
+            </div>
           </form>
         ) : (
           <div className="flex flex-wrap items-center gap-3">
             <span>{currentName ?? "Not set"}</span>
-            <button
+            <Button
               type="button"
+              variant="secondary"
+              size="sm"
               onClick={beginEditing}
-              className="rounded-md border px-2.5 py-1.5 text-xs font-medium hover:bg-gray-100"
+              // className="min-h-9 min-w-14"
             >
               Edit
-            </button>
+            </Button>
           </div>
         )}
 
