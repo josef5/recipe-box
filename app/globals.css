@@ -18,6 +18,7 @@
   --color-surface: var(--surface);
   --color-input: var(--input);
   --color-danger: var(--danger);
+  --breakpoint-xs: 30rem;
 }
 
 /* @media (prefers-color-scheme: dark) {
