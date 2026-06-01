@@ -101,7 +101,7 @@ export function EditableAccountName({
   }
 
   return (
-    <div className="col-span-2 items-baseline gap-3 sm:grid sm:grid-cols-[140px_1fr]">
+    <div className="col-span-2 grid grid-cols-subgrid items-baseline gap-3">
       <dt className="font-medium">Name</dt>
       <dd className="col-start-2 space-y-2">
         {isEditing ? (
