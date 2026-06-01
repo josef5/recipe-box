@@ -101,9 +101,9 @@ export function EditableAccountName({
   }
 
   return (
-    <>
+    <div className="col-span-2 items-baseline gap-3 sm:grid sm:grid-cols-[140px_1fr]">
       <dt className="font-medium">Name</dt>
-      <dd className="space-y-2">
+      <dd className="col-start-2 space-y-2">
         {isEditing ? (
           <form
             action={handleSubmit}
@@ -163,6 +163,6 @@ export function EditableAccountName({
         {error ? <p className="text-sm text-red-500">{error}</p> : null}
         {success ? <p className="text-sm text-green-700">{success}</p> : null}
       </dd>
-    </>
+    </div>
   );
 }
