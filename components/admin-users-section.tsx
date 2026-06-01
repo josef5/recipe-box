@@ -6,6 +6,8 @@ import { CreateAdminUserSchema } from "@/lib/validation/admin-users";
 import { useEffect, useRef, useState } from "react";
 import { Accordion } from "./ui/accordion";
 import { Dialog } from "./ui/dialog";
+import { Input } from "./ui/input";
+import { Button } from "./ui/button";
 
 type ClientActionResult<T = void> =
   | { ok: true; data: T }
@@ -202,111 +204,100 @@ export function AdminUsersSection({
   }
 
   return (
-    <section className="rounded-lg border p-4">
-      <h2 className="text-lg font-semibold">Admin: Users</h2>
-      <p className="mt-1 text-sm text-gray-600">
+    <section className="bg-surface space-y-4 rounded-xl px-5 py-6 text-sm drop-shadow-lg">
+      <h2 className="font-bold">Users</h2>
+      <p className="text-sm text-gray-600">
         Create users with provisional passwords and remove users when needed.
       </p>
-
       <Accordion
         headingNode={<h2 className="font-medium">Create new user</h2>}
-        className="border-none px-0"
         ref={accordionRef}
       >
-        <>
-          <form
-            onSubmit={handleCreateUser}
-            noValidate
-            className="mt-4 grid gap-4"
-          >
-            <div className="grid gap-1.5">
-              <label htmlFor="adminUserName" className="text-sm font-medium">
-                Name
-              </label>
-              <input
-                id="adminUserName"
-                name="name"
-                type="text"
-                value={name}
-                onChange={(event) => {
-                  setName(event.target.value);
-                  setCreateUserFieldErrors((current) => ({
-                    ...current,
-                    name: undefined,
-                  }));
-                }}
-                className="rounded-md border px-3 py-2 text-sm"
-              />
-              {createUserFieldErrors.name ? (
-                <p className="text-sm text-red-600">
-                  {createUserFieldErrors.name}
-                </p>
-              ) : null}
-            </div>
+        <form
+          onSubmit={handleCreateUser}
+          noValidate
+          className="mt-4 grid gap-4"
+        >
+          <div className="grid gap-1.5">
+            <label htmlFor="adminUserName" className="text-sm font-medium">
+              Name
+            </label>
+            <Input
+              id="adminUserName"
+              name="name"
+              type="text"
+              value={name}
+              onChange={(event) => {
+                setName(event.target.value);
+                setCreateUserFieldErrors((current) => ({
+                  ...current,
+                  name: undefined,
+                }));
+              }}
+            />
+            {createUserFieldErrors.name ? (
+              <p className="text-sm text-red-600">
+                {createUserFieldErrors.name}
+              </p>
+            ) : null}
+          </div>
 
-            <div className="grid gap-1.5">
-              <label htmlFor="adminUserEmail" className="text-sm font-medium">
-                Email
-              </label>
-              <input
-                id="adminUserEmail"
-                name="email"
-                type="email"
-                value={email}
-                onChange={(event) => {
-                  setEmail(event.target.value);
-                  setCreateUserFieldErrors((current) => ({
-                    ...current,
-                    email: undefined,
-                  }));
-                }}
-                className="rounded-md border px-3 py-2 text-sm"
-              />
-              {createUserFieldErrors.email ? (
-                <p className="text-sm text-red-600">
-                  {createUserFieldErrors.email}
-                </p>
-              ) : null}
-            </div>
+          <div className="grid gap-1.5">
+            <label htmlFor="adminUserEmail" className="text-sm font-medium">
+              Email
+            </label>
+            <Input
+              id="adminUserEmail"
+              name="email"
+              type="email"
+              value={email}
+              onChange={(event) => {
+                setEmail(event.target.value);
+                setCreateUserFieldErrors((current) => ({
+                  ...current,
+                  email: undefined,
+                }));
+              }}
+            />
+            {createUserFieldErrors.email ? (
+              <p className="text-sm text-red-600">
+                {createUserFieldErrors.email}
+              </p>
+            ) : null}
+          </div>
 
-            <div className="grid gap-1.5">
-              <label
-                htmlFor="adminUserProvisionalPassword"
-                className="text-sm font-medium"
-              >
-                Provisional password
-              </label>
-              <input
-                id="adminUserProvisionalPassword"
-                name="provisionalPassword"
-                type="password"
-                value={provisionalPassword}
-                onChange={(event) => {
-                  setProvisionalPassword(event.target.value);
-                  setCreateUserFieldErrors((current) => ({
-                    ...current,
-                    provisionalPassword: undefined,
-                  }));
-                }}
-                className="rounded-md border px-3 py-2 text-sm"
-                autoComplete="new-password"
-              />
-              {createUserFieldErrors.provisionalPassword ? (
-                <p className="text-sm text-red-600">
-                  {createUserFieldErrors.provisionalPassword}
-                </p>
-              ) : null}
-            </div>
-
-            <button
-              type="submit"
-              disabled={isCreating || !isCreateUserValid}
-              className="w-full rounded-md bg-indigo-500 px-3 py-2 text-sm font-semibold text-white hover:bg-indigo-400 disabled:opacity-50 sm:w-auto"
+          <div className="grid gap-1.5">
+            <label
+              htmlFor="adminUserProvisionalPassword"
+              className="text-sm font-medium"
             >
-              {isCreating ? "Creating..." : "Create user"}
-            </button>
-          </form>
-        </>
+              Provisional password
+            </label>
+            <Input
+              id="adminUserProvisionalPassword"
+              name="provisionalPassword"
+              type="password"
+              value={provisionalPassword}
+              onChange={(event) => {
+                setProvisionalPassword(event.target.value);
+                setCreateUserFieldErrors((current) => ({
+                  ...current,
+                  provisionalPassword: undefined,
+                }));
+              }}
+              autoComplete="new-password"
+            />
+            {createUserFieldErrors.provisionalPassword ? (
+              <p className="text-sm text-red-600">
+                {createUserFieldErrors.provisionalPassword}
+              </p>
+            ) : null}
+          </div>
+
+          <Button type="submit" disabled={isCreating || !isCreateUserValid}>
+            {isCreating ? "Creating..." : "Create user"}
+          </Button>
+        </form>
       </Accordion>
       {error ? <p className="mt-4 text-sm text-red-500">{error}</p> : null}
       {success ? (
@@ -363,14 +354,14 @@ export function AdminUsersSection({
                         setDeletingUserId(user.id);
                         dialogRef.current?.showModal();
                       }}
-                      className="rounded border px-2 py-1 text-xs disabled:opacity-50"
+                      className="w-full"
                     >
                       {isCurrentUser
                         ? "Current user"
                         : isDeleting
                           ? "Deleting..."
                           : "Delete"}
-                    </button>
+                    </Button>
                   </td>
                 </tr>
               );
