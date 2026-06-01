@@ -436,7 +436,7 @@ export function RecipeForm({
               {imageUrl ? (
                 <Button
                   type="button"
-                  variant="danger-secondary"
+                  variant="destructive-secondary"
                   onClick={() => {
                     setImageUrl("");
                     setImagePublicId("");
@@ -575,7 +575,7 @@ export function RecipeForm({
                         )
                       }
                       aria-label={`Remove ingredient ${index + 1}`}
-                      variant="danger-secondary"
+                      variant="destructive-secondary"
                     >
                       Remove
                     </Button>
@@ -618,7 +618,7 @@ export function RecipeForm({
                   />
                   <Button
                     type="button"
-                    variant="danger-secondary"
+                    variant="destructive-secondary"
                     onClick={() =>
                       setSteps((current) =>
                         current.length === 1
@@ -716,7 +716,7 @@ export function DeleteButton({
         onClick={async () => {
           dialogRef.current?.showModal();
         }}
-        variant="danger"
+        variant="destructive"
         {...props}
       >
         {isPending ? "Deleting..." : "Delete"}
