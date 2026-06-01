@@ -21,7 +21,7 @@ export function AccountProfileSection({
   }>(null);
 
   return (
-    <section className="rounded-lg border p-4">
+    <section className="bg-surface space-y-4 rounded-xl px-5 py-6 text-sm drop-shadow-lg">
       <dl className="grid gap-3 sm:grid-cols-[140px_1fr]">
         <EditableAccountName initialName={user.name ?? null} />
         <dt className="font-medium">Email</dt>
@@ -33,7 +33,6 @@ export function AccountProfileSection({
       </dl>
       <Accordion
         headingNode={<h2 className="font-medium">Change Password</h2>}
-        className="border-none px-0"
         ref={accordionRef}
       >
         <ChangePasswordForm
@@ -43,9 +42,9 @@ export function AccountProfileSection({
         />
       </Accordion>
       {recipes.length > 0 ? (
-        <div className="mt-6">
-          <h2 className="font-medium">Your Recipes</h2>
-          <ul className="list-inside list-disc">
+        <div className="mt-6 space-y-2">
+          <h2 className="font-bold">Your Recipes</h2>
+          <ul className="list-inside list-disc pl-0.5">
             {recipes.map((recipe) => (
               <li key={recipe.id}>
                 <Link href={`/recipes/${recipe.slug}`}>{recipe.title}</Link>
