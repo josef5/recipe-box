@@ -716,7 +716,7 @@ export function DeleteButton({
         onClick={async () => {
           dialogRef.current?.showModal();
         }}
-        variant="destructive"
+        variant="destructive-secondary"
         {...props}
       >
         {isPending ? "Deleting..." : "Delete"}
