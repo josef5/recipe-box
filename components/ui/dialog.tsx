@@ -1,6 +1,7 @@
 "use client";
 
 import { useId, useRef } from "react";
+import { Button } from "./button";
 
 export function Dialog({
   title,
@@ -63,27 +64,23 @@ export function Dialog({
       onClick={handleClick}
       onKeyDown={handleKeyDown}
       onToggle={handleToggle}
-      className="backdrop:bg-opacity-70 m-auto rounded-md border p-6 backdrop:bg-gray-900 backdrop:opacity-70"
+      className="backdrop:bg-opacity-70 backdrop:bg-foreground m-auto rounded-md p-6 drop-shadow-lg backdrop:opacity-70"
     >
-      <h2 id={titleId} className="text-lg font-semibold">
+      <h2 id={titleId} className="font-semibold">
         {title}
       </h2>
       <div className="mt-4 flex justify-end gap-3">
-        <button
+        <Button
           ref={cancelButtonRef}
           type="button"
+          variant="secondary"
           onClick={() => dialogRef.current?.close()}
-          className="rounded-md border px-4 py-2 text-sm"
         >
           Cancel
-        </button>
-        <button
-          type="button"
-          onClick={onConfirm}
-          className="rounded-md bg-red-500 px-4 py-2 text-sm font-semibold text-white hover:bg-red-400"
-        >
+        </Button>
+        <Button type="button" variant="destructive" onClick={onConfirm}>
           {confirmButtonText}
-        </button>
+        </Button>
       </div>
     </dialog>
   );
