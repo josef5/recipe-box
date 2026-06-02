@@ -206,7 +206,7 @@ export function AdminUsersSection({
   return (
     <section className="bg-surface space-y-4 rounded-xl px-5 py-6 text-sm drop-shadow-lg">
       <h2 className="font-bold">Users</h2>
-      <p className="text-sm text-gray-600">
+      <p className="text-sm">
         Create users with provisional passwords and remove users when needed.
       </p>
       <Accordion
@@ -236,7 +236,7 @@ export function AdminUsersSection({
               }}
             />
             {createUserFieldErrors.name ? (
-              <p className="text-sm text-red-600">
+              <p className="text-danger text-sm">
                 {createUserFieldErrors.name}
               </p>
             ) : null}
@@ -260,7 +260,7 @@ export function AdminUsersSection({
               }}
             />
             {createUserFieldErrors.email ? (
-              <p className="text-sm text-red-600">
+              <p className="text-danger text-sm">
                 {createUserFieldErrors.email}
               </p>
             ) : null}
@@ -288,7 +288,7 @@ export function AdminUsersSection({
               autoComplete="new-password"
             />
             {createUserFieldErrors.provisionalPassword ? (
-              <p className="text-sm text-red-600">
+              <p className="text-danger text-sm">
                 {createUserFieldErrors.provisionalPassword}
               </p>
             ) : null}
@@ -299,76 +299,72 @@ export function AdminUsersSection({
           </Button>
         </form>
       </Accordion>
-      {error ? <p className="mt-4 text-sm text-red-500">{error}</p> : null}
-      {success ? (
-        <p className="mt-4 text-sm text-green-700">{success}</p>
-      ) : null}
-      <div className="mt-2 overflow-x-auto">
-        <table className="w-full text-sm">
-          <thead className="xs:table-header-group hidden">
-            <tr className="xs:table-row mb-4 block">
-              <th className="px-2 py-2 text-left font-medium">Name</th>
-              <th className="px-2 py-2 text-left font-medium">Email</th>
-              <th className="px-2 py-2 text-left font-medium">Role</th>
-              <th className="px-2 py-2 text-left font-medium">Created</th>
-              <th className="px-2 py-2 text-left font-medium">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {users.map((user) => {
-              const isCurrentUser = user.id === currentUserId;
-              const isDeleting = deletingUserId === user.id;
+      {error ? <p className="text-danger mt-4 text-sm">{error}</p> : null}
+      {success ? <p className="text-success mt-4 text-sm">{success}</p> : null}
+      <table className="mb-0 w-full text-sm">
+        <thead className="xs:table-header-group hidden">
+          <tr className="xs:table-row mb-4 block">
+            <th className="px-2 py-2 text-left font-medium">Name</th>
+            <th className="px-2 py-2 text-left font-medium">Email</th>
+            <th className="px-2 py-2 text-left font-medium">Role</th>
+            <th className="px-2 py-2 text-left font-medium">Created</th>
+            <th className="px-2 py-2 text-left font-medium">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {users.map((user) => {
+            const isCurrentUser = user.id === currentUserId;
+            const isDeleting = deletingUserId === user.id;
 
-              return (
-                <tr
-                  key={user.id}
-                  className="xs:table-row border-foreground/25 block border-b last:border-0"
-                >
-                  <td className="xs:table-cell flex justify-between px-2 py-2">
-                    <span className="xs:hidden font-bold">Name</span>
-                    {user.name}
-                  </td>
-                  <td className="xs:table-cell flex justify-between px-2 py-2 break-all">
-                    <span className="xs:hidden font-bold">Email</span>
-                    {user.email}
-                  </td>
-                  <td className="xs:table-cell flex justify-between px-2 py-2">
-                    <span className="xs:hidden font-bold">Role</span>
-                    {user.role ?? "user"}
-                  </td>
-                  <td className="xs:table-cell flex justify-between px-2 py-2 break-all">
-                    <span className="xs:hidden font-bold">Created</span>
-                    {formatStableDate(user.createdAt)}
-                  </td>
-                  <td className="xs:table-cell flex justify-between px-2 py-2">
-                    <Button
-                      type="button"
-                      variant={
-                        isCurrentUser || isDeleting
-                          ? "secondary"
-                          : "destructive-secondary"
-                      }
-                      size="sm"
-                      disabled={isCurrentUser || isDeleting}
-                      onClick={() => {
-                        setDeletingUserId(user.id);
-                        dialogRef.current?.showModal();
-                      }}
-                      className="w-full"
-                    >
-                      {isCurrentUser
-                        ? "Current user"
-                        : isDeleting
-                          ? "Deleting..."
-                          : "Delete"}
-                    </Button>
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-      </div>
+            return (
+              <tr
+                key={user.id}
+                className="xs:table-row border-foreground/25 block border-b last:border-0"
+              >
+                <td className="xs:table-cell flex justify-between px-2 py-2">
+                  <span className="xs:hidden font-medium">Name</span>
+                  {user.name}
+                </td>
+                <td className="xs:table-cell flex justify-between px-2 py-2 break-all">
+                  <span className="xs:hidden font-medium">Email</span>
+                  {user.email}
+                </td>
+                <td className="xs:table-cell flex justify-between px-2 py-2">
+                  <span className="xs:hidden font-medium">Role</span>
+                  {user.role ?? "user"}
+                </td>
+                <td className="xs:table-cell flex justify-between px-2 py-2 break-all">
+                  <span className="xs:hidden font-medium">Created</span>
+                  {formatStableDate(user.createdAt)}
+                </td>
+                <td className="xs:table-cell flex justify-between px-2 py-2">
+                  <Button
+                    type="button"
+                    variant={
+                      isCurrentUser || isDeleting
+                        ? "secondary"
+                        : "destructive-secondary"
+                    }
+                    size="sm"
+                    disabled={isCurrentUser || isDeleting}
+                    onClick={() => {
+                      setDeletingUserId(user.id);
+                      dialogRef.current?.showModal();
+                    }}
+                    className="w-full"
+                  >
+                    {isCurrentUser
+                      ? "Current user"
+                      : isDeleting
+                        ? "Deleting..."
+                        : "Delete"}
+                  </Button>
+                </td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
       <Dialog
         title="Delete this user? This action cannot be undone."
         onConfirm={() => deletingUserId && handleDeleteUser(deletingUserId)}
