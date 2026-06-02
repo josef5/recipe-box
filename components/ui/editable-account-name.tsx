@@ -121,7 +121,7 @@ export function EditableAccountName({
               autoComplete="name"
               required
               maxLength={100}
-              className="min-w-8 flex-1"
+              className="min-w-36 flex-1"
             />
             <div className="flex min-h-9 gap-2">
               <Button
@@ -153,15 +153,13 @@ export function EditableAccountName({
               variant="secondary"
               size="sm"
               onClick={beginEditing}
-              // className="min-h-9 min-w-14"
             >
               Edit
             </Button>
           </div>
         )}
-
-        {error ? <p className="text-sm text-red-500">{error}</p> : null}
-        {success ? <p className="text-sm text-green-700">{success}</p> : null}
+        {error ? <p className="text-danger text-sm">{error}</p> : null}
+        {success ? <p className="text-success text-sm">{success}</p> : null}
       </dd>
     </div>
   );
