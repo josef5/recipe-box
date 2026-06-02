@@ -21,7 +21,9 @@ export function AccountProfileSection({
   }>(null);
 
   return (
-    <section className="bg-surface space-y-4 rounded-xl px-5 py-6 text-sm drop-shadow-lg">
+    <section className="bg-surface space-y-4 rounded-xl px-5 pt-6 pb-8 text-sm drop-shadow-lg">
+      <h2 className="font-bold">Profile</h2>
+      <p className="text-sm">Account details and settings.</p>
       <dl className="grid gap-3 sm:grid-cols-[140px_1fr]">
         <EditableAccountName initialName={user.name ?? null} />
         <dt className="font-medium">Email</dt>
