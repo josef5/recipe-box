@@ -651,7 +651,7 @@ export function SubmitButton({
   label: string;
   form?: string;
   disabled?: boolean;
-} & React.ComponentProps<typeof Button>) {
+} & Omit<React.ComponentProps<"button">, "type" | "form" | "disabled">) {
   const { pending } = useFormStatus();
   const [isFormValid, setIsFormValid] = useState(!form);
 
@@ -703,7 +703,7 @@ export function DeleteButton({
   ...props
 }: {
   action: () => string | void | Promise<string | void>;
-} & React.ComponentProps<typeof Button>) {
+} & Omit<React.ComponentProps<"button">, "type" | "form" | "disabled">) {
   const router = useRouter();
   const [isPending, setIsPending] = useState(false);
   const dialogRef = useRef<HTMLDialogElement>(null);
