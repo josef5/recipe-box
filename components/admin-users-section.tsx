@@ -368,6 +368,7 @@ export function AdminUsersSection({
       <Dialog
         title="Delete this user? This action cannot be undone."
         onConfirm={() => deletingUserId && handleDeleteUser(deletingUserId)}
+        onCancel={() => setDeletingUserId(null)}
         dialogRef={dialogRef}
       />
     </section>
