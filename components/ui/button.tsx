@@ -25,16 +25,8 @@ const buttonVariants = cva(
   },
 );
 
-export function Button({
-  label,
-  href,
-  variant,
-  size,
-  className,
-  ...props
-}: {
+type CommonType = {
   label?: string;
-  href?: string;
   variant?:
     | "primary"
     | "secondary"
@@ -42,27 +34,74 @@ export function Button({
     | "destructive-secondary"
     | "ghost";
   size?: "sm" | "md" | "lg";
-} & VariantProps<typeof buttonVariants> &
-  React.ComponentPropsWithoutRef<"a"> &
-  React.ComponentPropsWithoutRef<"button">) {
-  if (!href) {
+  className?: string;
+  disabled?: boolean;
+} & VariantProps<typeof buttonVariants>;
+
+type ButtonType = CommonType &
+  Omit<React.ComponentPropsWithRef<"button">, "className" | "href"> & {
+    href?: undefined;
+    ref?: React.Ref<HTMLButtonElement>;
+  };
+
+type LinkType = CommonType &
+  Omit<React.ComponentPropsWithRef<"a">, "className"> & {
+    href: string;
+    ref?: React.Ref<HTMLAnchorElement>;
+  };
+
+type Props = ButtonType | LinkType;
+
+export function Button(props: Props) {
+  if (props.href == null) {
+    const {
+      label,
+      variant,
+      size,
+      className,
+      ref,
+      disabled,
+      href: _href,
+      children,
+      ...buttonProps
+    } = props;
+    void _href; // To prevent "href is declared but its value is never read" error
+
     return (
       <button
         className={cn(buttonVariants({ variant, size }), className)}
-        {...props}
+        ref={ref}
+        disabled={disabled}
+        {...buttonProps}
       >
-        {label ?? props.children}
+        {label ?? children}
       </button>
     );
   }
+
+  const {
+    label,
+    href,
+    variant,
+    size,
+    className,
+    ref,
+    disabled,
+    children,
+    ...linkProps
+  } = props;
 
   return (
     <Link
       href={href}
       className={cn(buttonVariants({ variant, size }), className)}
-      {...props}
+      ref={ref}
+      aria-disabled={disabled}
+      tabIndex={disabled ? -1 : linkProps.tabIndex}
+      onClick={disabled ? (e) => e.preventDefault() : linkProps.onClick}
+      {...linkProps}
     >
-      {label ?? props.children}
+      {label ?? children}
     </Link>
   );
 }
