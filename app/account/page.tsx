@@ -21,7 +21,7 @@ export default async function AccountPage() {
         title="Account"
         description={`Manage your account settings for ${user.name ?? user.email ?? "your profile"}.`}
       />
-      <div className="flex flex-col gap-8">
+      <div className="col-span-full row-start-2 flex flex-col gap-8 sm:col-span-1">
         <AccountProfileSection user={user} recipes={recipes} />
         {isAdmin ? (
           <AdminUsersSection
