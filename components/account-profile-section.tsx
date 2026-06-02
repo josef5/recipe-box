@@ -31,7 +31,7 @@ export function AccountProfileSection({
         <dt className="font-medium">Role</dt>
         <dd>{getRoles(user).join(", ")}</dd>
         <dt className="font-medium">User ID</dt>
-        <dd className="text-sm break-all text-gray-600">{user.id}</dd>
+        <dd className="text-sm break-all">{user.id}</dd>
       </dl>
       <Accordion
         headingNode={<h2 className="font-medium">Change Password</h2>}
