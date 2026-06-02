@@ -88,7 +88,7 @@ export function ChangePasswordForm({ onSuccess }: { onSuccess?: () => void }) {
           autoComplete="current-password"
         />
         {fieldErrors.currentPassword ? (
-          <p id="current-password-error" className="text-sm text-red-600">
+          <p id="current-password-error" className="text-danger text-sm">
             {fieldErrors.currentPassword}
           </p>
         ) : null}
@@ -117,7 +117,7 @@ export function ChangePasswordForm({ onSuccess }: { onSuccess?: () => void }) {
           autoComplete="new-password"
         />
         {fieldErrors.newPassword ? (
-          <p id="new-password-error" className="text-sm text-red-600">
+          <p id="new-password-error" className="text-danger text-sm">
             {fieldErrors.newPassword}
           </p>
         ) : null}
@@ -125,19 +125,18 @@ export function ChangePasswordForm({ onSuccess }: { onSuccess?: () => void }) {
 
       {error ? (
         <div aria-live="polite" className="grid gap-2">
-          <p role="alert" className="text-sm text-red-500">
+          <p role="alert" className="text-danger text-sm">
             {error}
           </p>
         </div>
       ) : null}
       {success ? (
         <div aria-live="polite" className="grid gap-2">
-          <p role="status" className="text-sm text-green-700">
+          <p role="status" className="text-success text-sm">
             {success}
           </p>
         </div>
       ) : null}
-
       <Button
         type="submit"
         disabled={isPending || !isFormValid}
