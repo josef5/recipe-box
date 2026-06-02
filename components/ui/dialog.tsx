@@ -6,12 +6,16 @@ import { Button } from "./button";
 export function Dialog({
   title,
   onConfirm,
+  onCancel,
   confirmButtonText = "Confirm",
+  cancelButtonText = "Cancel",
   dialogRef,
 }: {
   title: string;
   onConfirm: () => void;
+  onCancel?: () => void;
   confirmButtonText?: string;
+  cancelButtonText?: string;
   dialogRef: React.RefObject<HTMLDialogElement | null>;
 }) {
   const titleId = useId();
@@ -21,6 +25,7 @@ export function Dialog({
   // Click-outside closes by comparing target to the dialog backdrop.
   const handleClick = (event: React.MouseEvent<HTMLDialogElement>) => {
     if (event.target === dialogRef.current) {
+      onCancel?.();
       dialogRef.current?.close();
     }
   };
@@ -74,9 +79,12 @@ export function Dialog({
           ref={cancelButtonRef}
           type="button"
           variant="secondary"
-          onClick={() => dialogRef.current?.close()}
+          onClick={() => {
+            onCancel?.();
+            dialogRef.current?.close();
+          }}
         >
-          Cancel
+          {cancelButtonText}
         </Button>
         <Button type="button" variant="destructive" onClick={onConfirm}>
           {confirmButtonText}
