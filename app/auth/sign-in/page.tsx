@@ -1,6 +1,8 @@
 "use client";
 
 import Main from "@/components/main";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { authClient } from "@/lib/auth/client";
 import {
   SignInSchema,
@@ -71,82 +73,74 @@ function SignInForm() {
       <form
         action={handleSubmit}
         noValidate
-        className="flex flex-col items-center gap-5"
+        className="flex min-h-[70vh] flex-col items-start gap-2"
       >
-        <h1 className="text-2xl font-bold">Sign in to recipe-box</h1>
-
-        <div className="flex w-80 flex-col gap-1.5">
-          <label htmlFor="email" className="text-sm font-medium">
-            Email
-          </label>
-          <input
-            id="email"
-            name="email"
-            type="email"
-            value={email}
-            onChange={(event) => {
-              setEmail(event.target.value);
-              setFieldErrors((current) => ({ ...current, email: undefined }));
-            }}
-            placeholder="you@example.com"
-            aria-describedby={
-              fieldErrors.email ? "sign-in-email-error" : undefined
-            }
-            aria-invalid={fieldErrors.email ? true : undefined}
-            className="rounded-md border px-3 py-2 text-sm"
-          />
-          {fieldErrors.email ? (
-            <p id="sign-in-email-error" className="text-sm text-red-600">
-              {fieldErrors.email}
-            </p>
-          ) : null}
-        </div>
-
-        <div className="flex w-80 flex-col gap-1.5">
-          <label htmlFor="password" className="text-sm font-medium">
-            Password
-          </label>
-          <input
-            id="password"
-            name="password"
-            type="password"
-            value={password}
-            onChange={(event) => {
-              setPassword(event.target.value);
-              setFieldErrors((current) => ({
-                ...current,
-                password: undefined,
-              }));
-            }}
-            placeholder="*****"
-            aria-describedby={
-              fieldErrors.password ? "sign-in-password-error" : undefined
-            }
-            aria-invalid={fieldErrors.password ? true : undefined}
-            className="rounded-md border px-3 py-2 text-sm"
-          />
-          {fieldErrors.password ? (
-            <p id="sign-in-password-error" className="text-sm text-red-600">
-              {fieldErrors.password}
-            </p>
-          ) : null}
-        </div>
-
+        <h1 className="font-bold">Sign in to Recipe Box</h1>
+        <label htmlFor="email" className="text-sm font-medium">
+          Email
+        </label>
+        <Input
+          id="email"
+          name="email"
+          type="email"
+          value={email}
+          onChange={(event) => {
+            setEmail(event.target.value);
+            setFieldErrors((current) => ({ ...current, email: undefined }));
+          }}
+          placeholder="you@example.com"
+          aria-describedby={
+            fieldErrors.email ? "sign-in-email-error" : undefined
+          }
+          aria-invalid={fieldErrors.email ? true : undefined}
+          className="w-full"
+        />
+        {fieldErrors.email ? (
+          <p id="sign-in-email-error" className="text-sm text-red-600">
+            {fieldErrors.email}
+          </p>
+        ) : null}
+        <label htmlFor="password" className="text-sm font-medium">
+          Password
+        </label>
+        <Input
+          id="password"
+          name="password"
+          type="password"
+          value={password}
+          onChange={(event) => {
+            setPassword(event.target.value);
+            setFieldErrors((current) => ({
+              ...current,
+              password: undefined,
+            }));
+          }}
+          placeholder="*****"
+          aria-describedby={
+            fieldErrors.password ? "sign-in-password-error" : undefined
+          }
+          aria-invalid={fieldErrors.password ? true : undefined}
+          className="w-full"
+        />
+        {fieldErrors.password ? (
+          <p id="sign-in-password-error" className="text-danger text-sm">
+            {fieldErrors.password}
+          </p>
+        ) : null}
         <div aria-live="polite" className="w-80">
           {error ? (
-            <p role="alert" className="text-sm text-red-500">
+            <p role="alert" className="text-danger text-sm">
               {error}
             </p>
           ) : null}
         </div>
-
-        <button
+        <Button
           type="submit"
           disabled={isPending || !isFormValid}
-          className="w-80 rounded-md bg-indigo-500 px-3 py-2 text-sm font-semibold text-white hover:bg-indigo-400 disabled:opacity-50"
+          className="mt-4 min-w-1/2"
         >
           {isPending ? "Signing in..." : "Sign in"}
-        </button>
+        </Button>
       </form>
     </Main>
   );
