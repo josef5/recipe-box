@@ -4,6 +4,9 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "dev:https": "next dev --experimental-https -H 0.0.0.0",
+    "dev:https:cert": "next dev -H 0.0.0.0 --experimental-https --experimental-https-key ./certs/lan-key.pem --experimental-https-cert ./certs/lan-cert.pem",
+    "cert:lan": "mkdir -p certs && mkcert -key-file ./certs/lan-key.pem -cert-file ./certs/lan-cert.pem 192.168.1.231 localhost 127.0.0.1 ::1",
     "dev:webpack": "next dev --webpack",
     "build": "next build",
     "start": "next start",

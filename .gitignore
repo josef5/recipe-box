@@ -42,3 +42,5 @@ next-env.d.ts
 
 # local playwright test artifacts
 /.playwright-mcp
+
+certificates
