@@ -3,6 +3,16 @@
 import { authClient } from "@/lib/auth/client";
 import { Button } from "./button";
 
+type ButtonLinkProps = Extract<
+  React.ComponentPropsWithoutRef<typeof Button>,
+  { href: string }
+>;
+
+type EditRecipeButtonProps = {
+  recipeUserId: string | null;
+  editHref: string;
+} & Omit<ButtonLinkProps, "href" | "children" | "variant">;
+
 function userHasAdminRole(user: unknown) {
   if (!user || typeof user !== "object") {
     return false;
@@ -22,13 +32,7 @@ export function EditRecipeButton({
   editHref,
   className,
   ...props
-}: {
-  recipeUserId: string | null;
-  editHref: string;
-} & Omit<
-  React.ComponentPropsWithoutRef<typeof Button>,
-  "href" | "children" | "variant"
->) {
+}: EditRecipeButtonProps) {
   const { data: session, isPending } = authClient.useSession();
   const isOwner = !!recipeUserId && session?.user?.id === recipeUserId;
   const isAdmin = userHasAdminRole(session?.user);
