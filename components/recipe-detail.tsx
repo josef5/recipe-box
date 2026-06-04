@@ -63,13 +63,14 @@ export function RecipeDetail({
           editHref={`/recipes/${recipe.slug}/edit`}
           className="w-full"
         />
-        <div className="space-y-0.5 text-sm">
-          <p className="">By {recipe.ownerDisplayName ?? "Unknown cook"}</p>{" "}
+        <div className="flex flex-wrap gap-x-2 gap-y-0 text-sm sm:flex-col">
           <p className="">Serves: {baseServings}</p>
           {recipe.prepTimeMins && <p>Prep time: {recipe.prepTimeMins}m</p>}
           {recipe.cookTimeMins && (
             <p className="mb-3">Cook time: {recipe.cookTimeMins}m</p>
           )}
+          {/* Spacer for wrapping */}
+          <p className="w-0 basis-full sm:hidden"></p>
           <p className="text-xs">
             Created: {new Date(recipe.createdAt).toLocaleDateString()}
           </p>
