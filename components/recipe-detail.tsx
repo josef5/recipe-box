@@ -72,10 +72,10 @@ export function RecipeDetail({
           {/* Spacer for wrapping */}
           <p className="w-0 basis-full sm:hidden"></p>
           <p className="text-xs">
-            Created: {new Date(recipe.createdAt).toLocaleDateString()}
+            Created: {new Date(recipe.createdAt).toLocaleDateString("en-GB")}
           </p>
           <p className="text-xs">
-            Updated: {new Date(recipe.updatedAt).toLocaleDateString()}
+            Updated: {new Date(recipe.updatedAt).toLocaleDateString("en-GB")}
           </p>
         </div>
       </Sidebar>
