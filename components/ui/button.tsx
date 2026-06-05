@@ -17,7 +17,7 @@ const buttonVariants = cva(
       },
       size: {
         sm: "px-2 py-1.5 text-xs font-normal",
-        md: "px-4 py-2 text-sm font-bold",
+        md: "px-4 py-2 text-sm font-normal",
         lg: "px-5 py-3 text-base font-bold",
       },
     },
