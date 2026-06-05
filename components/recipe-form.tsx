@@ -399,7 +399,7 @@ export function RecipeForm({
               }
               aria-invalid={state?.errors.imageUrl ? true : undefined}
             />
-            <input name="imagePublicId" type="hidden" value={imagePublicId} />
+            <Input name="imagePublicId" type="hidden" value={imagePublicId} />
             <p id="image-url-help" className="text-xs">
               Upload to Cloudinary or paste any external image URL.
             </p>
