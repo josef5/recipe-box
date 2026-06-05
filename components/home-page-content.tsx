@@ -49,14 +49,13 @@ export function HomePageContent({
             <label htmlFor="recipe-search" className="sr-only">
               Search recipes
             </label>
-            {/* TODO: Improve search layout */}
             <Input
               id="recipe-search"
               type="search"
               name="q"
               defaultValue={query}
               placeholder="Search recipes"
-              className="w-full"
+              className="flex-1"
             />
             <div className="flex gap-2">
               <Button
@@ -70,7 +69,7 @@ export function HomePageContent({
                   label="Clear"
                   href="/"
                   variant="secondary"
-                  className="shrink"
+                  className="flex-1"
                 />
               )}
             </div>
