@@ -245,7 +245,7 @@ export function RecipeForm({
           <p
             id="recipe-form-error"
             role="alert"
-            className="rounded-md bg-red-50 px-4 py-3 text-sm text-red-700"
+            className="text-danger rounded-md px-4 py-3 text-sm"
           >
             {state.errors._form}
           </p>
@@ -263,7 +263,7 @@ export function RecipeForm({
               aria-invalid={state?.errors.title ? true : undefined}
             />
             {state?.errors.title && (
-              <p id="title-error" className="text-sm text-red-600">
+              <p id="title-error" className="text-danger text-sm">
                 {state.errors.title}
               </p>
             )}
@@ -297,7 +297,7 @@ export function RecipeForm({
                 aria-invalid={state?.errors.servings ? true : undefined}
               />
               {state?.errors.servings && (
-                <p id="servings-error" className="text-sm text-red-600">
+                <p id="servings-error" className="text-danger text-sm">
                   {state.errors.servings}
                 </p>
               )}
@@ -320,7 +320,7 @@ export function RecipeForm({
                 aria-invalid={state?.errors.prepTimeMins ? true : undefined}
               />
               {state?.errors.prepTimeMins && (
-                <p id="prep-time-error" className="text-sm text-red-600">
+                <p id="prep-time-error" className="text-danger text-sm">
                   {state.errors.prepTimeMins}
                 </p>
               )}
@@ -343,7 +343,7 @@ export function RecipeForm({
                 aria-invalid={state?.errors.cookTimeMins ? true : undefined}
               />
               {state?.errors.cookTimeMins && (
-                <p id="cook-time-error" className="text-sm text-red-600">
+                <p id="cook-time-error" className="text-danger text-sm">
                   {state.errors.cookTimeMins}
                 </p>
               )}
@@ -375,7 +375,7 @@ export function RecipeForm({
                 aria-invalid={state?.errors.sourceUrl ? true : undefined}
               />
               {state?.errors.sourceUrl && (
-                <p id="source-url-error" className="text-sm text-red-600">
+                <p id="source-url-error" className="text-danger text-sm">
                   {state.errors.sourceUrl}
                 </p>
               )}
@@ -400,7 +400,7 @@ export function RecipeForm({
               aria-invalid={state?.errors.imageUrl ? true : undefined}
             />
             <input name="imagePublicId" type="hidden" value={imagePublicId} />
-            <p id="image-url-help" className="text-xs text-gray-600">
+            <p id="image-url-help" className="text-xs">
               Upload to Cloudinary or paste any external image URL.
             </p>
             <div

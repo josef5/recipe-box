@@ -27,7 +27,7 @@ export function HomePageContent({
       />
       <div className="flex flex-col gap-4 sm:col-start-1 sm:row-start-2">
         {recipes.length === 0 ? (
-          <p className="text-sm text-gray-600">
+          <p className="text-sm">
             {query ? `No recipes found for "${query}".` : "No recipes yet."}
           </p>
         ) : (
