@@ -5,7 +5,7 @@ export default function Main({
   return (
     <main
       id="main-content"
-      className="grid grid-cols-1 gap-y-4 sm:grid-cols-[3fr_1fr] sm:gap-x-6"
+      className="grid flex-1 grid-cols-1 grid-rows-[auto_auto_1fr] items-start gap-y-4 sm:grid-cols-[3fr_1fr] sm:grid-rows-[auto_1fr] sm:gap-x-6"
       {...props}
     >
       {children}

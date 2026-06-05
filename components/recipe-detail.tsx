@@ -26,7 +26,7 @@ export function RecipeDetail({
         title={recipe.title}
         description={`By ${recipe.ownerDisplayName ?? "Unknown cook"}`}
       />
-      <div className="bg-surface flex flex-col items-start justify-between gap-3 rounded-3xl p-4 pb-10 text-sm drop-shadow-lg sm:col-start-1 sm:row-start-2">
+      <div className="bg-surface flex flex-col items-start gap-3 rounded-3xl p-4 pb-10 text-sm drop-shadow-lg sm:col-start-1 sm:row-start-2">
         <Image
           src={recipe.imageUrl ?? FALLBACK_RECIPE_IMAGE_SRC}
           alt={`${recipe.title} photo`}
