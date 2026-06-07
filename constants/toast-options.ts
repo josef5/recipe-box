@@ -1,4 +1,7 @@
 export const TOAST_OPTIONS = {
+  info: {
+    duration: 4000,
+  },
   success: {
     duration: 4000,
   },
@@ -10,10 +13,10 @@ export const TOAST_OPTIONS = {
     },
   },
   classNames: {
-    success:
-      "!font-mono !text-foreground bg-surface [&_svg]:!text-success !drop-shadow-md",
-    error:
-      "!font-mono !text-foreground bg-surface [&_svg]:!text-danger !drop-shadow-md",
+    toast: "!font-mono !text-foreground bg-surface !drop-shadow-md",
+    success: "[&_svg]:!text-success",
+    error: "[&_svg]:!text-danger",
+    info: "[&_svg]:!text-foreground",
     cancelButton:
       "!bg-surface !text-foreground !border !border-foreground !p-3",
   },
