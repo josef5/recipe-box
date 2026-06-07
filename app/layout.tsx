@@ -3,6 +3,8 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Footer from "@/components/footer";
+import { Toaster } from "sonner";
+import { TOAST_OPTIONS } from "@/constants/toast-options";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -40,6 +42,7 @@ export default function RootLayout({
         <a href="#main-content" className="skip-link">
           Skip to main content
         </a>
+        <Toaster toastOptions={{ classNames: TOAST_OPTIONS.classNames }} />
         <Menu />
         {children}
         <Footer />
