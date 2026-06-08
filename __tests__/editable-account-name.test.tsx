@@ -2,23 +2,29 @@ import { EditableAccountName } from "@/components/ui/editable-account-name";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-const authMocks = vi.hoisted(() => ({
+const mocks = vi.hoisted(() => ({
   updateUser: vi.fn(),
-}));
-
-const navigationMocks = vi.hoisted(() => ({
   refresh: vi.fn(),
   useRouter: vi.fn(),
+  toastSuccess: vi.fn(),
+  toastError: vi.fn(),
 }));
 
 vi.mock("@/lib/auth/client", () => ({
   authClient: {
-    updateUser: authMocks.updateUser,
+    updateUser: mocks.updateUser,
   },
 }));
 
 vi.mock("next/navigation", () => ({
-  useRouter: navigationMocks.useRouter,
+  useRouter: mocks.useRouter,
+}));
+
+vi.mock("sonner", () => ({
+  toast: {
+    success: mocks.toastSuccess,
+    error: mocks.toastError,
+  },
 }));
 
 const syncResponse = (body: object, status = 200) =>
@@ -30,11 +36,11 @@ const syncResponse = (body: object, status = 200) =>
 describe("account profile section", () => {
   beforeEach(() => {
     vi.restoreAllMocks();
-    authMocks.updateUser.mockReset();
-    authMocks.updateUser.mockResolvedValue({ error: null });
-    navigationMocks.refresh.mockReset();
-    navigationMocks.useRouter.mockReturnValue({
-      refresh: navigationMocks.refresh,
+    mocks.updateUser.mockReset();
+    mocks.updateUser.mockResolvedValue({ error: null });
+    mocks.refresh.mockReset();
+    mocks.useRouter.mockReturnValue({
+      refresh: mocks.refresh,
     });
 
     vi.spyOn(globalThis, "fetch").mockResolvedValue(
@@ -64,11 +70,57 @@ describe("account profile section", () => {
     fireEvent.click(screen.getByRole("button", { name: "Cancel" }));
 
     expect(screen.getByText("Current Name")).toBeInTheDocument();
-    expect(authMocks.updateUser).not.toHaveBeenCalled();
+    expect(mocks.updateUser).not.toHaveBeenCalled();
     expect(globalThis.fetch).not.toHaveBeenCalled();
   });
 
   it("calls authClient.updateUser then syncs DB and shows success", async () => {
+    const message1 = "Updated Name";
+    const message2 = "Name updated.";
+
+    render(<EditableAccountName initialName="Current Name" />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Edit" }));
+    fireEvent.change(screen.getByLabelText("Name"), {
+      target: { value: message1 },
+    });
+    fireEvent.submit(
+      screen.getByRole("button", { name: "Save" }).closest("form")!,
+    );
+
+    await waitFor(() => {
+      expect(mocks.updateUser).toHaveBeenCalledWith({
+        name: message1,
+      });
+    });
+
+    expect(globalThis.fetch).toHaveBeenCalledWith(
+      "/api/account/name/sync",
+      expect.objectContaining({
+        method: "POST",
+        body: JSON.stringify({ name: message1 }),
+      }),
+    );
+
+    await waitFor(() => {
+      expect(mocks.toastSuccess).toHaveBeenCalledWith(
+        message2,
+        expect.any(Object),
+      );
+    });
+    // expect(await screen.findByText(message2)).toBeInTheDocument();
+
+    expect(screen.getByText(message1)).toBeInTheDocument();
+    expect(mocks.refresh).toHaveBeenCalled();
+  });
+
+  it("shows auth error when authClient.updateUser fails", async () => {
+    const errorMessage = "Auth update failed.";
+
+    mocks.updateUser.mockResolvedValueOnce({
+      error: { message: errorMessage },
+    });
+
     render(<EditableAccountName initialName="Current Name" />);
 
     fireEvent.click(screen.getByRole("button", { name: "Edit" }));
@@ -80,46 +132,19 @@ describe("account profile section", () => {
     );
 
     await waitFor(() => {
-      expect(authMocks.updateUser).toHaveBeenCalledWith({
-        name: "Updated Name",
-      });
+      expect(mocks.toastError).toHaveBeenCalledWith(
+        errorMessage,
+        expect.any(Object),
+      );
     });
-
-    expect(globalThis.fetch).toHaveBeenCalledWith(
-      "/api/account/name/sync",
-      expect.objectContaining({
-        method: "POST",
-        body: JSON.stringify({ name: "Updated Name" }),
-      }),
-    );
-
-    expect(await screen.findByText("Name updated.")).toBeInTheDocument();
-    expect(screen.getByText("Updated Name")).toBeInTheDocument();
-    expect(navigationMocks.refresh).toHaveBeenCalled();
-  });
-
-  it("shows auth error when authClient.updateUser fails", async () => {
-    authMocks.updateUser.mockResolvedValueOnce({
-      error: { message: "Auth update failed." },
-    });
-
-    render(<EditableAccountName initialName="Current Name" />);
-
-    fireEvent.click(screen.getByRole("button", { name: "Edit" }));
-    fireEvent.change(screen.getByLabelText("Name"), {
-      target: { value: "Updated Name" },
-    });
-    fireEvent.submit(
-      screen.getByRole("button", { name: "Save" }).closest("form")!,
-    );
-
-    expect(await screen.findByText("Auth update failed.")).toBeInTheDocument();
     expect(globalThis.fetch).not.toHaveBeenCalled();
   });
 
   it("shows sync error when DB sync fails", async () => {
+    const errorMessage = "Unable to update your name.";
+
     vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(
-      syncResponse({ ok: false, error: "Unable to update your name." }, 400),
+      syncResponse({ ok: false, error: errorMessage }, 400),
     );
 
     render(<EditableAccountName initialName="Current Name" />);
@@ -133,8 +158,11 @@ describe("account profile section", () => {
       screen.getByRole("button", { name: "Save" }).closest("form")!,
     );
 
-    expect(
-      await screen.findByText("Unable to update your name."),
-    ).toBeInTheDocument();
+    await waitFor(() => {
+      expect(mocks.toastError).toHaveBeenCalledWith(
+        errorMessage,
+        expect.any(Object),
+      );
+    });
   });
 });

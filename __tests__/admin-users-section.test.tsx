@@ -2,9 +2,22 @@ import { AdminUsersSection } from "@/components/admin-users-section";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
+const mocks = vi.hoisted(() => ({
+  toastSuccess: vi.fn(),
+  toastError: vi.fn(),
+}));
+
+vi.mock("sonner", () => ({
+  toast: {
+    success: mocks.toastSuccess,
+    error: mocks.toastError,
+  },
+}));
+
 describe("admin users section", () => {
   beforeEach(() => {
-    vi.restoreAllMocks();
+    mocks.toastSuccess.mockReset();
+    mocks.toastError.mockReset();
   });
 
   it("creates a user and refreshes the table", async () => {
@@ -71,21 +84,28 @@ describe("admin users section", () => {
     );
 
     fireEvent.click(screen.getByRole("button", { name: "Create new user" }));
+
     fireEvent.change(screen.getByLabelText("Name"), {
       target: { value: "Family Member" },
     });
+
     fireEvent.change(screen.getByLabelText("Email"), {
       target: { value: "family@example.com" },
     });
+
     fireEvent.change(screen.getByLabelText("Provisional password"), {
       target: { value: "provisional-pass" },
     });
 
     fireEvent.submit(screen.getByRole("button", { name: "Create user" }));
 
-    expect(
-      await screen.findByText("Created user: family@example.com"),
-    ).toBeInTheDocument();
+    await waitFor(() => {
+      expect(mocks.toastSuccess).toHaveBeenCalledWith(
+        "Created user: family@example.com",
+        expect.any(Object),
+      );
+    });
+
     expect(await screen.findByText("Family Member")).toBeInTheDocument();
 
     expect(fetchMock).toHaveBeenNthCalledWith(
@@ -179,21 +199,27 @@ describe("admin users section", () => {
     );
 
     fireEvent.click(screen.getByRole("button", { name: "Create new user" }));
+
     fireEvent.change(screen.getByLabelText("Name"), {
       target: { value: "Family Member" },
     });
+
     fireEvent.change(screen.getByLabelText("Email"), {
       target: { value: "family@example.com" },
     });
+
     fireEvent.change(screen.getByLabelText("Provisional password"), {
       target: { value: "provisional-pass" },
     });
 
     fireEvent.submit(screen.getByRole("button", { name: "Create user" }));
 
-    expect(
-      await screen.findByText("Unable to create user."),
-    ).toBeInTheDocument();
+    await waitFor(() => {
+      expect(mocks.toastError).toHaveBeenCalledWith(
+        "Unable to create user.",
+        expect.any(Object),
+      );
+    });
   });
 
   it("shows list errors when refresh fails after create", async () => {
@@ -245,30 +271,41 @@ describe("admin users section", () => {
     );
 
     fireEvent.click(screen.getByRole("button", { name: "Create new user" }));
+
     fireEvent.change(screen.getByLabelText("Name"), {
       target: { value: "Family Member" },
     });
+
     fireEvent.change(screen.getByLabelText("Email"), {
       target: { value: "family@example.com" },
     });
+
     fireEvent.change(screen.getByLabelText("Provisional password"), {
       target: { value: "provisional-pass" },
     });
 
     fireEvent.submit(screen.getByRole("button", { name: "Create user" }));
 
-    expect(
-      await screen.findByText("Created user: family@example.com"),
-    ).toBeInTheDocument();
-    expect(
-      await screen.findByText("Unable to list users."),
-    ).toBeInTheDocument();
+    await waitFor(() => {
+      expect(mocks.toastSuccess).toHaveBeenCalledWith(
+        "Created user: family@example.com",
+        expect.any(Object),
+      );
+    });
+
+    await waitFor(() => {
+      expect(mocks.toastError).toHaveBeenCalledWith(
+        "Unable to list users.",
+        expect.any(Object),
+      );
+    });
 
     expect(fetchMock).toHaveBeenNthCalledWith(
       1,
       "/api/admin-users",
       expect.objectContaining({ method: "POST" }),
     );
+
     expect(fetchMock).toHaveBeenNthCalledWith(
       2,
       "/api/admin-users",

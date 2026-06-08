@@ -3,20 +3,31 @@ import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { axe } from "jest-axe";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-const authMocks = vi.hoisted(() => ({
+const mocks = vi.hoisted(() => ({
   changePassword: vi.fn(),
+  toastSuccess: vi.fn(),
+  toastError: vi.fn(),
 }));
 
 vi.mock("@/lib/auth/client", () => ({
   authClient: {
-    changePassword: authMocks.changePassword,
+    changePassword: mocks.changePassword,
+  },
+}));
+
+vi.mock("sonner", () => ({
+  toast: {
+    success: mocks.toastSuccess,
+    error: mocks.toastError,
   },
 }));
 
 describe("change password form", () => {
   beforeEach(() => {
-    authMocks.changePassword.mockReset();
-    authMocks.changePassword.mockResolvedValue({ error: null });
+    mocks.changePassword.mockReset();
+    mocks.changePassword.mockResolvedValue({ error: null });
+    mocks.toastSuccess.mockReset();
+    mocks.toastError.mockReset();
   });
 
   it("submits matching passwords to auth client", async () => {
@@ -25,6 +36,7 @@ describe("change password form", () => {
     fireEvent.change(screen.getByLabelText("Current password"), {
       target: { value: "old-pass-123" },
     });
+
     fireEvent.change(screen.getByLabelText("New password"), {
       target: { value: "new-pass-123" },
     });
@@ -34,19 +46,25 @@ describe("change password form", () => {
     );
 
     await waitFor(() => {
-      expect(authMocks.changePassword).toHaveBeenCalledWith({
+      expect(mocks.changePassword).toHaveBeenCalledWith({
         currentPassword: "old-pass-123",
         newPassword: "new-pass-123",
         revokeOtherSessions: true,
       });
     });
 
-    expect(await screen.findByText("Password updated.")).toBeInTheDocument();
+    await waitFor(() => {
+      expect(mocks.toastSuccess).toHaveBeenCalledWith(
+        "Password updated.",
+        expect.any(Object),
+      );
+    });
   });
 
   it("shows auth errors from the API", async () => {
-    authMocks.changePassword.mockResolvedValueOnce({
-      error: { message: "Current password is incorrect" },
+    const errorMessage = "Current password is incorrect";
+    mocks.changePassword.mockResolvedValueOnce({
+      error: { message: errorMessage },
     });
 
     render(<ChangePasswordForm />);
@@ -54,6 +72,7 @@ describe("change password form", () => {
     fireEvent.change(screen.getByLabelText("Current password"), {
       target: { value: "wrong-pass" },
     });
+
     fireEvent.change(screen.getByLabelText("New password"), {
       target: { value: "new-pass-123" },
     });
@@ -62,9 +81,12 @@ describe("change password form", () => {
       screen.getByRole("button", { name: "Update password" }).closest("form")!,
     );
 
-    expect(
-      await screen.findByText("Current password is incorrect"),
-    ).toBeInTheDocument();
+    await waitFor(() => {
+      expect(mocks.toastError).toHaveBeenCalledWith(
+        errorMessage,
+        expect.any(Object),
+      );
+    });
   });
 
   it("shows a validation error when current password is missing", async () => {
@@ -81,7 +103,8 @@ describe("change password form", () => {
     expect(
       await screen.findByText("Current password is required."),
     ).toBeInTheDocument();
-    expect(authMocks.changePassword).not.toHaveBeenCalled();
+
+    expect(mocks.changePassword).not.toHaveBeenCalled();
   });
 
   it("shows a validation error when new password is too short", async () => {
@@ -90,6 +113,7 @@ describe("change password form", () => {
     fireEvent.change(screen.getByLabelText("Current password"), {
       target: { value: "old-pass-123" },
     });
+
     fireEvent.change(screen.getByLabelText("New password"), {
       target: { value: "short" },
     });
@@ -101,7 +125,8 @@ describe("change password form", () => {
     expect(
       await screen.findByText("New password must be at least 8 characters."),
     ).toBeInTheDocument();
-    expect(authMocks.changePassword).not.toHaveBeenCalled();
+
+    expect(mocks.changePassword).not.toHaveBeenCalled();
   });
 
   it("shows all client-side validation errors for an empty submit", async () => {
@@ -114,10 +139,12 @@ describe("change password form", () => {
     expect(
       await screen.findByText("Current password is required."),
     ).toBeInTheDocument();
+
     expect(
       await screen.findByText("New password must be at least 8 characters."),
     ).toBeInTheDocument();
-    expect(authMocks.changePassword).not.toHaveBeenCalled();
+
+    expect(mocks.changePassword).not.toHaveBeenCalled();
   });
 
   it("disables submit until the form is valid", () => {
