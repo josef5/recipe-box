@@ -14,6 +14,9 @@ import { useSearchParams } from "next/navigation";
 import { Suspense, useState } from "react";
 import { toast } from "sonner";
 
+// TODO: Implement React-Hook-Form and Zod
+// TODO: Add success toast
+
 export const dynamic = "force-dynamic";
 
 function getSafeRedirectPath(redirectTo: string | null) {
