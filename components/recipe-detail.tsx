@@ -57,24 +57,22 @@ export function RecipeDetail({
           </section>
         </div>
       </div>
-      <Sidebar className="gap-4">
+      <Sidebar className="gap-2">
         <EditRecipeButton
           recipeUserId={recipe.userId}
           editHref={`/recipes/${recipe.slug}/edit`}
-          className="w-full"
+          className="mb-3 w-full"
         />
         <div className="flex flex-wrap gap-x-2 gap-y-0 text-sm sm:flex-col">
-          <p className="">Serves: {baseServings}</p>
+          <p>Serves: {baseServings}</p>
           {recipe.prepTimeMins && <p>Prep time: {recipe.prepTimeMins}m</p>}
-          {recipe.cookTimeMins && (
-            <p className="mb-3">Cook time: {recipe.cookTimeMins}m</p>
-          )}
-          {/* Spacer for wrapping */}
-          <p className="w-0 basis-full sm:hidden"></p>
-          <p className="text-xs">
+          {recipe.cookTimeMins && <p>Cook time: {recipe.cookTimeMins}m</p>}
+        </div>
+        <div className="flex gap-x-2 gap-y-0.5 text-xs sm:flex-col">
+          <p>
             Created: {new Date(recipe.createdAt).toLocaleDateString("en-GB")}
           </p>
-          <p className="text-xs">
+          <p>
             Updated: {new Date(recipe.updatedAt).toLocaleDateString("en-GB")}
           </p>
         </div>
