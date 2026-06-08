@@ -6,6 +6,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 const mocks = vi.hoisted(() => ({
   signInEmail: vi.fn(),
   redirectTo: "/",
+  toastError: vi.fn(),
 }));
 
 vi.mock("@/lib/auth/client", () => ({
@@ -25,11 +26,18 @@ vi.mock("next/navigation", () => ({
     ),
 }));
 
+vi.mock("sonner", () => ({
+  toast: {
+    error: mocks.toastError,
+  },
+}));
+
 describe("sign-in page", () => {
   beforeEach(() => {
     mocks.signInEmail.mockReset();
     mocks.signInEmail.mockResolvedValue({ error: null });
     mocks.redirectTo = "/";
+    mocks.toastError.mockReset();
   });
 
   it("submits email sign-in credentials with default callback", async () => {
@@ -49,7 +57,7 @@ describe("sign-in page", () => {
       expect(mocks.signInEmail).toHaveBeenCalledWith({
         email: "cook@example.com",
         password: "secret-pass",
-        callbackURL: "/",
+        callbackURL: "/?toast=signed-in",
       });
     });
   });
@@ -73,7 +81,7 @@ describe("sign-in page", () => {
       expect(mocks.signInEmail).toHaveBeenCalledWith({
         email: "cook@example.com",
         password: "secret-pass",
-        callbackURL: "/account",
+        callbackURL: "/account?toast=signed-in",
       });
     });
   });
@@ -97,7 +105,7 @@ describe("sign-in page", () => {
       expect(mocks.signInEmail).toHaveBeenCalledWith({
         email: "cook@example.com",
         password: "secret-pass",
-        callbackURL: "/",
+        callbackURL: "/?toast=signed-in",
       });
     });
   });
@@ -119,9 +127,12 @@ describe("sign-in page", () => {
       screen.getByRole("button", { name: "Sign in" }).closest("form")!,
     );
 
-    expect(
-      await screen.findByText("Invalid email or password"),
-    ).toBeInTheDocument();
+    await waitFor(() => {
+      expect(mocks.toastError).toHaveBeenCalledWith(
+        "Invalid email or password",
+        expect.any(Object),
+      );
+    });
   });
 
   it("shows a validation error for an invalid email", async () => {
