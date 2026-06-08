@@ -11,7 +11,7 @@ export function SignOutButton() {
 
     try {
       await authClient.signOut();
-      window.location.href = "/";
+      window.location.assign("/?toast=signed-out");
     } finally {
       setIsPending(false);
     }

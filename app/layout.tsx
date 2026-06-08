@@ -3,8 +3,10 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Footer from "@/components/footer";
+import { FlashToast } from "@/components/ui/flash-toast";
 import { Toaster } from "sonner";
 import { TOAST_OPTIONS } from "@/constants/toast-options";
+import { Suspense } from "react";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -43,6 +45,24 @@ export default function RootLayout({
           Skip to main content
         </a>
         <Toaster toastOptions={{ classNames: TOAST_OPTIONS.classNames }} />
+        <Suspense fallback={null}>
+          <FlashToast
+            configByValue={{
+              "recipe-saved": {
+                message: "Recipe saved.",
+                variant: "success",
+              },
+              "signed-in": {
+                message: "Signed in.",
+                variant: "success",
+              },
+              "signed-out": {
+                message: "Signed out.",
+                variant: "success",
+              },
+            }}
+          />
+        </Suspense>
         <Menu />
         {children}
         <Footer />

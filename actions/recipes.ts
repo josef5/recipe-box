@@ -346,7 +346,7 @@ export async function createRecipeFromForm(
   }
 
   const recipe = await createRecipe(parsed.data);
-  redirect(`/recipes/${recipe.slug}`);
+  redirect(`/recipes/${recipe.slug}?toast=recipe-saved`);
 }
 
 /**
@@ -442,7 +442,7 @@ export async function updateRecipeFromForm(
   }
 
   const recipe = await updateRecipe(id, parsed.data);
-  redirect(`/recipes/${recipe.slug}`);
+  redirect(`/recipes/${recipe.slug}?toast=recipe-saved`);
 }
 
 /**

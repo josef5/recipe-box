@@ -3,8 +3,6 @@ import Main from "@/components/main";
 import { getPublicRecipes } from "@/lib/recipes";
 import { Suspense } from "react";
 
-// TODO: Add Toast notifications
-
 export default async function Home({
   searchParams,
 }: {

@@ -15,7 +15,6 @@ import { Suspense, useState } from "react";
 import { toast } from "sonner";
 
 // TODO: Implement React-Hook-Form and Zod
-// TODO: Add success toast
 
 export const dynamic = "force-dynamic";
 
@@ -31,13 +30,27 @@ function getSafeRedirectPath(redirectTo: string | null) {
   return redirectTo;
 }
 
+function withToastParam(path: string, toastValue: string) {
+  const [pathAndQuery, hash = ""] = path.split("#", 2);
+  const [pathname, queryString = ""] = pathAndQuery.split("?", 2);
+  const params = new URLSearchParams(queryString);
+  params.set("toast", toastValue);
+  const nextQuery = params.toString();
+  const nextHash = hash ? `#${hash}` : "";
+
+  return `${pathname}${nextQuery ? `?${nextQuery}` : ""}${nextHash}`;
+}
+
 function SignInForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [fieldErrors, setFieldErrors] = useState<SignInFieldErrors>({});
   const [isPending, setIsPending] = useState(false);
   const searchParams = useSearchParams();
-  const callbackURL = getSafeRedirectPath(searchParams.get("redirectTo"));
+  const callbackURL = withToastParam(
+    getSafeRedirectPath(searchParams.get("redirectTo")),
+    "signed-in",
+  );
   const isFormValid = SignInSchema.safeParse({ email, password }).success;
 
   async function handleSubmit(formData: FormData) {
