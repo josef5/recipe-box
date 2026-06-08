@@ -13,7 +13,8 @@ export const TOAST_OPTIONS = {
     },
   },
   classNames: {
-    toast: "!font-mono !text-foreground bg-surface !drop-shadow-md",
+    toast:
+      "!font-mono !text-foreground !bg-surface !drop-shadow-md !border-none",
     success: "[&_svg]:!text-success",
     error: "[&_svg]:!text-danger",
     info: "[&_svg]:!text-foreground",
