@@ -3,14 +3,16 @@
 import Main from "@/components/main";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { TOAST_OPTIONS } from "@/constants/toast-options";
 import { authClient } from "@/lib/auth/client";
 import {
   SignInSchema,
-  type SignInFieldErrors,
   validateSignInFormData,
+  type SignInFieldErrors,
 } from "@/lib/validation/auth";
 import { useSearchParams } from "next/navigation";
 import { Suspense, useState } from "react";
+import { toast } from "sonner";
 
 export const dynamic = "force-dynamic";
 
@@ -30,7 +32,6 @@ function SignInForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [fieldErrors, setFieldErrors] = useState<SignInFieldErrors>({});
-  const [error, setError] = useState<string | null>(null);
   const [isPending, setIsPending] = useState(false);
   const searchParams = useSearchParams();
   const callbackURL = getSafeRedirectPath(searchParams.get("redirectTo"));
@@ -41,14 +42,12 @@ function SignInForm() {
 
     if (!validated.success) {
       setFieldErrors(validated.errors);
-      setError(null);
       return;
     }
 
     const { email, password } = validated.data;
 
     setFieldErrors({});
-    setError(null);
     setIsPending(true);
 
     try {
@@ -59,10 +58,13 @@ function SignInForm() {
       });
 
       if (result.error) {
-        setError(result.error.message ?? "Unable to sign in.");
+        throw new Error(result.error.message);
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Unable to sign in.");
+      toast.error(
+        err instanceof Error ? err.message : "Unable to sign in.",
+        TOAST_OPTIONS.error,
+      );
     } finally {
       setIsPending(false);
     }
@@ -96,7 +98,7 @@ function SignInForm() {
           className="w-full"
         />
         {fieldErrors.email ? (
-          <p id="sign-in-email-error" className="text-sm text-red-600">
+          <p id="sign-in-email-error" className="text-danger text-sm">
             {fieldErrors.email}
           </p>
         ) : null}
@@ -127,13 +129,6 @@ function SignInForm() {
             {fieldErrors.password}
           </p>
         ) : null}
-        <div aria-live="polite" className="w-80">
-          {error ? (
-            <p role="alert" className="text-danger text-sm">
-              {error}
-            </p>
-          ) : null}
-        </div>
         <Button
           type="submit"
           disabled={isPending || !isFormValid}

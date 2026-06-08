@@ -1,13 +1,15 @@
 "use client";
 
 import { type ManagedUser } from "@/actions/admin-users";
+import { TOAST_OPTIONS } from "@/constants/toast-options";
 import { formatStableDate } from "@/lib/utils";
 import { CreateAdminUserSchema } from "@/lib/validation/admin-users";
 import { useEffect, useRef, useState } from "react";
+import { toast } from "sonner";
 import { Accordion } from "./ui/accordion";
+import { Button } from "./ui/button";
 import { Dialog } from "./ui/dialog";
 import { Input } from "./ui/input";
-import { Button } from "./ui/button";
 
 type ClientActionResult<T = void> =
   | { ok: true; data: T }
@@ -129,8 +131,6 @@ export function AdminUsersSection({
   const [deletingUserId, setDeletingUserId] = useState<string | null>(null);
   const [createUserFieldErrors, setCreateUserFieldErrors] =
     useState<CreateUserFieldErrors>({});
-  const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState<string | null>(null);
   const dialogRef = useRef<HTMLDialogElement | null>(null);
   const accordionRef = useRef<{
     open: () => void;
@@ -150,7 +150,7 @@ export function AdminUsersSection({
     const result = await listManagedUsersApi();
 
     if (!result.ok) {
-      setError(result.error);
+      toast.error(result.error, TOAST_OPTIONS.error);
       return;
     }
 
@@ -159,8 +159,6 @@ export function AdminUsersSection({
 
   async function handleCreateUser(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    setError(null);
-    setSuccess(null);
 
     const result = await createManagedUserApi({
       name,
@@ -169,11 +167,11 @@ export function AdminUsersSection({
     });
 
     if (!result.ok) {
-      setError(result.error);
+      toast.error(result.error, TOAST_OPTIONS.error);
       return;
     }
 
-    setSuccess(`Created user: ${result.data.email}`);
+    toast.success(`Created user: ${result.data.email}`, TOAST_OPTIONS.success);
     setName("");
     setEmail("");
     setProvisionalPassword("");
@@ -185,17 +183,14 @@ export function AdminUsersSection({
   }
 
   async function handleDeleteUser(userId: string) {
-    setError(null);
-    setSuccess(null);
-
     const result = await deleteManagedUserApi({ userId });
 
     if (!result.ok) {
-      setError(result.error);
+      toast.error(result.error, TOAST_OPTIONS.error);
       return;
     }
 
-    setSuccess("User deleted.");
+    toast.success("User deleted.", TOAST_OPTIONS.success);
     setUsers((currentUsers) =>
       currentUsers.filter((user) => user.id !== result.data.userId),
     );
@@ -299,8 +294,6 @@ export function AdminUsersSection({
           </Button>
         </form>
       </Accordion>
-      {error ? <p className="text-danger mt-4 text-sm">{error}</p> : null}
-      {success ? <p className="text-success mt-4 text-sm">{success}</p> : null}
       <table className="mb-0 w-full text-sm">
         <thead className="xs:table-header-group hidden">
           <tr className="xs:table-row mb-4 block">

@@ -1,21 +1,21 @@
 "use client";
 
+import { TOAST_OPTIONS } from "@/constants/toast-options";
 import { authClient } from "@/lib/auth/client";
 import {
   ChangePasswordSchema,
-  type ChangePasswordFieldErrors,
   validateChangePasswordFormData,
+  type ChangePasswordFieldErrors,
 } from "@/lib/validation/auth";
 import { useState } from "react";
-import { Input } from "./ui/input";
+import { toast } from "sonner";
 import { Button } from "./ui/button";
+import { Input } from "./ui/input";
 
 export function ChangePasswordForm({ onSuccess }: { onSuccess?: () => void }) {
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [fieldErrors, setFieldErrors] = useState<ChangePasswordFieldErrors>({});
-  const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState<string | null>(null);
   const [isPending, setIsPending] = useState(false);
   const isFormValid = ChangePasswordSchema.safeParse({
     currentPassword,
@@ -27,16 +27,12 @@ export function ChangePasswordForm({ onSuccess }: { onSuccess?: () => void }) {
 
     if (!validated.success) {
       setFieldErrors(validated.errors);
-      setError(null);
-      setSuccess(null);
       return;
     }
 
     const { currentPassword, newPassword } = validated.data;
 
     setFieldErrors({});
-    setError(null);
-    setSuccess(null);
     setIsPending(true);
 
     try {
@@ -47,16 +43,20 @@ export function ChangePasswordForm({ onSuccess }: { onSuccess?: () => void }) {
       });
 
       if (result.error) {
-        setError(result.error.message ?? "Unable to update password.");
+        toast.error(
+          result.error.message ?? "Unable to update password.",
+          TOAST_OPTIONS.error,
+        );
         return;
       }
 
-      setSuccess("Password updated.");
+      toast.success("Password updated.", TOAST_OPTIONS.success);
 
       onSuccess?.();
     } catch (err) {
-      setError(
+      toast.error(
         err instanceof Error ? err.message : "Unable to update password.",
+        TOAST_OPTIONS.error,
       );
     } finally {
       setIsPending(false);
@@ -122,21 +122,6 @@ export function ChangePasswordForm({ onSuccess }: { onSuccess?: () => void }) {
           </p>
         ) : null}
       </div>
-
-      {error ? (
-        <div aria-live="polite" className="grid gap-2">
-          <p role="alert" className="text-danger text-sm">
-            {error}
-          </p>
-        </div>
-      ) : null}
-      {success ? (
-        <div aria-live="polite" className="grid gap-2">
-          <p role="status" className="text-success text-sm">
-            {success}
-          </p>
-        </div>
-      ) : null}
       <Button
         type="submit"
         disabled={isPending || !isFormValid}

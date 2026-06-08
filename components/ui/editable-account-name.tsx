@@ -1,10 +1,12 @@
 "use client";
 
+import { TOAST_OPTIONS } from "@/constants/toast-options";
 import { authClient } from "@/lib/auth/client";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { Input } from "./input";
+import { toast } from "sonner";
 import { Button } from "./button";
+import { Input } from "./input";
 
 const MAX_NAME_LENGTH = 100;
 
@@ -20,20 +22,14 @@ export function EditableAccountName({
   const [draftName, setDraftName] = useState(initialName ?? "");
   const [isEditing, setIsEditing] = useState(false);
   const [isPending, setIsPending] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState<string | null>(null);
 
   function beginEditing() {
     setDraftName(currentName ?? "");
-    setError(null);
-    setSuccess(null);
     setIsEditing(true);
   }
 
   function cancelEditing() {
     setDraftName(currentName ?? "");
-    setError(null);
-    setSuccess(null);
     setIsEditing(false);
   }
 
@@ -41,19 +37,18 @@ export function EditableAccountName({
     const submittedName = formData.get("name");
 
     if (typeof submittedName !== "string") {
-      setError("Invalid form submission.");
-      setSuccess(null);
+      toast.error("Invalid form submission.", TOAST_OPTIONS.error);
       return;
     }
 
     if (submittedName.length > MAX_NAME_LENGTH) {
-      setError(`Name must be ${MAX_NAME_LENGTH} characters or fewer.`);
-      setSuccess(null);
+      toast.error(
+        `Name must be ${MAX_NAME_LENGTH} characters or fewer.`,
+        TOAST_OPTIONS.error,
+      );
       return;
     }
 
-    setError(null);
-    setSuccess(null);
     setIsPending(true);
 
     try {
@@ -65,7 +60,10 @@ export function EditableAccountName({
       const authResult = await authClient.updateUser({ name: submittedName });
 
       if (authResult.error) {
-        setError(authResult.error.message ?? "Unable to update your name.");
+        toast.error(
+          authResult.error.message ?? "Unable to update your name.",
+          TOAST_OPTIONS.error,
+        );
         return;
       }
 
@@ -82,18 +80,19 @@ export function EditableAccountName({
         | { ok: false; error: string };
 
       if (!result.ok) {
-        setError(result.error);
+        toast.error(result.error, TOAST_OPTIONS.error);
         return;
       }
 
       setCurrentName(result.data.name);
       setDraftName(result.data.name);
       setIsEditing(false);
-      setSuccess("Name updated.");
+      toast.success("Name updated.", TOAST_OPTIONS.success);
       router.refresh();
     } catch (err) {
-      setError(
+      toast.error(
         err instanceof Error ? err.message : "Unable to update your name.",
+        TOAST_OPTIONS.error,
       );
     } finally {
       setIsPending(false);
@@ -158,8 +157,6 @@ export function EditableAccountName({
             </Button>
           </div>
         )}
-        {error ? <p className="text-danger text-sm">{error}</p> : null}
-        {success ? <p className="text-success text-sm">{success}</p> : null}
       </dd>
     </div>
   );
