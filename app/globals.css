@@ -7,6 +7,7 @@
   --surface: hsl(0, 0%, 100%);
   --input: hsl(0, 0%, 95%);
   --danger: hsl(0, 100%, 40%);
+  --success: hsl(90, 100%, 40%);
 }
 
 @theme inline {
@@ -18,6 +19,7 @@
   --color-surface: var(--surface);
   --color-input: var(--input);
   --color-danger: var(--danger);
+  --color-success: var(--success);
   --breakpoint-xs: 30rem;
 }
 
