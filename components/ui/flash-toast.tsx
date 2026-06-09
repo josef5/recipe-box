@@ -12,6 +12,14 @@ type FlashToastConfig = {
   variant?: FlashToastVariant;
 };
 
+/**
+ * FlashToast component for displaying toast notifications after a redirect
+ * Usage:
+ * 1. Include <FlashToast /> in your root layout (e.g., app/layout.tsx).
+ * 2. When redirecting, add a query parameter to the URL to indicate the toast to show, e.g.:
+ *    router.push("/some-page?toast=recipe-saved");
+ * 3. Configure the messages and variants for each toast value in the FlashToast's configByValue prop.
+ */
 export function FlashToast({
   param = "toast",
   configByValue,
