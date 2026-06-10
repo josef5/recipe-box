@@ -34,19 +34,19 @@ export function BackButton({
   fallbackHref,
   className,
   children,
+  ...props
 }: {
   fallbackHref: string;
   className?: string;
   children: ReactNode;
-}) {
+} & React.ComponentProps<typeof Button>) {
   const router = useRouter();
 
   return (
     <Button
-      type="button"
-      variant="secondary"
       onClick={() => navigateBackOrFallback(router, fallbackHref)}
       className={className}
+      {...props}
     >
       {children}
     </Button>

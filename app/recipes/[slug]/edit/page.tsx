@@ -81,6 +81,8 @@ export default async function EditRecipePage({
         />
         <div className="flex w-full gap-2 sm:flex-col">
           <BackButton
+            type="button"
+            variant="secondary"
             fallbackHref={`/recipes/${recipe.slug}`}
             className="w-full"
           >

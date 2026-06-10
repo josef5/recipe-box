@@ -30,7 +30,12 @@ export default async function NewRecipePage() {
           form="recipe-form"
           className="w-full"
         />
-        <BackButton fallbackHref="/" className="w-full">
+        <BackButton
+          type="button"
+          variant="secondary"
+          fallbackHref="/"
+          className="w-full"
+        >
           Cancel
         </BackButton>
       </Sidebar>
