@@ -44,7 +44,7 @@ export function RecipeDetail({
             <h2 className="mb-2 font-bold">Ingredients</h2>
             <ScaledIngredientsList
               recipeIngredients={recipe.recipeIngredients}
-              baseServings={recipe.servings}
+              baseServings={baseServings}
             />
           </section>
           <section>
