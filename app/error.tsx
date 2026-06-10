@@ -1,5 +1,7 @@
-"use client"; // Error boundaries must be Client Components
+"use client";
 
+import Main from "@/components/main";
+import { Button } from "@/components/ui/button";
 import { useEffect } from "react";
 
 export default function ErrorPage({
@@ -10,21 +12,23 @@ export default function ErrorPage({
   unstable_retry: () => void;
 }) {
   useEffect(() => {
-    // Log the error to an error reporting service
     console.error(error);
   }, [error]);
 
   return (
-    <div>
-      <h2>Something went wrong!</h2>
-      <button
-        onClick={
-          // Attempt to recover by re-fetching and re-rendering the segment
-          () => unstable_retry()
-        }
-      >
-        Try again
-      </button>
-    </div>
+    <Main>
+      <div className="space-y-4">
+        <h2>Something went wrong!</h2>
+        <Button
+          variant="primary"
+          onClick={
+            // Attempt to recover by re-fetching and re-rendering the segment
+            () => unstable_retry()
+          }
+        >
+          Try again
+        </Button>
+      </div>
+    </Main>
   );
 }
