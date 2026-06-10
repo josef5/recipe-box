@@ -32,6 +32,7 @@ export function RecipeDetail({
           alt={`${recipe.title} photo`}
           width={1600}
           height={1066}
+          loading="eager"
           sizes="(max-width: 640px) 100vw, 900px"
           className="mb-2 max-h-112 w-full rounded-md border object-cover"
         />
