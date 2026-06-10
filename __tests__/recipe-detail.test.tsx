@@ -2,6 +2,7 @@ import { RecipeDetail } from "@/components/recipe-detail";
 import { createFulfilledThenable } from "@/test/fulfilled-thenable";
 import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
+import { FALLBACK_RECIPE_IMAGE_SRC } from "@/constants";
 
 vi.mock("@/components/menu", () => ({
   Menu: ({ variant }: { variant: string }) => (
@@ -140,6 +141,6 @@ describe("RecipeDetail", () => {
     expect(screen.getAllByText("By Unknown cook")).not.toBeNull();
     expect(
       screen.getByRole("img", { name: "Plain Rice photo" }),
-    ).toHaveAttribute("src", "/placeholder-1024x768.jpg");
+    ).toHaveAttribute("src", FALLBACK_RECIPE_IMAGE_SRC);
   });
 });

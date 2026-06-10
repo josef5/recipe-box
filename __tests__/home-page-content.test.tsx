@@ -3,6 +3,7 @@ import { createFulfilledThenable } from "@/test/fulfilled-thenable";
 import { render, screen } from "@testing-library/react";
 import { axe } from "jest-axe";
 import { describe, expect, it } from "vitest";
+import { FALLBACK_RECIPE_IMAGE_SRC } from "@/constants";
 
 type HomePageRecipes =
   Parameters<typeof HomePageContent>[0]["recipesPromise"] extends Promise<
@@ -92,7 +93,7 @@ describe("HomePageContent", () => {
     ).toBeVisible();
     expect(screen.getByRole("img", { name: "Toast photo" })).toHaveAttribute(
       "src",
-      "/placeholder-1024x768.jpg",
+      FALLBACK_RECIPE_IMAGE_SRC,
     );
     expect(screen.getByText("By Jamie Oliver")).toBeVisible();
     expect(screen.getByText("By Unknown cook")).toBeVisible();
