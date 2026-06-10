@@ -27,6 +27,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${geistMono.variable} h-full antialiased`}>
       <head>
+        {/* TODO: Remove this script in production */}
         {/* Temp */}
         <script
           src="https://mcp.figma.com/mcp/html-to-design/capture.js"
