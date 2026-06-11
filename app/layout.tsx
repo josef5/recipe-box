@@ -26,14 +26,6 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${geistMono.variable} h-full antialiased`}>
-      <head>
-        {/* TODO: Remove this script in production */}
-        {/* Temp */}
-        <script
-          src="https://mcp.figma.com/mcp/html-to-design/capture.js"
-          async
-        />
-      </head>
       <body className="mx-auto flex min-h-full max-w-4xl flex-col px-4 sm:px-6">
         <a href="#main-content" className="skip-link">
           Skip to main content
