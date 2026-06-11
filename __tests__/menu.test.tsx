@@ -45,7 +45,7 @@ describe("Menu", () => {
       "/auth/sign-in",
     );
     expect(
-      screen.queryByRole("link", { name: mockUserName }),
+      screen.queryByRole("link", { name: "Account" }),
     ).not.toBeInTheDocument();
     expect(
       screen.queryByRole("button", { name: "Sign out" }),
@@ -70,7 +70,7 @@ describe("Menu", () => {
       "href",
       "/",
     );
-    expect(screen.getByRole("link", { name: mockUserName })).toHaveAttribute(
+    expect(screen.getByRole("link", { name: "Account" })).toHaveAttribute(
       "href",
       "/account",
     );
