@@ -12,8 +12,6 @@ import { Dialog } from "./ui/dialog";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 
-// TODO: Rename to AccountUsersSection
-
 type ClientActionResult<T = void> =
   | { ok: true; data: T }
   | { ok: false; error: string };
@@ -122,7 +120,7 @@ type CreateUserFieldErrors = Partial<
   Record<"name" | "email" | "provisionalPassword", string>
 >;
 
-export function AdminUsersSection({
+export function AccountUsersSection({
   initialUsers,
   currentUserId,
 }: AdminUsersSectionProps) {

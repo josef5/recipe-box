@@ -1,4 +1,4 @@
-import { AdminUsersSection } from "@/components/admin-users-section";
+import { AccountUsersSection } from "@/components/account-users-section";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -69,7 +69,7 @@ describe("admin users section", () => {
     );
 
     render(
-      <AdminUsersSection
+      <AccountUsersSection
         currentUserId="admin-1"
         initialUsers={[
           {
@@ -135,7 +135,7 @@ describe("admin users section", () => {
     );
 
     render(
-      <AdminUsersSection
+      <AccountUsersSection
         currentUserId="admin-1"
         initialUsers={[
           {
@@ -184,7 +184,7 @@ describe("admin users section", () => {
     );
 
     render(
-      <AdminUsersSection
+      <AccountUsersSection
         currentUserId="admin-1"
         initialUsers={[
           {
@@ -256,7 +256,7 @@ describe("admin users section", () => {
     );
 
     render(
-      <AdminUsersSection
+      <AccountUsersSection
         currentUserId="admin-1"
         initialUsers={[
           {

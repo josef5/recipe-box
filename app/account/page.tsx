@@ -1,6 +1,6 @@
 import { getManagedUsersForAccountPage } from "@/actions/admin-users";
 import { AccountProfileSection } from "@/components/account-profile-section";
-import { AdminUsersSection } from "@/components/admin-users-section";
+import { AccountUsersSection } from "@/components/account-users-section";
 import Main from "@/components/main";
 import Header from "@/components/header";
 import { requireCurrentUser, userHasAdminRole } from "@/lib/auth/session";
@@ -24,7 +24,7 @@ export default async function AccountPage() {
       <div className="col-span-full row-start-2 flex flex-col gap-8 sm:col-span-1">
         <AccountProfileSection user={user} recipes={recipes} />
         {isAdmin ? (
-          <AdminUsersSection
+          <AccountUsersSection
             initialUsers={adminUsers}
             currentUserId={user.id}
           />
