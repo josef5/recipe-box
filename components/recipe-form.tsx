@@ -340,6 +340,7 @@ export function RecipeForm({
             </div>
           </div>
           <div className="grid gap-4 md:grid-cols-2">
+            {/* TODO: Remove source from here and db */}
             <div className="flex flex-col gap-1.5">
               <Label htmlFor="sourceName">Source name</Label>
               <Input

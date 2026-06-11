@@ -15,6 +15,7 @@ import { useSearchParams } from "next/navigation";
 import { Suspense, useState } from "react";
 import { toast } from "sonner";
 
+// TODO: Move route to (auth) so url is /sign-in not /auth/sign-in
 // TODO: Implement React-Hook-Form and Zod
 
 export const dynamic = "force-dynamic";

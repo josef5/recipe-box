@@ -12,6 +12,8 @@ import { Dialog } from "./ui/dialog";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 
+// TODO: Rename to AccountUsersSection
+
 type ClientActionResult<T = void> =
   | { ok: true; data: T }
   | { ok: false; error: string };
@@ -215,9 +217,7 @@ export function AdminUsersSection({
           className="mt-4 grid gap-4"
         >
           <div className="grid gap-1.5">
-            <label htmlFor="adminUserName" className="text-sm font-medium">
-              Name
-            </label>
+            <Label htmlFor="adminUserName">Name</Label>
             <Input
               id="adminUserName"
               name="name"
