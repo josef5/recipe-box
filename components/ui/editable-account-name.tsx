@@ -7,6 +7,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { Button } from "./button";
 import { Input } from "./input";
+import { Label } from "./label";
 
 const MAX_NAME_LENGTH = 100;
 
@@ -108,9 +109,9 @@ export function EditableAccountName({
             action={handleSubmit}
             className="flex flex-wrap items-center justify-end gap-2"
           >
-            <label htmlFor="name" className="sr-only">
+            <Label htmlFor="name" className="sr-only">
               Name
-            </label>
+            </Label>
             <Input
               id="name"
               name="name"

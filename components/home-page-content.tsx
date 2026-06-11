@@ -4,11 +4,12 @@ import { Recipe } from "@/types";
 import Image from "next/image";
 import Link from "next/link";
 import { use } from "react";
-import { NewRecipeButton } from "./ui/new-recipe-button";
-import { Button } from "./ui/button";
 import Header from "./header";
 import Sidebar from "./sidebar";
+import { Button } from "./ui/button";
 import { Input } from "./ui/input";
+import { Label } from "./ui/label";
+import { NewRecipeButton } from "./ui/new-recipe-button";
 
 export function HomePageContent({
   recipesPromise,
@@ -46,9 +47,9 @@ export function HomePageContent({
           className="flex flex-col gap-2"
         >
           <div className="flex gap-2 text-sm sm:flex-col">
-            <label htmlFor="recipe-search" className="sr-only">
+            <Label htmlFor="recipe-search" className="sr-only">
               Search recipes
-            </label>
+            </Label>
             <Input
               id="recipe-search"
               type="search"

@@ -10,6 +10,7 @@ import { Accordion } from "./ui/accordion";
 import { Button } from "./ui/button";
 import { Dialog } from "./ui/dialog";
 import { Input } from "./ui/input";
+import { Label } from "./ui/label";
 
 type ClientActionResult<T = void> =
   | { ok: true; data: T }
@@ -238,9 +239,7 @@ export function AdminUsersSection({
           </div>
 
           <div className="grid gap-1.5">
-            <label htmlFor="adminUserEmail" className="text-sm font-medium">
-              Email
-            </label>
+            <Label htmlFor="adminUserEmail">Email</Label>
             <Input
               id="adminUserEmail"
               name="email"
@@ -262,12 +261,12 @@ export function AdminUsersSection({
           </div>
 
           <div className="grid gap-1.5">
-            <label
+            <Label
               htmlFor="adminUserProvisionalPassword"
               className="text-sm font-medium"
             >
               Provisional password
-            </label>
+            </Label>
             <Input
               id="adminUserProvisionalPassword"
               name="provisionalPassword"

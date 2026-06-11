@@ -1,16 +1,17 @@
 "use client";
 
-import Image from "next/image";
-import { useActionState, useEffect, useMemo, useRef, useState } from "react";
-import { useRouter } from "next/navigation";
-import { useFormStatus } from "react-dom";
-import { Dialog } from "./ui/dialog";
 import {
   type RecipeFormState,
   validateRecipeFormData,
 } from "@/lib/validation/recipes";
-import { Input } from "./ui/input";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { useActionState, useEffect, useMemo, useRef, useState } from "react";
+import { useFormStatus } from "react-dom";
 import { Button } from "./ui/button";
+import { Dialog } from "./ui/dialog";
+import { Input } from "./ui/input";
+import { Label } from "./ui/label";
 
 type IngredientSuggestion = {
   name: string;
@@ -41,8 +42,6 @@ type RecipeFormValues = {
   ingredients: IngredientField[];
   steps: StepField[];
 };
-
-// TODO: Decompose label component?
 
 export function RecipeForm({
   action,
@@ -252,9 +251,7 @@ export function RecipeForm({
         )}
         <section className="flex flex-col gap-4">
           <div className="flex flex-col gap-1.5">
-            <label htmlFor="title" className="text-sm font-medium">
-              Title
-            </label>
+            <Label htmlFor="title">Title</Label>
             <Input
               id="title"
               name="title"
@@ -269,9 +266,7 @@ export function RecipeForm({
             )}
           </div>
           <div className="flex flex-col gap-1.5">
-            <label htmlFor="description" className="text-sm font-medium">
-              Description
-            </label>
+            <Label htmlFor="description">Description</Label>
             {/* TODO: Set word limit */}
             <textarea
               id="description"
@@ -283,9 +278,7 @@ export function RecipeForm({
           </div>
           <div className="grid grid-cols-3 gap-4">
             <div className="flex flex-col gap-1.5">
-              <label htmlFor="servings" className="text-sm font-medium">
-                Servings
-              </label>
+              <Label htmlFor="servings">Servings</Label>
               <Input
                 id="servings"
                 name="servings"
@@ -303,12 +296,12 @@ export function RecipeForm({
               )}
             </div>
             <div className="flex flex-col gap-1.5">
-              <label
+              <Label
                 htmlFor="prepTimeMins"
                 className="truncate text-sm font-medium"
               >
                 Prep time (mins)
-              </label>
+              </Label>
               <Input
                 id="prepTimeMins"
                 name="prepTimeMins"
@@ -326,12 +319,9 @@ export function RecipeForm({
               )}
             </div>
             <div className="flex flex-col gap-1.5">
-              <label
-                htmlFor="cookTimeMins"
-                className="truncate text-sm font-medium"
-              >
+              <Label htmlFor="cookTimeMins" className="truncate">
                 Cook time (mins)
-              </label>
+              </Label>
               <Input
                 id="cookTimeMins"
                 name="cookTimeMins"
@@ -351,9 +341,7 @@ export function RecipeForm({
           </div>
           <div className="grid gap-4 md:grid-cols-2">
             <div className="flex flex-col gap-1.5">
-              <label htmlFor="sourceName" className="text-sm font-medium">
-                Source name
-              </label>
+              <Label htmlFor="sourceName">Source name</Label>
               <Input
                 id="sourceName"
                 name="sourceName"
@@ -361,9 +349,7 @@ export function RecipeForm({
               />
             </div>
             <div className="flex flex-col gap-1.5">
-              <label htmlFor="sourceUrl" className="text-sm font-medium">
-                Source URL
-              </label>
+              <Label htmlFor="sourceUrl">Source URL</Label>
               <Input
                 id="sourceUrl"
                 name="sourceUrl"
@@ -382,9 +368,7 @@ export function RecipeForm({
             </div>
           </div>
           <div className="flex flex-col gap-1.5">
-            <label htmlFor="imageUrl" className="text-sm font-medium">
-              Image URL
-            </label>
+            <Label htmlFor="imageUrl">Image URL</Label>
             <Input
               id="imageUrl"
               name="imageUrl"
@@ -407,12 +391,7 @@ export function RecipeForm({
               aria-live="polite"
               className="flex flex-wrap items-center gap-3"
             >
-              <label
-                htmlFor="recipe-image-file"
-                className="text-sm font-medium"
-              >
-                Upload image file
-              </label>
+              <Label htmlFor="recipe-image-file">Upload image file</Label>
               <Input
                 id="recipe-image-file"
                 ref={imageInputRef}
@@ -496,12 +475,9 @@ export function RecipeForm({
               <div key={index} className="">
                 <div className="grid grid-cols-2 gap-4">
                   <div className="col-span-full flex flex-col gap-1.5">
-                    <label
-                      htmlFor={`ingredient-name-${index}`}
-                      className="text-sm font-medium"
-                    >
+                    <Label htmlFor={`ingredient-name-${index}`}>
                       Ingredient
-                    </label>
+                    </Label>
                     <Input
                       id={`ingredient-name-${index}`}
                       name="ingredientName"
@@ -513,12 +489,7 @@ export function RecipeForm({
                     />
                   </div>
                   <div className="flex flex-col gap-1.5">
-                    <label
-                      htmlFor={`ingredient-amount-${index}`}
-                      className="text-sm font-medium"
-                    >
-                      Amount
-                    </label>
+                    <Label htmlFor={`ingredient-amount-${index}`}>Amount</Label>
                     <Input
                       id={`ingredient-amount-${index}`}
                       name="ingredientAmount"
@@ -530,12 +501,7 @@ export function RecipeForm({
                     />
                   </div>
                   <div className="flex flex-col gap-1.5">
-                    <label
-                      htmlFor={`ingredient-unit-${index}`}
-                      className="text-sm font-medium"
-                    >
-                      Unit
-                    </label>
+                    <Label htmlFor={`ingredient-unit-${index}`}>Unit</Label>
                     <Input
                       id={`ingredient-unit-${index}`}
                       name="ingredientUnit"
@@ -547,12 +513,7 @@ export function RecipeForm({
                   </div>
                 </div>
                 <div className="mt-4 flex flex-col gap-1.5">
-                  <label
-                    htmlFor={`ingredient-notes-${index}`}
-                    className="text-sm font-medium"
-                  >
-                    Notes
-                  </label>
+                  <Label htmlFor={`ingredient-notes-${index}`}>Notes</Label>
                   <div className="flex gap-3">
                     <Input
                       id={`ingredient-notes-${index}`}
@@ -601,12 +562,12 @@ export function RecipeForm({
           <div className="flex flex-col gap-4">
             {steps.map((step, index) => (
               <div key={index} className="">
-                <label
+                <Label
                   htmlFor={`step-instruction-${index}`}
-                  className="mb-2 block text-sm font-medium"
+                  className="mb-2 block"
                 >
                   Step {index + 1}
-                </label>
+                </Label>
                 <div className="flex items-start gap-3">
                   <textarea
                     id={`step-instruction-${index}`}

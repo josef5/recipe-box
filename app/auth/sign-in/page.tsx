@@ -3,6 +3,7 @@
 import Main from "@/components/main";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { TOAST_OPTIONS } from "@/constants/toast-options";
 import { authClient } from "@/lib/auth/client";
 import {
@@ -94,9 +95,7 @@ function SignInForm() {
         className="flex min-h-[70vh] flex-col items-start gap-2"
       >
         <h1 className="font-bold">Sign in to Recipe Box</h1>
-        <label htmlFor="email" className="text-sm font-medium">
-          Email
-        </label>
+        <Label htmlFor="email">Email</Label>
         <Input
           id="email"
           name="email"
@@ -118,9 +117,7 @@ function SignInForm() {
             {fieldErrors.email}
           </p>
         ) : null}
-        <label htmlFor="password" className="text-sm font-medium">
-          Password
-        </label>
+        <Label htmlFor="password">Password</Label>
         <Input
           id="password"
           name="password"

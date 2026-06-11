@@ -1,7 +1,8 @@
 "use client";
 
-import { useMemo, useState } from "react";
 import { RecipeIngredient } from "@/types";
+import { useMemo, useState } from "react";
+import { Label } from "./ui/label";
 
 const DEFAULT_SERVINGS = 4;
 const MIN_DROPDOWN_SERVINGS = 1;
@@ -75,9 +76,7 @@ export function ScaledIngredientsList({
   return (
     <>
       <div className="mb-3 flex items-center gap-2">
-        <label htmlFor="servings-adjust" className="text-sm font-medium">
-          Servings
-        </label>
+        <Label htmlFor="servings-adjust">Servings</Label>
         <select
           id="servings-adjust"
           value={selectedServings}

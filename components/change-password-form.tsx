@@ -11,6 +11,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
+import { Label } from "./ui/label";
 
 export function ChangePasswordForm({ onSuccess }: { onSuccess?: () => void }) {
   const [currentPassword, setCurrentPassword] = useState("");
@@ -66,9 +67,7 @@ export function ChangePasswordForm({ onSuccess }: { onSuccess?: () => void }) {
   return (
     <form action={handleSubmit} noValidate className="mt-4 grid gap-4">
       <div className="grid gap-1.5">
-        <label htmlFor="currentPassword" className="text-sm font-medium">
-          Current password
-        </label>
+        <Label htmlFor="currentPassword">Current password</Label>
         <Input
           id="currentPassword"
           name="currentPassword"
@@ -95,9 +94,7 @@ export function ChangePasswordForm({ onSuccess }: { onSuccess?: () => void }) {
       </div>
 
       <div className="grid gap-1.5">
-        <label htmlFor="newPassword" className="text-sm font-medium">
-          New password
-        </label>
+        <Label htmlFor="newPassword">New password</Label>
         <Input
           id="newPassword"
           name="newPassword"
