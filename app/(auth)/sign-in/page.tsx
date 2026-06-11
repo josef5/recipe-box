@@ -92,7 +92,7 @@ function SignInForm() {
       <form
         action={handleSubmit}
         noValidate
-        className="flex min-h-[70vh] flex-col items-start gap-2"
+        className="flex min-h-[70vh] flex-col items-start gap-3"
       >
         <h1 className="font-bold">Sign in to Recipe Box</h1>
         <Label htmlFor="email">Email</Label>
