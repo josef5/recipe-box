@@ -1,4 +1,4 @@
-import SignInPage from "@/app/auth/sign-in/page";
+import SignInPage from "@/app/(auth)/sign-in/page";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { axe } from "jest-axe";
 import { beforeEach, describe, expect, it, vi } from "vitest";

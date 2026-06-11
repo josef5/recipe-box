@@ -20,10 +20,10 @@ function toSignInPath(redirectTo?: string) {
     !redirectTo.startsWith("/") ||
     redirectTo.startsWith("//")
   ) {
-    return "/auth/sign-in";
+    return "/sign-in";
   }
 
-  return `/auth/sign-in?redirectTo=${encodeURIComponent(redirectTo)}`;
+  return `/sign-in?redirectTo=${encodeURIComponent(redirectTo)}`;
 }
 
 /**

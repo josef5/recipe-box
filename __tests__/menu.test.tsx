@@ -42,7 +42,7 @@ describe("Menu", () => {
     );
     expect(screen.getByRole("link", { name: "Sign in" })).toHaveAttribute(
       "href",
-      "/auth/sign-in",
+      "/sign-in",
     );
     expect(
       screen.queryByRole("link", { name: "Account" }),

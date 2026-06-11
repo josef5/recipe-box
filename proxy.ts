@@ -2,7 +2,7 @@ import { auth } from "@/lib/auth/server";
 import { NextRequest } from "next/server";
 
 const authMiddleware = auth.middleware({
-  loginUrl: "/auth/sign-in",
+  loginUrl: "/sign-in",
 });
 
 export default async function proxy(request: NextRequest) {
@@ -13,7 +13,7 @@ export default async function proxy(request: NextRequest) {
     return response;
   }
 
-  const loginUrl = new URL("/auth/sign-in", request.url);
+  const loginUrl = new URL("/sign-in", request.url);
   const targetUrl = new URL(redirectLocation, request.url);
 
   if (targetUrl.pathname !== loginUrl.pathname) {

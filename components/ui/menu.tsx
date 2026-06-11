@@ -17,7 +17,7 @@ export function Menu() {
         ? "recipe"
         : pathname.startsWith("/account")
           ? "account"
-          : pathname.startsWith("/auth/")
+          : pathname.startsWith("/sign-in")
             ? "auth"
             : "home";
 
@@ -43,7 +43,7 @@ export function Menu() {
               <SignOutButton />
             </>
           ) : (
-            <Link href="/auth/sign-in">Sign in</Link>
+            <Link href="/sign-in">Sign in</Link>
           )}
         </div>
       )}
