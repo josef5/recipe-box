@@ -1,5 +1,7 @@
-// TODO: Populate with content
-
 export default function Footer() {
-  return <div className="h-24 py-4 text-xs">Footer</div>;
+  return (
+    <div className="text-foreground-muted min-h-12 py-6 text-xs">
+      © 2026 Jose Espejo
+    </div>
+  );
 }
