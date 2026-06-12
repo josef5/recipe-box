@@ -58,7 +58,7 @@ export function HomePageContent({
               name="q"
               defaultValue={query}
               placeholder="Search recipes"
-              className="flex-1"
+              className="w-full flex-1"
             />
             <div className="flex gap-2">
               <Button
