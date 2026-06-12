@@ -132,11 +132,7 @@ export function AccountUsersSection({
   const [isCreating, setIsCreating] = useState(false);
   const [deletingUserId, setDeletingUserId] = useState<string | null>(null);
   const [createUserFieldErrors, setCreateUserFieldErrors] =
-    useState<CreateUserFieldErrors>({
-      name: "Name is required",
-      email: "Email is required",
-      provisionalPassword: "Provisional password is required",
-    });
+    useState<CreateUserFieldErrors>({});
   const dialogRef = useRef<HTMLDialogElement | null>(null);
   const accordionRef = useRef<{
     open: () => void;
