@@ -33,8 +33,6 @@ describe("RecipeForm", () => {
           prepTimeMins: 20,
           cookTimeMins: 35,
           imageUrl: "https://example.com/cake.jpg",
-          sourceUrl: "https://example.com/cake",
-          sourceName: "Family Recipe",
           ingredients: [
             {
               name: "Flour",
@@ -69,8 +67,6 @@ describe("RecipeForm", () => {
           prepTimeMins: 15,
           cookTimeMins: 30,
           imageUrl: "https://example.com/lemon-bars.jpg",
-          sourceUrl: "https://example.com/lemon-bars",
-          sourceName: "Bakery Notes",
           ingredients: [
             {
               name: "Lemon",

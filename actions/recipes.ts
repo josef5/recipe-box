@@ -27,8 +27,6 @@ export type RecipeFormData = {
   cookTimeMins?: number;
   imageUrl?: string;
   imagePublicId?: string;
-  sourceUrl?: string;
-  sourceName?: string;
   ingredients: {
     ingredientId: string;
     amount?: number;
@@ -157,8 +155,6 @@ async function buildRecipeFormData(
     cookTimeMins: getOptionalNumber(formData, "cookTimeMins"),
     imageUrl: getOptionalString(formData, "imageUrl"),
     imagePublicId: getOptionalString(formData, "imagePublicId"),
-    sourceUrl: getOptionalString(formData, "sourceUrl"),
-    sourceName: getOptionalString(formData, "sourceName"),
     ingredients: ingredientData.filter((ingredient) => ingredient !== null),
     steps: stepInstructions
       .filter((instruction) => instruction.length > 0)
@@ -301,8 +297,6 @@ export async function createRecipe(data: RecipeFormData) {
       cookTimeMins: data.cookTimeMins,
       imageUrl: data.imageUrl,
       imagePublicId: data.imagePublicId,
-      sourceUrl: data.sourceUrl,
-      sourceName: data.sourceName,
     })
     .returning();
 
@@ -379,8 +373,6 @@ export async function updateRecipe(id: string, data: RecipeFormData) {
       cookTimeMins: data.cookTimeMins,
       imageUrl: data.imageUrl,
       imagePublicId: data.imagePublicId,
-      sourceUrl: data.sourceUrl,
-      sourceName: data.sourceName,
       updatedAt: new Date(),
     })
     .where(eq(recipes.id, id))

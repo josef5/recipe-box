@@ -38,8 +38,6 @@ type RecipeFormValues = {
   cookTimeMins?: number | null;
   imageUrl?: string | null;
   imagePublicId?: string | null;
-  sourceUrl?: string | null;
-  sourceName?: string | null;
   ingredients: IngredientField[];
   steps: StepField[];
 };
@@ -330,34 +328,6 @@ export function RecipeForm({
               <FieldErrorMessage
                 text={state?.errors.cookTimeMins}
                 id="cook-time-error"
-              />
-            </div>
-          </div>
-          <div className="grid gap-4 md:grid-cols-2">
-            {/* TODO: Remove source from here and db */}
-            <div className="flex flex-col gap-1.5">
-              <Label htmlFor="sourceName">Source name</Label>
-              <Input
-                id="sourceName"
-                name="sourceName"
-                defaultValue={initialValues?.sourceName ?? ""}
-              />
-            </div>
-            <div className="flex flex-col gap-1.5">
-              <Label htmlFor="sourceUrl">Source URL</Label>
-              <Input
-                id="sourceUrl"
-                name="sourceUrl"
-                type="url"
-                defaultValue={initialValues?.sourceUrl ?? ""}
-                aria-describedby={
-                  state?.errors.sourceUrl ? "source-url-error" : undefined
-                }
-                aria-invalid={state?.errors.sourceUrl ? true : undefined}
-              />
-              <FieldErrorMessage
-                text={state?.errors.sourceUrl}
-                id="source-url-error"
               />
             </div>
           </div>

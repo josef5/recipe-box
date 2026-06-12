@@ -17,8 +17,6 @@ export const RecipeRawInputSchema = z.object({
   prepTimeMins: optionalNonNegativeInt,
   cookTimeMins: optionalNonNegativeInt,
   imageUrl: optionalUrl,
-  sourceUrl: optionalUrl,
-  sourceName: optionalString,
 });
 
 export type RecipeRawInput = z.infer<typeof RecipeRawInputSchema>;
@@ -49,8 +47,6 @@ export function validateRecipeFormData(
     prepTimeMins: formData.get("prepTimeMins"),
     cookTimeMins: formData.get("cookTimeMins"),
     imageUrl: formData.get("imageUrl"),
-    sourceUrl: formData.get("sourceUrl"),
-    sourceName: formData.get("sourceName"),
   });
 
   if (!result.success) {

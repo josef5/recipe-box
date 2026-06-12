@@ -59,8 +59,6 @@ export default async function EditRecipePage({
             cookTimeMins: recipe.cookTimeMins,
             imageUrl: recipe.imageUrl,
             imagePublicId: recipe.imagePublicId,
-            sourceUrl: recipe.sourceUrl,
-            sourceName: recipe.sourceName,
             ingredients: recipe.recipeIngredients.map((ingredient) => ({
               name: ingredient.ingredient.name,
               amount: ingredient.amount?.toString() ?? "",

@@ -26,7 +26,6 @@ const recipeData = [
     servings: 4,
     prepTimeMins: 15,
     cookTimeMins: 30,
-    sourceName: "Lorem Kitchen, p.42",
     ingredients: [
       { name: "Brown onion", amount: 2, unit: "" },
       { name: "Garlic cloves", amount: 3, unit: "" },
@@ -50,7 +49,6 @@ const recipeData = [
     servings: 2,
     prepTimeMins: 10,
     cookTimeMins: 25,
-    sourceName: "Ipsum Cooking",
     ingredients: [
       { name: "Chicken breast", amount: 500, unit: "g" },
       { name: "Olive oil", amount: 1, unit: "tbsp" },
@@ -74,7 +72,6 @@ const recipeData = [
     servings: 4,
     prepTimeMins: 5,
     cookTimeMins: 15,
-    sourceUrl: "https://example.com/pancakes",
     ingredients: [
       { name: "Plain flour", amount: 200, unit: "g" },
       { name: "Whole milk", defaultUnit: "ml", amount: 300, unit: "ml" },

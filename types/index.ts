@@ -23,8 +23,6 @@ export type Recipe = {
   updatedAt: Date;
   imageUrl?: string | null;
   imagePublicId?: string | null;
-  sourceUrl?: string | null;
-  sourceName?: string | null;
   isPublic?: boolean | null;
   authorId?: string | null;
   /**
