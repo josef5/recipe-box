@@ -11,6 +11,8 @@ import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 import { NewRecipeButton } from "./ui/new-recipe-button";
 
+// TODO: Improve search - live update, filter on query
+
 export function HomePageContent({
   recipesPromise,
   query,
