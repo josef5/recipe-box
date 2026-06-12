@@ -177,8 +177,6 @@ async function seed() {
         servings: recipe.servings,
         prepTimeMins: recipe.prepTimeMins,
         cookTimeMins: recipe.cookTimeMins,
-        sourceName: recipe.sourceName,
-        sourceUrl: recipe.sourceUrl,
       })
       .returning();
 
