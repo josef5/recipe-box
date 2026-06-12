@@ -10,10 +10,9 @@ import {
 import { useState } from "react";
 import { toast } from "sonner";
 import { Button } from "./ui/button";
+import { FieldErrorMessage } from "./ui/field-error-mesage";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
-
-// TODO: Check field error styling
 
 export function ChangePasswordForm({ onSuccess }: { onSuccess?: () => void }) {
   const [currentPassword, setCurrentPassword] = useState("");
@@ -88,13 +87,8 @@ export function ChangePasswordForm({ onSuccess }: { onSuccess?: () => void }) {
           aria-invalid={fieldErrors.currentPassword ? true : undefined}
           autoComplete="current-password"
         />
-        {fieldErrors.currentPassword ? (
-          <p id="current-password-error" className="text-danger text-sm">
-            {fieldErrors.currentPassword}
-          </p>
-        ) : null}
+        <FieldErrorMessage text={fieldErrors.currentPassword} />
       </div>
-
       <div className="grid gap-1.5">
         <Label htmlFor="newPassword">New password</Label>
         <Input
@@ -115,11 +109,7 @@ export function ChangePasswordForm({ onSuccess }: { onSuccess?: () => void }) {
           aria-invalid={fieldErrors.newPassword ? true : undefined}
           autoComplete="new-password"
         />
-        {fieldErrors.newPassword ? (
-          <p id="new-password-error" className="text-danger text-sm">
-            {fieldErrors.newPassword}
-          </p>
-        ) : null}
+          <FieldErrorMessage text={fieldErrors.newPassword} />
       </div>
       <Button
         type="submit"

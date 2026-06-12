@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import { Accordion } from "./ui/accordion";
 import { Button } from "./ui/button";
 import { Dialog } from "./ui/dialog";
+import { FieldErrorMessage } from "./ui/field-error-mesage";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 
@@ -131,7 +132,11 @@ export function AccountUsersSection({
   const [isCreating, setIsCreating] = useState(false);
   const [deletingUserId, setDeletingUserId] = useState<string | null>(null);
   const [createUserFieldErrors, setCreateUserFieldErrors] =
-    useState<CreateUserFieldErrors>({});
+    useState<CreateUserFieldErrors>({
+      name: "Name is required",
+      email: "Email is required",
+      provisionalPassword: "Provisional password is required",
+    });
   const dialogRef = useRef<HTMLDialogElement | null>(null);
   const accordionRef = useRef<{
     open: () => void;
@@ -229,11 +234,7 @@ export function AccountUsersSection({
                 }));
               }}
             />
-            {createUserFieldErrors.name ? (
-              <p className="text-danger text-sm">
-                {createUserFieldErrors.name}
-              </p>
-            ) : null}
+            <FieldErrorMessage text={createUserFieldErrors.name} />
           </div>
 
           <div className="grid gap-1.5">
@@ -251,11 +252,7 @@ export function AccountUsersSection({
                 }));
               }}
             />
-            {createUserFieldErrors.email ? (
-              <p className="text-danger text-sm">
-                {createUserFieldErrors.email}
-              </p>
-            ) : null}
+            <FieldErrorMessage text={createUserFieldErrors.email} />
           </div>
 
           <div className="grid gap-1.5">
@@ -279,11 +276,9 @@ export function AccountUsersSection({
               }}
               autoComplete="new-password"
             />
-            {createUserFieldErrors.provisionalPassword ? (
-              <p className="text-danger text-sm">
-                {createUserFieldErrors.provisionalPassword}
-              </p>
-            ) : null}
+            <FieldErrorMessage
+              text={createUserFieldErrors.provisionalPassword}
+            />
           </div>
 
           <Button type="submit" disabled={isCreating || !isCreateUserValid}>

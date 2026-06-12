@@ -10,6 +10,7 @@ import { useActionState, useEffect, useMemo, useRef, useState } from "react";
 import { useFormStatus } from "react-dom";
 import { Button } from "./ui/button";
 import { Dialog } from "./ui/dialog";
+import { FieldErrorMessage } from "./ui/field-error-mesage";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 
@@ -240,15 +241,11 @@ export function RecipeForm({
         onInput={scheduleClientValiditySync}
         className="bg-surface flex max-w-3xl flex-col gap-8 rounded-lg p-4"
       >
-        {state?.errors._form && (
-          <p
-            id="recipe-form-error"
-            role="alert"
-            className="text-danger rounded-md px-4 py-3 text-sm"
-          >
-            {state.errors._form}
-          </p>
-        )}
+        <FieldErrorMessage
+          text={state?.errors._form}
+          id="recipe-form-error"
+          role="alert"
+        />
         <section className="flex flex-col gap-4">
           <div className="flex flex-col gap-1.5">
             <Label htmlFor="title">Title</Label>
@@ -259,11 +256,7 @@ export function RecipeForm({
               aria-describedby={state?.errors.title ? "title-error" : undefined}
               aria-invalid={state?.errors.title ? true : undefined}
             />
-            {state?.errors.title && (
-              <p id="title-error" className="text-danger text-sm">
-                {state.errors.title}
-              </p>
-            )}
+            <FieldErrorMessage text={state?.errors.title} id="title-error" />
           </div>
           <div className="flex flex-col gap-1.5">
             <Label htmlFor="description">Description</Label>
@@ -274,6 +267,10 @@ export function RecipeForm({
               rows={4}
               defaultValue={initialValues?.description ?? ""}
               className="bg-input rounded-md p-3 text-sm"
+            />
+            <FieldErrorMessage
+              text={state?.errors.description}
+              id="description-error"
             />
           </div>
           <div className="grid grid-cols-3 gap-4">
@@ -289,11 +286,10 @@ export function RecipeForm({
                 }
                 aria-invalid={state?.errors.servings ? true : undefined}
               />
-              {state?.errors.servings && (
-                <p id="servings-error" className="text-danger text-sm">
-                  {state.errors.servings}
-                </p>
-              )}
+              <FieldErrorMessage
+                text={state?.errors.servings}
+                id="servings-error"
+              />
             </div>
             <div className="flex flex-col gap-1.5">
               <Label
@@ -312,11 +308,10 @@ export function RecipeForm({
                 }
                 aria-invalid={state?.errors.prepTimeMins ? true : undefined}
               />
-              {state?.errors.prepTimeMins && (
-                <p id="prep-time-error" className="text-danger text-sm">
-                  {state.errors.prepTimeMins}
-                </p>
-              )}
+              <FieldErrorMessage
+                text={state?.errors.prepTimeMins}
+                id="prep-time-error"
+              />
             </div>
             <div className="flex flex-col gap-1.5">
               <Label htmlFor="cookTimeMins" className="truncate">
@@ -332,11 +327,10 @@ export function RecipeForm({
                 }
                 aria-invalid={state?.errors.cookTimeMins ? true : undefined}
               />
-              {state?.errors.cookTimeMins && (
-                <p id="cook-time-error" className="text-danger text-sm">
-                  {state.errors.cookTimeMins}
-                </p>
-              )}
+              <FieldErrorMessage
+                text={state?.errors.cookTimeMins}
+                id="cook-time-error"
+              />
             </div>
           </div>
           <div className="grid gap-4 md:grid-cols-2">
@@ -361,11 +355,10 @@ export function RecipeForm({
                 }
                 aria-invalid={state?.errors.sourceUrl ? true : undefined}
               />
-              {state?.errors.sourceUrl && (
-                <p id="source-url-error" className="text-danger text-sm">
-                  {state.errors.sourceUrl}
-                </p>
-              )}
+              <FieldErrorMessage
+                text={state?.errors.sourceUrl}
+                id="source-url-error"
+              />
             </div>
           </div>
           <div className="flex flex-col gap-1.5">
@@ -427,11 +420,10 @@ export function RecipeForm({
                 </Button>
               ) : null}
             </div>
-            {imageUploadError ? (
-              <p role="alert" className="text-danger text-sm">
-                {imageUploadError}
-              </p>
-            ) : null}
+            <FieldErrorMessage
+              text={imageUploadError ?? undefined}
+              id="image-url-error"
+            />
             {imageUrl ? (
               <Image
                 src={imageUrl}
@@ -443,11 +435,10 @@ export function RecipeForm({
                 className="mt-2 max-h-64 w-full rounded-md border object-cover"
               />
             ) : null}
-            {state?.errors.imageUrl && (
-              <p id="image-url-error" className="text-danger text-sm">
-                {state.errors.imageUrl}
-              </p>
-            )}
+            <FieldErrorMessage
+              text={state?.errors.imageUrl}
+              id="image-url-error"
+            />
           </div>
         </section>
         <section className="flex flex-col gap-4">
