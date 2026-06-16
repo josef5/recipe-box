@@ -1,7 +1,7 @@
 "use client";
 
+import { changePasswordAction } from "@/actions/auth";
 import { TOAST_OPTIONS } from "@/constants/toast-options";
-import { authClient } from "@/lib/auth/client";
 import { ChangePasswordInput, changePasswordSchema } from "@/lib/schemas/auth";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -17,27 +17,48 @@ export function ChangePasswordForm({ onSuccess }: { onSuccess?: () => void }) {
     handleSubmit,
     setError,
     reset,
-    formState: { errors, isSubmitting },
+    formState: { errors, isSubmitting, dirtyFields },
   } = useForm<ChangePasswordInput>({
     resolver: zodResolver(changePasswordSchema),
-    mode: "onBlur",
+    mode: "onChange",
   });
+
+  const canSubmit =
+    Boolean(dirtyFields.currentPassword) &&
+    Boolean(dirtyFields.newPassword) &&
+    !errors.currentPassword &&
+    !errors.newPassword;
 
   async function onSubmit({
     currentPassword,
     newPassword,
   }: ChangePasswordInput) {
     try {
-      const result = await authClient.changePassword({
+      const result = await changePasswordAction({
         currentPassword,
         newPassword,
-        revokeOtherSessions: true,
       });
 
-      if (result.error) {
-        const message = result.error.message ?? "Unable to update password.";
-        setError("currentPassword", { type: "server", message });
-        toast.error(message, TOAST_OPTIONS.error);
+      if (!result.ok) {
+        if (result.fieldErrors?.currentPassword) {
+          setError("currentPassword", {
+            type: "server",
+            message: result.fieldErrors.currentPassword,
+          });
+        }
+
+        if (result.fieldErrors?.newPassword) {
+          setError("newPassword", {
+            type: "server",
+            message: result.fieldErrors.newPassword,
+          });
+        }
+
+        const message = result.error ?? result.fieldErrors?.newPassword;
+
+        if (message) {
+          toast.error(message, TOAST_OPTIONS.error);
+        }
         return;
       }
 
@@ -45,6 +66,7 @@ export function ChangePasswordForm({ onSuccess }: { onSuccess?: () => void }) {
       reset();
       onSuccess?.();
     } catch (err) {
+      console.error("Error changing password 3:", err);
       toast.error(
         err instanceof Error ? err.message : "Unable to update password.",
         TOAST_OPTIONS.error,
@@ -86,7 +108,11 @@ export function ChangePasswordForm({ onSuccess }: { onSuccess?: () => void }) {
         />
         <FieldErrorMessage text={errors.newPassword?.message} />
       </div>
-      <Button type="submit" disabled={isSubmitting} className="mt-2">
+      <Button
+        type="submit"
+        disabled={isSubmitting || !canSubmit}
+        className="mt-2"
+      >
         {isSubmitting ? "Updating..." : "Update password"}
       </Button>
     </form>
