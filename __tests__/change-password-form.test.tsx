@@ -121,7 +121,31 @@ describe("change password form", () => {
     );
 
     expect(
-      await screen.findByText("New password must be at least 8 characters."),
+      await screen.findByText("New password must be at least 8 characters"),
+    ).toBeInTheDocument();
+
+    expect(mocks.changePasswordAction).not.toHaveBeenCalled();
+  });
+
+  it("shows a validation error when new password matches current password", async () => {
+    render(<ChangePasswordForm />);
+
+    fireEvent.change(screen.getByLabelText("Current password"), {
+      target: { value: "same-pass-123" },
+    });
+
+    fireEvent.change(screen.getByLabelText("New password"), {
+      target: { value: "same-pass-123" },
+    });
+
+    fireEvent.submit(
+      screen.getByRole("button", { name: "Update password" }).closest("form")!,
+    );
+
+    expect(
+      await screen.findByText(
+        "New password must be different from current password",
+      ),
     ).toBeInTheDocument();
 
     expect(mocks.changePasswordAction).not.toHaveBeenCalled();
@@ -135,17 +159,17 @@ describe("change password form", () => {
     );
 
     expect(
-      await screen.findByText("Current password is required."),
+      await screen.findByText("Current password is required"),
     ).toBeInTheDocument();
 
     expect(
-      await screen.findByText("New password must be at least 8 characters."),
+      await screen.findByText("New password must be at least 8 characters"),
     ).toBeInTheDocument();
 
     expect(mocks.changePasswordAction).not.toHaveBeenCalled();
   });
 
-  it("disables submit until the form is valid", () => {
+  it("disables submit until the form is valid", async () => {
     render(<ChangePasswordForm />);
 
     const submitButton = screen.getByRole("button", {
@@ -164,7 +188,9 @@ describe("change password form", () => {
       target: { value: "new-pass-123" },
     });
 
-    expect(submitButton).toBeEnabled();
+    await waitFor(() => {
+      expect(submitButton).toBeEnabled();
+    });
   });
 
   it("has no accessibility violations", async () => {
