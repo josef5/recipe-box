@@ -4,15 +4,13 @@ import { axe } from "jest-axe";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const mocks = vi.hoisted(() => ({
-  changePassword: vi.fn(),
+  changePasswordAction: vi.fn(),
   toastSuccess: vi.fn(),
   toastError: vi.fn(),
 }));
 
-vi.mock("@/lib/auth/client", () => ({
-  authClient: {
-    changePassword: mocks.changePassword,
-  },
+vi.mock("@/actions/auth", () => ({
+  changePasswordAction: mocks.changePasswordAction,
 }));
 
 vi.mock("sonner", () => ({
@@ -24,8 +22,8 @@ vi.mock("sonner", () => ({
 
 describe("change password form", () => {
   beforeEach(() => {
-    mocks.changePassword.mockReset();
-    mocks.changePassword.mockResolvedValue({ error: null });
+    mocks.changePasswordAction.mockReset();
+    mocks.changePasswordAction.mockResolvedValue({ ok: true });
     mocks.toastSuccess.mockReset();
     mocks.toastError.mockReset();
   });
@@ -46,10 +44,9 @@ describe("change password form", () => {
     );
 
     await waitFor(() => {
-      expect(mocks.changePassword).toHaveBeenCalledWith({
+      expect(mocks.changePasswordAction).toHaveBeenCalledWith({
         currentPassword: "old-pass-123",
         newPassword: "new-pass-123",
-        revokeOtherSessions: true,
       });
     });
 
@@ -63,8 +60,9 @@ describe("change password form", () => {
 
   it("shows auth errors from the API", async () => {
     const errorMessage = "Current password is incorrect";
-    mocks.changePassword.mockResolvedValueOnce({
-      error: { message: errorMessage },
+    mocks.changePasswordAction.mockResolvedValueOnce({
+      ok: false,
+      error: errorMessage,
     });
 
     render(<ChangePasswordForm />);
@@ -101,10 +99,10 @@ describe("change password form", () => {
     );
 
     expect(
-      await screen.findByText("Current password is required."),
+      await screen.findByText("Current password is required"),
     ).toBeInTheDocument();
 
-    expect(mocks.changePassword).not.toHaveBeenCalled();
+    expect(mocks.changePasswordAction).not.toHaveBeenCalled();
   });
 
   it("shows a validation error when new password is too short", async () => {
@@ -126,7 +124,7 @@ describe("change password form", () => {
       await screen.findByText("New password must be at least 8 characters."),
     ).toBeInTheDocument();
 
-    expect(mocks.changePassword).not.toHaveBeenCalled();
+    expect(mocks.changePasswordAction).not.toHaveBeenCalled();
   });
 
   it("shows all client-side validation errors for an empty submit", async () => {
@@ -144,7 +142,7 @@ describe("change password form", () => {
       await screen.findByText("New password must be at least 8 characters."),
     ).toBeInTheDocument();
 
-    expect(mocks.changePassword).not.toHaveBeenCalled();
+    expect(mocks.changePasswordAction).not.toHaveBeenCalled();
   });
 
   it("disables submit until the form is valid", () => {
