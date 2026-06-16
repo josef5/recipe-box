@@ -19,13 +19,11 @@ export async function changePasswordAction(input: {
   newPassword: string;
 }): Promise<Result> {
   try {
-    // Avoid redirect-throwing helpers in server actions
     const { data: session } = await auth.getSession();
 
     if (!session?.user) {
       return { ok: false, error: "Please sign in again." };
     }
-    // await requireCurrentUser({ redirectTo: "/account" });
 
     const parsed = changePasswordSchema.safeParse(input);
 
