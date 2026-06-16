@@ -2,17 +2,9 @@ import { auth } from "@/lib/auth/server";
 import type { User } from "@/types";
 import { forbidden, redirect } from "next/navigation";
 
-type GetSessionOptions = Parameters<typeof auth.getSession>[0];
-
 type RequireUserOptions = {
   redirectTo?: string;
 };
-
-const freshSessionOptions = {
-  query: {
-    disableCookieCache: "true",
-  },
-} as GetSessionOptions;
 
 function toSignInPath(redirectTo?: string) {
   if (
@@ -31,7 +23,7 @@ function toSignInPath(redirectTo?: string) {
  * @returns The current user or null if no session exists.
  */
 export async function getCurrentUser(): Promise<User | null> {
-  const { data: session } = await auth.getSession(freshSessionOptions);
+  const { data: session } = await auth.getSession();
   return session?.user ?? null;
 }
 
