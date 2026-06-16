@@ -2,12 +2,9 @@
 
 import { TOAST_OPTIONS } from "@/constants/toast-options";
 import { authClient } from "@/lib/auth/client";
-import {
-  ChangePasswordSchema,
-  validateChangePasswordFormData,
-  type ChangePasswordFieldErrors,
-} from "@/lib/validation/auth";
-import { useState } from "react";
+import { ChangePasswordInput, changePasswordSchema } from "@/lib/schemas/auth";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { Button } from "./ui/button";
 import { FieldErrorMessage } from "./ui/field-error-mesage";
@@ -15,28 +12,21 @@ import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 
 export function ChangePasswordForm({ onSuccess }: { onSuccess?: () => void }) {
-  const [currentPassword, setCurrentPassword] = useState("");
-  const [newPassword, setNewPassword] = useState("");
-  const [fieldErrors, setFieldErrors] = useState<ChangePasswordFieldErrors>({});
-  const [isPending, setIsPending] = useState(false);
-  const isFormValid = ChangePasswordSchema.safeParse({
+  const {
+    register,
+    handleSubmit,
+    setError,
+    reset,
+    formState: { errors, isSubmitting },
+  } = useForm<ChangePasswordInput>({
+    resolver: zodResolver(changePasswordSchema),
+    mode: "onBlur",
+  });
+
+  async function onSubmit({
     currentPassword,
     newPassword,
-  }).success;
-
-  async function handleSubmit(formData: FormData) {
-    const validated = validateChangePasswordFormData(formData);
-
-    if (!validated.success) {
-      setFieldErrors(validated.errors);
-      return;
-    }
-
-    const { currentPassword, newPassword } = validated.data;
-
-    setFieldErrors({});
-    setIsPending(true);
-
+  }: ChangePasswordInput) {
     try {
       const result = await authClient.changePassword({
         currentPassword,
@@ -45,78 +35,59 @@ export function ChangePasswordForm({ onSuccess }: { onSuccess?: () => void }) {
       });
 
       if (result.error) {
-        toast.error(
-          result.error.message ?? "Unable to update password.",
-          TOAST_OPTIONS.error,
-        );
+        const message = result.error.message ?? "Unable to update password.";
+        setError("currentPassword", { type: "server", message });
+        toast.error(message, TOAST_OPTIONS.error);
         return;
       }
 
       toast.success("Password updated.", TOAST_OPTIONS.success);
-
+      reset();
       onSuccess?.();
     } catch (err) {
       toast.error(
         err instanceof Error ? err.message : "Unable to update password.",
         TOAST_OPTIONS.error,
       );
-    } finally {
-      setIsPending(false);
     }
   }
 
   return (
-    <form action={handleSubmit} noValidate className="mt-4 grid gap-4">
+    <form
+      onSubmit={handleSubmit(onSubmit)}
+      noValidate
+      className="mt-4 grid gap-4"
+    >
       <div className="grid gap-1.5">
         <Label htmlFor="currentPassword">Current password</Label>
         <Input
           id="currentPassword"
-          name="currentPassword"
           type="password"
-          value={currentPassword}
-          onChange={(event) => {
-            setCurrentPassword(event.target.value);
-            setFieldErrors((current) => ({
-              ...current,
-              currentPassword: undefined,
-            }));
-          }}
+          {...register("currentPassword")}
           aria-describedby={
-            fieldErrors.currentPassword ? "current-password-error" : undefined
+            errors.currentPassword ? "current-password-error" : undefined
           }
-          aria-invalid={fieldErrors.currentPassword ? true : undefined}
+          aria-invalid={errors.currentPassword ? true : undefined}
           autoComplete="current-password"
         />
-        <FieldErrorMessage text={fieldErrors.currentPassword} />
+        <FieldErrorMessage text={errors.currentPassword?.message} />
       </div>
       <div className="grid gap-1.5">
         <Label htmlFor="newPassword">New password</Label>
         <Input
           id="newPassword"
-          name="newPassword"
           type="password"
-          value={newPassword}
-          onChange={(event) => {
-            setNewPassword(event.target.value);
-            setFieldErrors((current) => ({
-              ...current,
-              newPassword: undefined,
-            }));
-          }}
+          {...register("newPassword")}
           aria-describedby={
-            fieldErrors.newPassword ? "new-password-error" : undefined
+            errors.newPassword ? "new-password-error" : undefined
           }
-          aria-invalid={fieldErrors.newPassword ? true : undefined}
+          aria-invalid={errors.newPassword ? true : undefined}
           autoComplete="new-password"
         />
-          <FieldErrorMessage text={fieldErrors.newPassword} />
+        <FieldErrorMessage text={errors.newPassword?.message} />
       </div>
-      <Button
-        type="submit"
-        disabled={isPending || !isFormValid}
-        className="mt-2"
-      >
-        {isPending ? "Updating..." : "Update password"}
+      <Button type="submit" disabled={isSubmitting} className="mt-2">
+        {isSubmitting ? "Updating..." : "Update password"}
       </Button>
     </form>
   );
