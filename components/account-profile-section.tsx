@@ -8,6 +8,8 @@ import { EditableAccountName } from "./ui/editable-account-name";
 import { useRef } from "react";
 import Link from "next/link";
 
+// TODO: Filter recipes by user
+
 export function AccountProfileSection({
   user,
   recipes = [],
