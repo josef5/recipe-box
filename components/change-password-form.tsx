@@ -66,7 +66,6 @@ export function ChangePasswordForm({ onSuccess }: { onSuccess?: () => void }) {
       reset();
       onSuccess?.();
     } catch (err) {
-      console.error("Error changing password 3:", err);
       toast.error(
         err instanceof Error ? err.message : "Unable to update password.",
         TOAST_OPTIONS.error,
