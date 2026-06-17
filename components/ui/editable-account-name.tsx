@@ -8,57 +8,45 @@ import { toast } from "sonner";
 import { Button } from "./button";
 import { Input } from "./input";
 import { Label } from "./label";
-
-const MAX_NAME_LENGTH = 100;
-
-type AccountProfileSectionProps = {
-  initialName: string | null;
-};
+import {
+  accountNameSchema,
+  type AccountNameInput,
+} from "@/lib/schemas/account";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { FieldErrorMessage } from "./field-error-mesage";
+import { updateAccountNameAction } from "@/actions/account";
 
 export function EditableAccountName({
   initialName,
-}: AccountProfileSectionProps) {
+}: {
+  initialName: string | null;
+}) {
   const router = useRouter();
+  const {
+    register,
+    handleSubmit,
+    setError,
+    reset,
+    formState: { errors, isSubmitting, dirtyFields },
+  } = useForm<AccountNameInput>({
+    resolver: zodResolver(accountNameSchema),
+    mode: "onChange",
+    defaultValues: {
+      name: initialName ?? "",
+    },
+  });
   const [currentName, setCurrentName] = useState<string | null>(initialName);
-  const [draftName, setDraftName] = useState(initialName ?? "");
   const [isEditing, setIsEditing] = useState(false);
-  const [isPending, setIsPending] = useState(false);
 
-  function beginEditing() {
-    setDraftName(currentName ?? "");
-    setIsEditing(true);
-  }
-
-  function cancelEditing() {
-    setDraftName(currentName ?? "");
-    setIsEditing(false);
-  }
-
-  async function handleSubmit(formData: FormData) {
-    const submittedName = formData.get("name");
-
-    if (typeof submittedName !== "string") {
-      toast.error("Invalid form submission.", TOAST_OPTIONS.error);
-      return;
-    }
-
-    if (submittedName.length > MAX_NAME_LENGTH) {
-      toast.error(
-        `Name must be ${MAX_NAME_LENGTH} characters or fewer.`,
-        TOAST_OPTIONS.error,
-      );
-      return;
-    }
-
-    setIsPending(true);
-
+  async function onSubmit({ name }: AccountNameInput) {
     try {
       // Calling authClient.updateUser() from the client is required because
       // it hits the /update-user path which triggers Better Auth's session
       // atom listeners, causing useSession() consumers (like Menu) to
       // automatically receive the refreshed user data. A server-side
       // auth.updateUser() call or manual refetchSession() does not do this.
-      const authResult = await authClient.updateUser({ name: submittedName });
+      const authResult = await authClient.updateUser({ name });
 
       if (authResult.error) {
         toast.error(
@@ -68,26 +56,24 @@ export function EditableAccountName({
         return;
       }
 
-      // Separately sync recipes.ownerDisplayName in the DB and revalidate
-      // Next.js caches. This call intentionally does not re-run auth.updateUser.
-      const response = await fetch("/api/account/name/sync", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name: submittedName }),
-      });
-
-      const result = (await response.json()) as
-        | { ok: true; data: { name: string } }
-        | { ok: false; error: string };
+      const result = await updateAccountNameAction({ name });
 
       if (!result.ok) {
-        toast.error(result.error, TOAST_OPTIONS.error);
+        setError("name", {
+          type: "server",
+          message: result.error,
+        });
+
+        if (result.error) {
+          toast.error(result.error, TOAST_OPTIONS.error);
+        }
+
         return;
       }
 
       setCurrentName(result.data.name);
-      setDraftName(result.data.name);
       setIsEditing(false);
+      reset({ name: result.data.name });
       toast.success("Name updated.", TOAST_OPTIONS.success);
       router.refresh();
     } catch (err) {
@@ -95,54 +81,56 @@ export function EditableAccountName({
         err instanceof Error ? err.message : "Unable to update your name.",
         TOAST_OPTIONS.error,
       );
-    } finally {
-      setIsPending(false);
     }
   }
+
+  const canSubmit = Boolean(dirtyFields.name) && !errors.name && !isSubmitting;
 
   return (
     <div className="col-span-2 grid grid-cols-subgrid items-baseline gap-3">
       <dt className="font-medium">Name</dt>
       <dd className="col-start-2 space-y-2">
         {isEditing ? (
-          <form
-            action={handleSubmit}
-            className="flex flex-wrap items-center justify-end gap-2"
-          >
-            <Label htmlFor="name" className="sr-only">
-              Name
-            </Label>
-            <Input
-              id="name"
-              name="name"
-              type="text"
-              value={draftName}
-              onChange={(event) => setDraftName(event.currentTarget.value)}
-              autoComplete="name"
-              required
-              maxLength={100}
-              className="min-w-36 flex-1"
-            />
-            <div className="flex min-h-9 gap-2">
-              <Button
-                type="submit"
-                variant="primary"
-                size="sm"
-                disabled={isPending}
-                className="min-h-full min-w-14"
-              >
-                {isPending ? "Saving..." : "Save"}
-              </Button>
-              <Button
-                type="button"
-                variant="secondary"
-                size="sm"
-                disabled={isPending}
-                onClick={cancelEditing}
-                className="min-h-full min-w-14"
-              >
-                Cancel
-              </Button>
+          <form onSubmit={handleSubmit(onSubmit)} className="">
+            <div className="flex flex-col gap-2">
+              <div className="flex flex-wrap items-center justify-end gap-2">
+                <Label htmlFor="name" className="sr-only">
+                  Name
+                </Label>
+                <Input
+                  id="name"
+                  type="text"
+                  {...register("name")}
+                  autoComplete="name"
+                  required
+                  className="min-w-36 flex-1"
+                />
+                <div className="flex min-h-9 gap-2">
+                  <Button
+                    type="submit"
+                    variant="primary"
+                    size="sm"
+                    disabled={!canSubmit}
+                    className="min-h-full min-w-14"
+                  >
+                    {isSubmitting ? "Saving..." : "Save"}
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    size="sm"
+                    // disabled={!canSubmit}
+                    onClick={() => {
+                      reset();
+                      setIsEditing(false);
+                    }}
+                    className="min-h-full min-w-14"
+                  >
+                    Cancel
+                  </Button>
+                </div>
+              </div>
+              <FieldErrorMessage text={errors.name?.message} />
             </div>
           </form>
         ) : (
@@ -152,7 +140,7 @@ export function EditableAccountName({
               type="button"
               variant="secondary"
               size="sm"
-              onClick={beginEditing}
+              onClick={() => setIsEditing(true)}
             >
               Edit
             </Button>
