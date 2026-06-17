@@ -6,6 +6,18 @@ type RequireUserOptions = {
   redirectTo?: string;
 };
 
+function normalizeUserRole(role: unknown): string | string[] | undefined {
+  if (typeof role === "string") {
+    return role;
+  }
+
+  if (Array.isArray(role)) {
+    return role.filter((value): value is string => typeof value === "string");
+  }
+
+  return undefined;
+}
+
 function toSignInPath(redirectTo?: string) {
   if (
     !redirectTo ||
@@ -24,7 +36,15 @@ function toSignInPath(redirectTo?: string) {
  */
 export async function getCurrentUser(): Promise<User | null> {
   const { data: session } = await auth.getSession();
-  return session?.user ?? null;
+
+  if (!session?.user) {
+    return null;
+  }
+
+  return {
+    ...session.user,
+    role: normalizeUserRole(session.user.role),
+  };
 }
 
 /**
