@@ -4,6 +4,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const mocks = vi.hoisted(() => ({
   updateUser: vi.fn(),
+  updateAccountNameAction: vi.fn(),
   refresh: vi.fn(),
   useRouter: vi.fn(),
   toastSuccess: vi.fn(),
@@ -14,6 +15,10 @@ vi.mock("@/lib/auth/client", () => ({
   authClient: {
     updateUser: mocks.updateUser,
   },
+}));
+
+vi.mock("@/actions/account", () => ({
+  updateAccountNameAction: mocks.updateAccountNameAction,
 }));
 
 vi.mock("next/navigation", () => ({
@@ -27,25 +32,20 @@ vi.mock("sonner", () => ({
   },
 }));
 
-const syncResponse = (body: object, status = 200) =>
-  new Response(JSON.stringify(body), {
-    status,
-    headers: { "Content-Type": "application/json" },
-  });
-
 describe("account profile section", () => {
   beforeEach(() => {
     vi.restoreAllMocks();
     mocks.updateUser.mockReset();
     mocks.updateUser.mockResolvedValue({ error: null });
+    mocks.updateAccountNameAction.mockReset();
+    mocks.updateAccountNameAction.mockResolvedValue({
+      ok: true,
+      data: { name: "Updated Name" },
+    });
     mocks.refresh.mockReset();
     mocks.useRouter.mockReturnValue({
       refresh: mocks.refresh,
     });
-
-    vi.spyOn(globalThis, "fetch").mockResolvedValue(
-      syncResponse({ ok: true, data: { name: "Updated Name" } }),
-    );
   });
 
   it("renders current name and enters edit mode", () => {
@@ -71,12 +71,17 @@ describe("account profile section", () => {
 
     expect(screen.getByText("Current Name")).toBeInTheDocument();
     expect(mocks.updateUser).not.toHaveBeenCalled();
-    expect(globalThis.fetch).not.toHaveBeenCalled();
+    expect(mocks.updateAccountNameAction).not.toHaveBeenCalled();
   });
 
-  it("calls authClient.updateUser then syncs DB and shows success", async () => {
+  it("calls authClient.updateUser then syncs the account name and shows success", async () => {
     const message1 = "Updated Name";
     const message2 = "Name updated.";
+
+    mocks.updateAccountNameAction.mockResolvedValueOnce({
+      ok: true,
+      data: { name: message1 },
+    });
 
     render(<EditableAccountName initialName="Current Name" />);
 
@@ -94,13 +99,9 @@ describe("account profile section", () => {
       });
     });
 
-    expect(globalThis.fetch).toHaveBeenCalledWith(
-      "/api/account/name/sync",
-      expect.objectContaining({
-        method: "POST",
-        body: JSON.stringify({ name: message1 }),
-      }),
-    );
+    expect(mocks.updateAccountNameAction).toHaveBeenCalledWith({
+      name: message1,
+    });
 
     await waitFor(() => {
       expect(mocks.toastSuccess).toHaveBeenCalledWith(
@@ -137,15 +138,16 @@ describe("account profile section", () => {
         expect.any(Object),
       );
     });
-    expect(globalThis.fetch).not.toHaveBeenCalled();
+    expect(mocks.updateAccountNameAction).not.toHaveBeenCalled();
   });
 
-  it("shows sync error when DB sync fails", async () => {
+  it("shows sync error when the server action fails", async () => {
     const errorMessage = "Unable to update your name.";
 
-    vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(
-      syncResponse({ ok: false, error: errorMessage }, 400),
-    );
+    mocks.updateAccountNameAction.mockResolvedValueOnce({
+      ok: false,
+      error: errorMessage,
+    });
 
     render(<EditableAccountName initialName="Current Name" />);
 
