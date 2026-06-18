@@ -3,15 +3,12 @@
 import { type ManagedUser } from "@/actions/admin-users";
 import { TOAST_OPTIONS } from "@/constants/toast-options";
 import { formatStableDate } from "@/lib/utils";
-import { CreateAdminUserSchema } from "@/lib/validation/admin-users";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
+import { AddUserForm } from "./add-user-form";
 import { Accordion } from "./ui/accordion";
 import { Button } from "./ui/button";
 import { Dialog } from "./ui/dialog";
-import { FieldErrorMessage } from "./ui/field-error-mesage";
-import { Input } from "./ui/input";
-import { Label } from "./ui/label";
 
 type ClientActionResult<T = void> =
   | { ok: true; data: T }
@@ -117,32 +114,18 @@ type AdminUsersSectionProps = {
   currentUserId: string;
 };
 
-type CreateUserFieldErrors = Partial<
-  Record<"name" | "email" | "provisionalPassword", string>
->;
-
 export function AccountUsersSection({
   initialUsers,
   currentUserId,
 }: AdminUsersSectionProps) {
   const [users, setUsers] = useState<ManagedUser[]>(initialUsers);
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [provisionalPassword, setProvisionalPassword] = useState("");
   const [isCreating, setIsCreating] = useState(false);
   const [deletingUserId, setDeletingUserId] = useState<string | null>(null);
-  const [createUserFieldErrors, setCreateUserFieldErrors] =
-    useState<CreateUserFieldErrors>({});
   const dialogRef = useRef<HTMLDialogElement | null>(null);
   const accordionRef = useRef<{
     open: () => void;
     close: () => void;
   }>(null);
-  const isCreateUserValid = CreateAdminUserSchema.safeParse({
-    name,
-    email,
-    provisionalPassword,
-  }).success;
 
   useEffect(() => {
     setUsers(initialUsers);
@@ -159,9 +142,15 @@ export function AccountUsersSection({
     setUsers(result.data);
   }
 
-  async function handleCreateUser(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-
+  async function handleCreateUser({
+    name,
+    email,
+    provisionalPassword,
+  }: {
+    name: string;
+    email: string;
+    provisionalPassword: string;
+  }) {
     const result = await createManagedUserApi({
       name,
       email,
@@ -174,9 +163,6 @@ export function AccountUsersSection({
     }
 
     toast.success(`Created user: ${result.data.email}`, TOAST_OPTIONS.success);
-    setName("");
-    setEmail("");
-    setProvisionalPassword("");
     accordionRef.current?.close();
 
     await refreshUsers();
@@ -210,77 +196,7 @@ export function AccountUsersSection({
         headingNode={<h2 className="font-medium">Create new user</h2>}
         ref={accordionRef}
       >
-        <form
-          onSubmit={handleCreateUser}
-          noValidate
-          className="mt-4 grid gap-4"
-        >
-          <div className="grid gap-1.5">
-            <Label htmlFor="adminUserName">Name</Label>
-            <Input
-              id="adminUserName"
-              name="name"
-              type="text"
-              value={name}
-              onChange={(event) => {
-                setName(event.target.value);
-                setCreateUserFieldErrors((current) => ({
-                  ...current,
-                  name: undefined,
-                }));
-              }}
-            />
-            <FieldErrorMessage text={createUserFieldErrors.name} />
-          </div>
-
-          <div className="grid gap-1.5">
-            <Label htmlFor="adminUserEmail">Email</Label>
-            <Input
-              id="adminUserEmail"
-              name="email"
-              type="email"
-              value={email}
-              onChange={(event) => {
-                setEmail(event.target.value);
-                setCreateUserFieldErrors((current) => ({
-                  ...current,
-                  email: undefined,
-                }));
-              }}
-            />
-            <FieldErrorMessage text={createUserFieldErrors.email} />
-          </div>
-
-          <div className="grid gap-1.5">
-            <Label
-              htmlFor="adminUserProvisionalPassword"
-              className="text-sm font-medium"
-            >
-              Provisional password
-            </Label>
-            <Input
-              id="adminUserProvisionalPassword"
-              name="provisionalPassword"
-              type="password"
-              value={provisionalPassword}
-              onChange={(event) => {
-                setProvisionalPassword(event.target.value);
-                setCreateUserFieldErrors((current) => ({
-                  ...current,
-                  provisionalPassword: undefined,
-                }));
-              }}
-              autoComplete="new-password"
-            />
-            <FieldErrorMessage
-              text={createUserFieldErrors.provisionalPassword}
-            />
-          </div>
-
-          <Button type="submit" disabled={isCreating || !isCreateUserValid}>
-            {isCreating ? "Creating..." : "Create user"}
-          </Button>
-        </form>
+        <AddUserForm onSubmit={handleCreateUser} isCreating={isCreating} />
       </Accordion>
       <table className="mb-0 w-full text-sm">
         <thead className="xs:table-header-group hidden">
