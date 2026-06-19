@@ -1,87 +1,71 @@
 "use client";
 
-import { CreateAdminUserSchema } from "@/lib/validation/admin-users";
-import { useState } from "react";
 import { Button } from "./ui/button";
 import { FieldErrorMessage } from "./ui/field-error-mesage";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
-
-type CreateUserFieldErrors = Partial<
-  Record<"name" | "email" | "provisionalPassword", string>
->;
+import { useForm } from "react-hook-form";
+import { addUserSchema, type AddUserInput } from "@/lib/schemas/account";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 export function AddUserForm({
   onSubmit,
   isCreating,
 }: {
-  onSubmit: ({
-    name,
-    email,
-    provisionalPassword,
-  }: {
-    name: string;
-    email: string;
-    provisionalPassword: string;
-  }) => void;
+  onSubmit: (
+    {
+      name,
+      email,
+      provisionalPassword,
+    }: {
+      name: string;
+      email: string;
+      provisionalPassword: string;
+    },
+    setError: ReturnType<typeof useForm<AddUserInput>>["setError"],
+  ) => void;
   isCreating?: boolean;
 }) {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [provisionalPassword, setProvisionalPassword] = useState("");
-  const [createUserFieldErrors, setCreateUserFieldErrors] =
-    useState<CreateUserFieldErrors>({});
-  const isCreateUserValid = CreateAdminUserSchema.safeParse({
-    name,
-    email,
-    provisionalPassword,
-  }).success;
+  const {
+    register,
+    handleSubmit,
+    setError,
+    reset,
+    formState: { errors, dirtyFields },
+  } = useForm<AddUserInput>({
+    resolver: zodResolver(addUserSchema),
+    mode: "onChange",
+  });
 
-  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
+  const canSubmit =
+    Boolean(dirtyFields.name) &&
+    Boolean(dirtyFields.email) &&
+    Boolean(dirtyFields.provisionalPassword) &&
+    !errors.name &&
+    !errors.email &&
+    !errors.provisionalPassword;
 
-    onSubmit({ name, email, provisionalPassword });
+  function submitHandler({ name, email, provisionalPassword }: AddUserInput) {
+    onSubmit({ name, email, provisionalPassword }, setError);
 
-    setName("");
-    setEmail("");
-    setProvisionalPassword("");
+    reset();
   }
 
   return (
-    <form onSubmit={handleSubmit} noValidate className="mt-4 grid gap-4">
+    <form
+      onSubmit={handleSubmit(submitHandler)}
+      noValidate
+      className="mt-4 grid gap-4"
+    >
       <div className="grid gap-1.5">
         <Label htmlFor="adminUserName">Name</Label>
-        <Input
-          id="adminUserName"
-          name="name"
-          type="text"
-          value={name}
-          onChange={(event) => {
-            setName(event.target.value);
-            setCreateUserFieldErrors((current) => ({
-              ...current,
-              name: undefined,
-            }));
-          }}
-        />
-        <FieldErrorMessage text={createUserFieldErrors.name} />
+        <Input id="adminUserName" {...register("name")} type="text" />
+        <FieldErrorMessage text={errors.name?.message} />
       </div>
       <div className="grid gap-1.5">
         <Label htmlFor="adminUserEmail">Email</Label>
-        <Input
-          id="adminUserEmail"
-          name="email"
-          type="email"
-          value={email}
-          onChange={(event) => {
-            setEmail(event.target.value);
-            setCreateUserFieldErrors((current) => ({
-              ...current,
-              email: undefined,
-            }));
-          }}
-        />
-        <FieldErrorMessage text={createUserFieldErrors.email} />
+        <Input id="adminUserEmail" {...register("email")} type="email" />
+        <FieldErrorMessage text={errors.email?.message} />
       </div>
       <div className="grid gap-1.5">
         <Label
@@ -92,21 +76,12 @@ export function AddUserForm({
         </Label>
         <Input
           id="adminUserProvisionalPassword"
-          name="provisionalPassword"
+          {...register("provisionalPassword")}
           type="password"
-          value={provisionalPassword}
-          onChange={(event) => {
-            setProvisionalPassword(event.target.value);
-            setCreateUserFieldErrors((current) => ({
-              ...current,
-              provisionalPassword: undefined,
-            }));
-          }}
-          autoComplete="new-password"
         />
-        <FieldErrorMessage text={createUserFieldErrors.provisionalPassword} />
+        <FieldErrorMessage text={errors.provisionalPassword?.message} />
       </div>
-      <Button type="submit" disabled={isCreating || !isCreateUserValid}>
+      <Button type="submit" disabled={isCreating || !canSubmit}>
         {isCreating ? "Creating..." : "Create user"}
       </Button>
     </form>
