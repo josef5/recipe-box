@@ -1,14 +1,19 @@
 "use client";
 
-import { type ManagedUser } from "@/actions/admin-users";
+import { addUserAction } from "@/actions/account";
+import type { ManagedUser } from "@/actions/admin-users";
 import { TOAST_OPTIONS } from "@/constants/toast-options";
+import type { AddUserInput } from "@/lib/schemas/account";
 import { formatStableDate } from "@/lib/utils";
 import { useEffect, useRef, useState } from "react";
+import type { UseFormSetError } from "react-hook-form";
 import { toast } from "sonner";
 import { AddUserForm } from "./add-user-form";
 import { Accordion } from "./ui/accordion";
 import { Button } from "./ui/button";
 import { Dialog } from "./ui/dialog";
+
+// TODO: Deal with autocompleted input values and canSubmit
 
 type ClientActionResult<T = void> =
   | { ok: true; data: T }
@@ -46,38 +51,6 @@ async function listManagedUsersApi(): Promise<
   }
 }
 
-async function createManagedUserApi(input: {
-  name: string;
-  email: string;
-  provisionalPassword: string;
-}): Promise<ClientActionResult<ManagedUser>> {
-  try {
-    const response = await fetch("/api/admin-users", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(input),
-    });
-
-    const payload = (await response.json()) as ClientActionResult<ManagedUser>;
-
-    if (!response.ok) {
-      return {
-        ok: false,
-        error:
-          !payload || typeof payload !== "object" || !("error" in payload)
-            ? "Unable to create user."
-            : String(payload.error),
-      };
-    }
-
-    return payload;
-  } catch {
-    return { ok: false, error: "Unable to create user." };
-  }
-}
-
 async function deleteManagedUserApi(input: {
   userId: string;
 }): Promise<ClientActionResult<{ userId: string }>> {
@@ -109,15 +82,13 @@ async function deleteManagedUserApi(input: {
   }
 }
 
-type AdminUsersSectionProps = {
-  initialUsers: ManagedUser[];
-  currentUserId: string;
-};
-
 export function AccountUsersSection({
   initialUsers,
   currentUserId,
-}: AdminUsersSectionProps) {
+}: {
+  initialUsers: ManagedUser[];
+  currentUserId: string;
+}) {
   const [users, setUsers] = useState<ManagedUser[]>(initialUsers);
   const [isCreating, setIsCreating] = useState(false);
   const [deletingUserId, setDeletingUserId] = useState<string | null>(null);
@@ -142,32 +113,68 @@ export function AccountUsersSection({
     setUsers(result.data);
   }
 
-  async function handleCreateUser({
-    name,
-    email,
-    provisionalPassword,
-  }: {
-    name: string;
-    email: string;
-    provisionalPassword: string;
-  }) {
-    const result = await createManagedUserApi({
+  async function handleCreateUser(
+    {
       name,
       email,
       provisionalPassword,
-    });
+    }: {
+      name: string;
+      email: string;
+      provisionalPassword: string;
+    },
+    setError: UseFormSetError<AddUserInput>,
+  ) {
+    setIsCreating(true);
 
-    if (!result.ok) {
-      toast.error(result.error, TOAST_OPTIONS.error);
-      return;
+    try {
+      const result = await addUserAction({
+        name,
+        email,
+        provisionalPassword,
+      });
+
+      if (!result.ok) {
+        if (result.fieldErrors?.name) {
+          setError("name", {
+            type: "server",
+            message: result.fieldErrors.name,
+          });
+        }
+
+        if (result.fieldErrors?.email) {
+          setError("email", {
+            type: "server",
+            message: result.fieldErrors.email,
+          });
+        }
+
+        if (result.fieldErrors?.provisionalPassword) {
+          setError("provisionalPassword", {
+            type: "server",
+            message: result.fieldErrors.provisionalPassword,
+          });
+        }
+
+        if (result.error) {
+          toast.error(result.error, TOAST_OPTIONS.error);
+        }
+
+        return;
+      }
+
+      toast.success(`Created user: ${email}`, TOAST_OPTIONS.success);
+      accordionRef.current?.close();
+
+      await refreshUsers();
+    } catch (err) {
+      toast.error(
+        err instanceof Error ? err.message : "Unable to create user.",
+        TOAST_OPTIONS.error,
+      );
+    } finally {
+      setIsCreating(false);
     }
-
-    toast.success(`Created user: ${result.data.email}`, TOAST_OPTIONS.success);
-    accordionRef.current?.close();
-
-    await refreshUsers();
-
-    setIsCreating(false);
   }
 
   async function handleDeleteUser(userId: string) {
@@ -196,7 +203,10 @@ export function AccountUsersSection({
         headingNode={<h2 className="font-medium">Create new user</h2>}
         ref={accordionRef}
       >
-        <AddUserForm onSubmit={handleCreateUser} isCreating={isCreating} />
+        <AddUserForm
+          onSubmit={(data, setError) => handleCreateUser(data, setError)}
+          isCreating={isCreating}
+        />
       </Accordion>
       <table className="mb-0 w-full text-sm">
         <thead className="xs:table-header-group hidden">
