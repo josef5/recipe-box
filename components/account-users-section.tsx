@@ -1,6 +1,6 @@
 "use client";
 
-import { addUserAction } from "@/actions/account";
+import { addUserAction, deleteUserAction } from "@/actions/account";
 import type { ManagedUser } from "@/actions/admin-users";
 import { TOAST_OPTIONS } from "@/constants/toast-options";
 import type { AddUserInput } from "@/lib/schemas/account";
@@ -51,37 +51,6 @@ async function listManagedUsersApi(): Promise<
   }
 }
 
-async function deleteManagedUserApi(input: {
-  userId: string;
-}): Promise<ClientActionResult<{ userId: string }>> {
-  try {
-    const response = await fetch(`/api/admin-users/${input.userId}`, {
-      method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-
-    const payload = (await response.json()) as ClientActionResult<{
-      userId: string;
-    }>;
-
-    if (!response.ok) {
-      return {
-        ok: false,
-        error:
-          !payload || typeof payload !== "object" || !("error" in payload)
-            ? "Unable to delete user."
-            : String(payload.error),
-      };
-    }
-
-    return payload;
-  } catch {
-    return { ok: false, error: "Unable to delete user." };
-  }
-}
-
 export function AccountUsersSection({
   initialUsers,
   currentUserId,
@@ -91,6 +60,7 @@ export function AccountUsersSection({
 }) {
   const [users, setUsers] = useState<ManagedUser[]>(initialUsers);
   const [isCreating, setIsCreating] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   const [deletingUserId, setDeletingUserId] = useState<string | null>(null);
   const dialogRef = useRef<HTMLDialogElement | null>(null);
   const accordionRef = useRef<{
@@ -178,19 +148,31 @@ export function AccountUsersSection({
   }
 
   async function handleDeleteUser(userId: string) {
-    const result = await deleteManagedUserApi({ userId });
+    setIsDeleting(true);
 
-    if (!result.ok) {
-      toast.error(result.error, TOAST_OPTIONS.error);
-      return;
+    try {
+      const result = await deleteUserAction({ userId });
+
+      if (!result.ok) {
+        toast.error(result.error, TOAST_OPTIONS.error);
+        return;
+      }
+
+      setUsers((currentUsers) =>
+        currentUsers.filter((user) => user.id !== userId),
+      );
+
+      toast.success("User deleted.", TOAST_OPTIONS.success);
+      setDeletingUserId(null);
+      dialogRef.current?.close();
+    } catch (err) {
+      toast.error(
+        err instanceof Error ? err.message : "Unable to delete user.",
+        TOAST_OPTIONS.error,
+      );
+    } finally {
+      setIsDeleting(false);
     }
-
-    toast.success("User deleted.", TOAST_OPTIONS.success);
-    setUsers((currentUsers) =>
-      currentUsers.filter((user) => user.id !== result.data.userId),
-    );
-    setDeletingUserId(null);
-    dialogRef.current?.close();
   }
 
   return (
@@ -221,7 +203,7 @@ export function AccountUsersSection({
         <tbody>
           {users.map((user) => {
             const isCurrentUser = user.id === currentUserId;
-            const isDeleting = deletingUserId === user.id;
+            const isBeingDeleted = isDeleting && deletingUserId === user.id;
 
             return (
               <tr
@@ -248,12 +230,12 @@ export function AccountUsersSection({
                   <Button
                     type="button"
                     variant={
-                      isCurrentUser || isDeleting
+                      isCurrentUser || isBeingDeleted
                         ? "secondary"
                         : "destructive-secondary"
                     }
                     size="sm"
-                    disabled={isCurrentUser || isDeleting}
+                    disabled={isCurrentUser || isBeingDeleted}
                     onClick={() => {
                       setDeletingUserId(user.id);
                       dialogRef.current?.showModal();
@@ -262,7 +244,7 @@ export function AccountUsersSection({
                   >
                     {isCurrentUser
                       ? "Current user"
-                      : isDeleting
+                      : isBeingDeleted
                         ? "Deleting..."
                         : "Delete"}
                   </Button>
