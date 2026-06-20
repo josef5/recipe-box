@@ -19,6 +19,8 @@ export type AdminClient = {
 
 /**
  * Returns an instance of the AdminClient for performing administrative actions.
+ * The AdminClient provides methods to list users, create users, and remove users.
+ *
  * @returns {AdminClient} The admin client instance.
  */
 export function getAdminClient(): AdminClient {
