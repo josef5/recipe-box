@@ -5,9 +5,22 @@ import { recipes } from "@/db/schema";
 import { getAdminClient } from "@/lib/auth/admin-client";
 import { auth } from "@/lib/auth/server";
 import { getUserDisplayName } from "@/lib/auth/session";
-import { accountNameSchema, addUserSchema } from "@/lib/schemas/account";
+import {
+  accountNameSchema,
+  addUserSchema,
+  deleteUserSchema,
+} from "@/lib/schemas/account";
 import { eq } from "drizzle-orm";
 import { revalidatePath, revalidateTag } from "next/cache";
+import { requireCurrentAdmin } from "@/lib/auth/session";
+
+type User = {
+  id: string;
+  name: string;
+  email: string;
+  role?: string | string[] | null;
+  createdAt?: Date | string | number;
+};
 
 // Create
 export async function addUserAction(input: {
@@ -108,14 +121,6 @@ export async function addUserAction(input: {
   }
 }
 
-type User = {
-  id: string;
-  name: string;
-  email: string;
-  role?: string | string[] | null;
-  createdAt?: Date | string | number;
-};
-
 // Helper function to extract error message from unknown error
 function extractErrorMessage(error: unknown): string | null {
   if (typeof error === "string" && error.trim()) {
@@ -200,6 +205,56 @@ export async function updateAccountNameAction(input: {
       ok: false,
       error:
         error instanceof Error ? error.message : "Unable to update your name.",
+    };
+  }
+}
+
+// Delete
+export async function deleteUserAction(input: {
+  userId: string;
+}): Promise<{ ok: true } | { ok: false; error: string }> {
+  const currentUser = await requireCurrentAdmin();
+
+  if (input.userId === currentUser.id) {
+    return { ok: false, error: "You cannot delete your own admin user." };
+  }
+
+  try {
+    const { data: session } = await auth.getSession();
+
+    if (!session?.user) {
+      return { ok: false, error: "Please sign in again." };
+    }
+
+    const parsed = deleteUserSchema.safeParse(input);
+
+    if (!parsed.success) {
+      return { ok: false, error: parsed.error.issues[0].message };
+    }
+
+    const { userId } = parsed.data;
+    const adminClient = getAdminClient();
+    const result = await adminClient.removeUser({ userId });
+
+    const normalized = normalizeAdminResult<{
+      userId?: string;
+      id?: string;
+    }>(result);
+
+    if (normalized.errorMessage) {
+      return { ok: false, error: normalized.errorMessage };
+    }
+
+    revalidatePath("/account");
+    revalidatePath("/");
+    revalidateTag("recipes", "max");
+
+    return { ok: true };
+  } catch (error) {
+    return {
+      ok: false,
+      error:
+        error instanceof Error ? error.message : "Unable to delete account.",
     };
   }
 }
