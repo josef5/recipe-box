@@ -1,21 +1,21 @@
 "use client";
 
+import { updateAccountNameAction } from "@/actions/account";
 import { TOAST_OPTIONS } from "@/constants/toast-options";
 import { authClient } from "@/lib/auth/client";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
-import { toast } from "sonner";
-import { Button } from "./button";
-import { Input } from "./input";
-import { Label } from "./label";
 import {
   accountNameSchema,
   type AccountNameInput,
 } from "@/lib/schemas/account";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+import { Button } from "./button";
 import { FieldErrorMessage } from "./field-error-mesage";
-import { updateAccountNameAction } from "@/actions/account";
+import { Input } from "./input";
+import { Label } from "./label";
 
 export function EditableAccountName({
   initialName,
