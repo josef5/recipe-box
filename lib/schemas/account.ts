@@ -24,3 +24,9 @@ export const addUserSchema = z.object({
 });
 
 export type AddUserInput = z.infer<typeof addUserSchema>;
+
+export const deleteUserSchema = z.object({
+  userId: z.string().min(1, "User ID is required"),
+});
+
+export type DeleteUserInput = z.infer<typeof deleteUserSchema>;
