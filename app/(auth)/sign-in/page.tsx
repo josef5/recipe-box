@@ -1,22 +1,18 @@
 "use client";
 
+import { signInAction } from "@/actions/auth";
 import Main from "@/components/main";
 import { Button } from "@/components/ui/button";
 import { FieldErrorMessage } from "@/components/ui/field-error-mesage";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { TOAST_OPTIONS } from "@/constants/toast-options";
-import { authClient } from "@/lib/auth/client";
-import {
-  SignInSchema,
-  validateSignInFormData,
-  type SignInFieldErrors,
-} from "@/lib/validation/auth";
-import { useSearchParams } from "next/navigation";
-import { Suspense, useState } from "react";
+import { SignInInput, signInSchema } from "@/lib/schemas/auth";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Suspense } from "react";
+import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-
-// TODO: Implement React-Hook-Form and Zod
 
 export const dynamic = "force-dynamic";
 
@@ -44,54 +40,64 @@ function withToastParam(path: string, toastValue: string) {
 }
 
 function SignInForm() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [fieldErrors, setFieldErrors] = useState<SignInFieldErrors>({});
-  const [isPending, setIsPending] = useState(false);
+  const {
+    register,
+    handleSubmit,
+    setError,
+    reset,
+    formState: { errors, isSubmitting, dirtyFields },
+  } = useForm<SignInInput>({
+    resolver: zodResolver(signInSchema),
+    mode: "onChange",
+  });
   const searchParams = useSearchParams();
   const callbackURL = withToastParam(
     getSafeRedirectPath(searchParams.get("redirectTo")),
     "signed-in",
   );
-  const isFormValid = SignInSchema.safeParse({ email, password }).success;
+  const router = useRouter();
 
-  async function handleSubmit(formData: FormData) {
-    const validated = validateSignInFormData(formData);
-
-    if (!validated.success) {
-      setFieldErrors(validated.errors);
-      return;
-    }
-
-    const { email, password } = validated.data;
-
-    setFieldErrors({});
-    setIsPending(true);
-
+  async function onSubmit({ email, password }: SignInInput) {
     try {
-      const result = await authClient.signIn.email({
-        email: email.trim(),
-        password,
-        callbackURL,
-      });
+      const result = await signInAction({ email, password });
 
-      if (result.error) {
-        throw new Error(result.error.message);
+      if (!result.ok) {
+        if (result.fieldErrors) {
+          for (const [field, message] of Object.entries(result.fieldErrors)) {
+            if (message) {
+              setError(field as keyof SignInInput, { message });
+            }
+          }
+        } else if (result.error) {
+          throw new Error(result.error);
+        }
+
+        return;
       }
-    } catch (err) {
+
+      reset();
+
+      if (callbackURL) {
+        router.push(callbackURL);
+      }
+    } catch (error) {
       toast.error(
-        err instanceof Error ? err.message : "Unable to sign in.",
-        TOAST_OPTIONS.error,
+        error instanceof Error ? error.message : "Unable to sign in.",
+        TOAST_OPTIONS,
       );
-    } finally {
-      setIsPending(false);
     }
   }
+
+  const canSubmit =
+    Boolean(dirtyFields.email) &&
+    Boolean(dirtyFields.password) &&
+    !errors.email &&
+    !errors.password;
 
   return (
     <Main>
       <form
-        action={handleSubmit}
+        onSubmit={handleSubmit(onSubmit)}
         noValidate
         className="flex min-h-[70vh] flex-col items-start gap-3"
       >
@@ -100,21 +106,14 @@ function SignInForm() {
           <Label htmlFor="email">Email</Label>
           <Input
             id="email"
-            name="email"
             type="email"
-            value={email}
-            onChange={(event) => {
-              setEmail(event.target.value);
-              setFieldErrors((current) => ({ ...current, email: undefined }));
-            }}
             placeholder="you@example.com"
-            aria-describedby={
-              fieldErrors.email ? "sign-in-email-error" : undefined
-            }
-            aria-invalid={fieldErrors.email ? true : undefined}
+            {...register("email")}
+            aria-describedby={errors.email ? "sign-in-email-error" : undefined}
+            aria-invalid={errors.email ? true : undefined}
           />
           <FieldErrorMessage
-            text={fieldErrors.email}
+            text={errors.email?.message}
             id="sign-in-email-error"
           />
         </div>
@@ -122,33 +121,25 @@ function SignInForm() {
           <Label htmlFor="password">Password</Label>
           <Input
             id="password"
-            name="password"
             type="password"
-            value={password}
-            onChange={(event) => {
-              setPassword(event.target.value);
-              setFieldErrors((current) => ({
-                ...current,
-                password: undefined,
-              }));
-            }}
             placeholder="*****"
+            {...register("password")}
             aria-describedby={
-              fieldErrors.password ? "sign-in-password-error" : undefined
+              errors.password ? "sign-in-password-error" : undefined
             }
-            aria-invalid={fieldErrors.password ? true : undefined}
+            aria-invalid={errors.password ? true : undefined}
           />
           <FieldErrorMessage
-            text={fieldErrors.password}
+            text={errors.password?.message}
             id="sign-in-password-error"
           />
         </div>
         <Button
           type="submit"
-          disabled={isPending || !isFormValid}
+          disabled={isSubmitting || !canSubmit}
           className="mt-4 min-w-1/2"
         >
-          {isPending ? "Signing in..." : "Sign in"}
+          {isSubmitting ? "Signing in..." : "Sign in"}
         </Button>
       </form>
     </Main>
