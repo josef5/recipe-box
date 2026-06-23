@@ -1,12 +1,12 @@
 export type User = {
   id: string;
-  createdAt?: Date;
-  updatedAt?: Date;
   email: string;
   emailVerified?: boolean;
   name: string;
   image?: string | null | undefined;
-  role?: string | string[];
+  role?: string | string[] | null | undefined;
+  createdAt?: Date | string | number;
+  updatedAt?: Date | string | number;
 };
 
 export type Recipe = {
