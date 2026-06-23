@@ -4,16 +4,15 @@ import { db } from "@/db";
 import { recipes } from "@/db/schema";
 import { getAdminClient } from "@/lib/auth/admin-client";
 import { auth } from "@/lib/auth/server";
-import { getUserDisplayName } from "@/lib/auth/session";
+import { getUserDisplayName, requireCurrentAdmin } from "@/lib/auth/session";
 import {
   accountNameSchema,
   addUserSchema,
   deleteUserSchema,
 } from "@/lib/schemas/account";
+import type { ManagedUser } from "@/types";
 import { eq } from "drizzle-orm";
 import { revalidatePath, revalidateTag } from "next/cache";
-import { requireCurrentAdmin } from "@/lib/auth/session";
-import type { ManagedUser } from "@/types";
 
 // Create
 export async function addUserAction(input: {
