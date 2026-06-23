@@ -1,19 +1,32 @@
-import { getManagedUsersForAccountPage } from "@/actions/admin-users";
+import { getManagedUsersAction } from "@/actions/account";
 import { AccountProfileSection } from "@/components/account-profile-section";
 import { AccountUsersSection } from "@/components/account-users-section";
-import Main from "@/components/main";
 import Header from "@/components/header";
+import Main from "@/components/main";
+import Sidebar from "@/components/sidebar";
 import { requireCurrentUser, userHasAdminRole } from "@/lib/auth/session";
 import { getPublicRecipes } from "@/lib/recipes";
-import Sidebar from "@/components/sidebar";
 
 export const dynamic = "force-dynamic";
 
 export default async function AccountPage() {
   const user = await requireCurrentUser({ redirectTo: "/account" });
   const isAdmin = userHasAdminRole(user);
-  const adminUsers = isAdmin ? await getManagedUsersForAccountPage() : [];
   const recipes = await getPublicRecipes();
+
+  async function fetchManagedUsers() {
+    const managedUsersResult = await getManagedUsersAction();
+
+    if (!managedUsersResult.ok) {
+      throw new Error(
+        managedUsersResult.error || "Unable to fetch managed users.",
+      );
+    }
+
+    return managedUsersResult.data;
+  }
+
+  const managedUsers = isAdmin ? await fetchManagedUsers() : [];
 
   return (
     <Main>
@@ -25,7 +38,7 @@ export default async function AccountPage() {
         <AccountProfileSection user={user} recipes={recipes} />
         {isAdmin ? (
           <AccountUsersSection
-            initialUsers={adminUsers}
+            initialUsers={managedUsers}
             currentUserId={user.id}
           />
         ) : null}
