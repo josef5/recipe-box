@@ -89,6 +89,7 @@ export async function addUserAction(input: {
       return { ok: false, error: normalized.errorMessage };
     }
 
+    // TODO: Is it necessary to normalize the user object here? The AdminClient should return a consistent shape for the user object.
     const user = normalized.data?.user
       ? normalized.data.user
       : normalized.data &&
@@ -132,6 +133,7 @@ function extractErrorMessage(error: unknown): string | null {
   return null;
 }
 
+// Helper function to normalize the result from the AdminClient
 function normalizeAdminResult<T>(result: unknown): {
   data: T | null;
   errorMessage: string | null;
@@ -153,6 +155,44 @@ function normalizeAdminResult<T>(result: unknown): {
   }
 
   return { data: result as T, errorMessage: null };
+}
+
+// Read
+export async function getManagedUsersAction(): Promise<
+  { ok: true; data: ManagedUser[] } | { ok: false; error: string }
+> {
+  try {
+    const { data: session } = await auth.getSession();
+
+    if (!session?.user) {
+      return { ok: false, error: "Please sign in again." };
+    }
+
+    const adminClient = getAdminClient();
+    const result = await adminClient.listUsers({
+      query: { limit: 100, sortBy: "name", sortDirection: "asc" },
+    });
+
+    const normalized = normalizeAdminResult<{
+      users?: ManagedUser[];
+    }>(result);
+
+    if (normalized.errorMessage) {
+      return { ok: false, error: normalized.errorMessage };
+    }
+
+    const users = normalized.data?.users ?? [];
+
+    return { ok: true, data: users };
+  } catch (error) {
+    return {
+      ok: false,
+      error:
+        error instanceof Error
+          ? error.message
+          : "Unable to retrieve managed users.",
+    };
+  }
 }
 
 // Update
