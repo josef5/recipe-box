@@ -9,6 +9,14 @@ export type User = {
   updatedAt?: Date | string | number;
 };
 
+/**
+ * ManagedUser: A user that is managed by an admin user. This type is used for the account management page.
+ */
+export type ManagedUser = Pick<
+  User,
+  "id" | "name" | "email" | "role" | "createdAt"
+>;
+
 export type Recipe = {
   id: string;
   userId: string | null;
