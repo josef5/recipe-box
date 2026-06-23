@@ -1,10 +1,14 @@
 "use client";
 
-import { addUserAction, deleteUserAction } from "@/actions/account";
-import type { ManagedUser } from "@/actions/admin-users";
+import {
+  addUserAction,
+  deleteUserAction,
+  getManagedUsersAction,
+} from "@/actions/account";
 import { TOAST_OPTIONS } from "@/constants/toast-options";
 import type { AddUserInput } from "@/lib/schemas/account";
 import { formatStableDate } from "@/lib/utils";
+import type { ManagedUser } from "@/types";
 import { useEffect, useRef, useState } from "react";
 import type { UseFormSetError } from "react-hook-form";
 import { toast } from "sonner";
@@ -14,42 +18,6 @@ import { Button } from "./ui/button";
 import { Dialog } from "./ui/dialog";
 
 // TODO: Deal with autocompleted input values and canSubmit
-
-type ClientActionResult<T = void> =
-  | { ok: true; data: T }
-  | { ok: false; error: string };
-
-async function listManagedUsersApi(): Promise<
-  ClientActionResult<ManagedUser[]>
-> {
-  try {
-    const response = await fetch("/api/admin-users", {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      cache: "no-store",
-    });
-
-    const payload = (await response.json()) as ClientActionResult<
-      ManagedUser[]
-    >;
-
-    if (!response.ok) {
-      return {
-        ok: false,
-        error:
-          !payload || typeof payload !== "object" || !("error" in payload)
-            ? "Unable to list users."
-            : String(payload.error),
-      };
-    }
-
-    return payload;
-  } catch {
-    return { ok: false, error: "Unable to list users." };
-  }
-}
 
 export function AccountUsersSection({
   initialUsers,
@@ -73,7 +41,7 @@ export function AccountUsersSection({
   }, [initialUsers]);
 
   async function refreshUsers() {
-    const result = await listManagedUsersApi();
+    const result = await getManagedUsersAction();
 
     if (!result.ok) {
       toast.error(result.error, TOAST_OPTIONS.error);
