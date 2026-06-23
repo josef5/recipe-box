@@ -13,14 +13,7 @@ import {
 import { eq } from "drizzle-orm";
 import { revalidatePath, revalidateTag } from "next/cache";
 import { requireCurrentAdmin } from "@/lib/auth/session";
-
-type User = {
-  id: string;
-  name: string;
-  email: string;
-  role?: string | string[] | null;
-  createdAt?: Date | string | number;
-};
+import type { ManagedUser } from "@/types";
 
 // Create
 export async function addUserAction(input: {
@@ -84,7 +77,7 @@ export async function addUserAction(input: {
     });
 
     const normalized = normalizeAdminResult<{
-      user?: User;
+      user?: ManagedUser;
       id?: string;
       name?: string;
       email?: string;
@@ -102,7 +95,7 @@ export async function addUserAction(input: {
           typeof normalized.data === "object" &&
           "id" in normalized.data &&
           "email" in normalized.data
-        ? (normalized.data as User)
+        ? (normalized.data as ManagedUser)
         : null;
 
     if (!user) {
