@@ -89,7 +89,7 @@ function RecipeCard({ recipe }: { recipe: Recipe }) {
     <li key={recipe.id} className="bg-surface rounded-3xl drop-shadow-lg">
       <Link href={`/recipes/${recipe.slug}`} className="block p-4">
         <Image
-          src={recipe.imageUrl ?? FALLBACK_RECIPE_IMAGE_SRC}
+          src={recipe.imageUrl || FALLBACK_RECIPE_IMAGE_SRC}
           alt={`${recipe.title} photo`}
           width={1200}
           height={800}
