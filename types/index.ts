@@ -1,3 +1,10 @@
+/**
+ * These types are aligned with the database schema
+ */
+
+/**
+ * User: Represents the authenticated user in the system.
+ */
 export type User = {
   id: string;
   email: string;
@@ -18,17 +25,17 @@ export type ManagedUser = Pick<
 >;
 
 export type Recipe = {
-  id: string;
-  userId: string | null;
-  slug: string;
+  id?: string;
+  userId?: string | null;
+  slug?: string;
   title: string;
   ownerDisplayName?: string | null;
   description?: string | null;
   servings?: number | null;
   prepTimeMins?: number | null;
   cookTimeMins?: number | null;
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt?: Date;
+  updatedAt?: Date;
   imageUrl?: string | null;
   imagePublicId?: string | null;
   isPublic?: boolean | null;
@@ -58,7 +65,7 @@ export type Ingredient = {
  * RecipeIngredient: Per-recipe usage of an ingredient, includes quantity/unit/notes and reference to Ingredient.
  */
 export type RecipeIngredient = {
-  id: string;
+  id?: string;
   amount: string | null;
   unit: string | null;
   notes: string | null;
@@ -68,8 +75,8 @@ export type RecipeIngredient = {
 };
 
 export type Step = {
-  id: string;
-  recipeId: string;
+  id?: string;
+  recipeId?: string;
   instruction: string;
   stepNumber: number;
   createdAt?: Date;
