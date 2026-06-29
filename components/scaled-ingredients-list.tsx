@@ -73,6 +73,10 @@ export function ScaledIngredientsList({
     return options;
   }, [normalizedBaseServings]);
 
+  if (!recipeIngredients || recipeIngredients.length === 0) {
+    return <p>No ingredients listed.</p>;
+  }
+
   return (
     <>
       <div className="mb-3 flex items-center gap-2">
