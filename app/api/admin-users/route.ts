@@ -3,6 +3,8 @@ import { requireCurrentAdmin } from "@/lib/auth/session";
 import { CreateAdminUserSchema } from "@/lib/validation/admin-users";
 import { NextRequest, NextResponse } from "next/server";
 
+// TODO: Remove unused routes
+
 type ManagedUser = {
   id: string;
   name: string;

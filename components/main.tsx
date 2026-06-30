@@ -1,3 +1,5 @@
+// TODO: Convert all components to named exports
+
 export default function Main({
   children,
   ...props
