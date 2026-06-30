@@ -69,7 +69,7 @@ export function Dialog({
       onClick={handleClick}
       onKeyDown={handleKeyDown}
       onToggle={handleToggle}
-      className="backdrop:bg-opacity-70 backdrop:bg-foreground m-auto rounded-md p-6 drop-shadow-lg backdrop:opacity-70"
+      className="backdrop:bg-opacity-70 backdrop:bg-foreground m-auto rounded-md p-6 text-sm drop-shadow-lg backdrop:opacity-70"
     >
       <h2 id={titleId} className="font-semibold">
         {title}
