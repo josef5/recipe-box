@@ -60,7 +60,7 @@ export function RecipeDetail({
       </div>
       <Sidebar className="gap-2">
         <EditRecipeButton
-          recipeUserId={recipe.userId}
+          recipeUserId={recipe.userId ?? null}
           editHref={`/recipes/${recipe.slug}/edit`}
           className="mb-3 w-full"
         />
@@ -70,12 +70,16 @@ export function RecipeDetail({
           {recipe.cookTimeMins && <p>Cook time: {recipe.cookTimeMins}m</p>}
         </div>
         <div className="flex gap-x-2 gap-y-0.5 text-xs sm:flex-col">
-          <p>
-            Created: {new Date(recipe.createdAt).toLocaleDateString("en-GB")}
-          </p>
-          <p>
-            Updated: {new Date(recipe.updatedAt).toLocaleDateString("en-GB")}
-          </p>
+          {recipe.createdAt && (
+            <p>
+              Created: {new Date(recipe.createdAt).toLocaleDateString("en-GB")}
+            </p>
+          )}
+          {recipe.updatedAt && (
+            <p>
+              Updated: {new Date(recipe.updatedAt).toLocaleDateString("en-GB")}
+            </p>
+          )}
         </div>
       </Sidebar>
     </>
