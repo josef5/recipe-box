@@ -38,6 +38,10 @@ Always ensure code is free of linter and type errors before considering a task c
 - Do not disable lint rules (e.g. `// eslint-disable`) unless explicitly asked to
 - If no lint config exists in the project, flag it and suggest setting one up
 
+## TypeScript
+
+- Where possible always store types in a global location such as ./types
+
 ## Saving Files
 
 - Prefer e.g. `skewer-case.tsx` for components and modules
