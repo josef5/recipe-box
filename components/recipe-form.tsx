@@ -12,6 +12,7 @@ import { Button } from "./ui/button";
 import { FieldErrorMessage } from "./ui/field-error-mesage";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
+import { useRouter } from "next/navigation";
 
 export function RecipeForm({
   initialValues,
@@ -30,6 +31,7 @@ export function RecipeForm({
     mode: "onChange",
     defaultValues: initialValues,
   });
+  const router = useRouter();
 
   const canSubmit =
     Boolean(dirtyFields.title) &&
@@ -193,12 +195,17 @@ export function RecipeForm({
         steps,
       });
 
-      console.log("result :", result);
-
       if (!result.ok) {
         console.log("ERROR", result.error);
         throw new Error(result.error);
       }
+
+      toast.success("Recipe created successfully!", TOAST_OPTIONS);
+      formRef.current?.reset();
+      setImageUrl("");
+      setImagePublicId("");
+
+      router.replace(`/recipes/${result.slug}`);
     } catch (error) {
       toast.error(
         error instanceof Error ? error.message : "Unable to create recipe.",
