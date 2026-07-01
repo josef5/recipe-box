@@ -1,23 +1,23 @@
 "use server";
 
 import { db } from "@/db";
-import { ingredients, recipes, recipeIngredients, steps } from "@/db/schema";
-import { eq } from "drizzle-orm";
-import { revalidatePath, revalidateTag } from "next/cache";
-import { generateSlug } from "@/lib/slug";
-import { forbidden, redirect } from "next/navigation";
-import { desc, ilike, or } from "drizzle-orm";
+import { ingredients, recipeIngredients, recipes, steps } from "@/db/schema";
 import {
   getUserDisplayName,
   requireCurrentUser,
   userHasAdminRole,
 } from "@/lib/auth/session";
+import { destroyCloudinaryImage } from "@/lib/cloudinary";
+import { generateSlug } from "@/lib/slug";
 import {
-  type RecipeRawInput,
   type RecipeFormState,
+  type RecipeRawInput,
   validateRecipeFormData,
 } from "@/lib/validation/recipes";
-import { destroyCloudinaryImage } from "@/lib/cloudinary";
+import { Recipe } from "@/types";
+import { desc, eq, ilike, or } from "drizzle-orm";
+import { revalidatePath, revalidateTag } from "next/cache";
+import { forbidden, redirect } from "next/navigation";
 
 export type RecipeFormData = {
   title: string;
@@ -72,8 +72,15 @@ function getOptionalNumber(formData: FormData, key: string) {
  * @param defaultUnit The default unit for the ingredient, if creating a new one.
  * @returns The ID of the existing or newly created ingredient.
  */
-async function getOrCreateIngredientId(name: string, defaultUnit?: string) {
+export async function getOrCreateIngredientId(
+  name: string,
+  defaultUnit?: string,
+) {
   const normalizedName = name.trim();
+
+  if (!normalizedName) {
+    throw new Error("Ingredient name cannot be empty");
+  }
 
   const existingIngredient = await db.query.ingredients.findFirst({
     where: eq(ingredients.name, normalizedName),
@@ -162,6 +169,12 @@ async function buildRecipeFormData(
   };
 }
 
+/**
+ * Parses the FormData from a recipe form submission and returns either a valid RecipeFormData
+ * object or a RecipeFormState with validation errors.
+ * @param formData The FormData from the recipe form submission.
+ * @returns A Promise that resolves to either a valid RecipeFormData or a RecipeFormState with errors.
+ */
 async function parseRecipeFormData(
   formData: FormData,
 ): Promise<
@@ -234,6 +247,40 @@ export async function getRecipes(query?: string) {
   });
 }
 
+/* Promise<{
+    id: string;
+    createdAt: Date;
+    updatedAt: Date;
+    title: string;
+    imageUrl: string | null;
+    imagePublicId: string | null;
+    description: string | null;
+    servings: number | null;
+    prepTimeMins: number | null;
+    cookTimeMins: number | null;
+    userId: string | null;
+    ownerDisplayName: string | null;
+    slug: string;
+    steps: {
+        id: string;
+        instruction: string;
+        recipeId: string;
+        stepNumber: number;
+    }[];
+    recipeIngredients: {
+        id: string;
+        amount: string | null;
+        unit: string | null;
+        notes: string | null;
+        recipeId: string;
+        ingredientId: string;
+        sortOrder: number;
+        ingredient: {
+            ...;
+        };
+    }[];
+} */
+
 /**
  * Retrieves a recipe by its ID, including its ingredients and steps.
  * @param id The ID of the recipe.
@@ -271,15 +318,56 @@ export async function getRecipeBySlug(slug: string) {
         orderBy: (s, { asc }) => [asc(s.stepNumber)],
       },
     },
-  });
+  }) /* as Promise<RecipeDB> */;
 }
+
+// type Recipe = Awaited<ReturnType<typeof getRecipeBySlug>>;
+
+/* type RecipeDB =
+  | {
+      title: string;
+      description: string | null | undefined;
+      servings: number | null | undefined;
+      prepTimeMins: number | null | undefined;
+      cookTimeMins: number | null | undefined;
+      imageUrl: string | null | undefined;
+      imagePublicId: string | null | undefined;
+      id: string;
+      createdAt: Date;
+      userId: string | null | undefined;
+      ownerDisplayName: string | null | undefined;
+      slug: string;
+      updatedAt: Date;
+      steps: {
+        instruction: string;
+        id: string;
+        recipeId: string;
+        stepNumber: number;
+      }[];
+      recipeIngredients: {
+        unit: string | null | undefined;
+        notes: string | null | undefined;
+        id: string;
+        amount: string | null | undefined;
+        recipeId: string;
+        ingredientId: string;
+        sortOrder: number;
+        ingredient: {
+          name: string;
+          id: string;
+          defaultUnit: string | null | undefined;
+          createdAt: Date;
+        };
+      }[];
+    }
+  | undefined; */
 
 /**
  * Creates a new recipe in the database.
  * @param data The data for the new recipe.
  * @returns A Promise that resolves to the newly created recipe.
  */
-export async function createRecipe(data: RecipeFormData) {
+export async function createRecipe(data: Recipe) {
   const user = await requireCurrentUser();
   const userId = user.id;
   const slug = await generateSlug(data.title);
@@ -296,15 +384,15 @@ export async function createRecipe(data: RecipeFormData) {
       prepTimeMins: data.prepTimeMins,
       cookTimeMins: data.cookTimeMins,
       imageUrl: data.imageUrl,
-      imagePublicId: data.imagePublicId,
+      // imagePublicId: data.imagePublicId,
     })
     .returning();
 
-  if (data.ingredients.length > 0) {
+  if (data.recipeIngredients.length > 0) {
     await db.insert(recipeIngredients).values(
-      data.ingredients.map((ing, index) => ({
-        recipeId: recipe.id,
-        ingredientId: ing.ingredientId,
+      data.recipeIngredients.map((ing, index) => ({
+        recipeId: recipe.id ?? "",
+        ingredientId: ing.id ?? "",
         amount: ing.amount?.toString(),
         unit: ing.unit,
         notes: ing.notes,
@@ -326,10 +414,17 @@ export async function createRecipe(data: RecipeFormData) {
   revalidatePath("/");
   revalidatePath(`/recipes/${recipe.slug}`);
   revalidateTag("recipes", "max");
+
   return recipe;
 }
 
-export async function createRecipeFromForm(
+/**
+ * Creates a new recipe from the submitted form data.
+ * @param _prevState The previous state of the recipe form.
+ * @param formData The FormData from the recipe form submission.
+ * @returns A Promise that resolves to the updated RecipeFormState.
+ */
+/* export async function createRecipeFromForm(
   _prevState: RecipeFormState,
   formData: FormData,
 ): Promise<RecipeFormState> {
@@ -341,7 +436,7 @@ export async function createRecipeFromForm(
 
   const recipe = await createRecipe(parsed.data);
   redirect(`/recipes/${recipe.slug}?toast=recipe-saved`);
-}
+} */
 
 /**
  * Updates an existing recipe in the database.
@@ -386,7 +481,7 @@ export async function updateRecipe(id: string, data: RecipeFormData) {
     await db.insert(recipeIngredients).values(
       data.ingredients.map((ing, index) => ({
         recipeId: id,
-        ingredientId: ing.ingredientId,
+        ingredientId: "",
         amount: ing.amount?.toString(),
         unit: ing.unit,
         notes: ing.notes,
@@ -439,6 +534,7 @@ export async function updateRecipeFromForm(
 
 /**
  * Deletes a recipe from the database.
+ * If the recipe has an associated image, it will also be deleted from Cloudinary.
  * @param id The ID of the recipe to delete.
  * @returns A Promise that resolves when the recipe is deleted.
  */
@@ -456,7 +552,7 @@ export async function deleteRecipe(id: string) {
 }
 
 /**
- * Deletes a recipe via form submission.
+ * Deletes a recipe via form submission, as opposed to directly by ID. This is useful for form actions that need to return a redirect URL.
  * @param id The ID of the recipe to delete.
  * @returns A Promise that resolves to the home page URL.
  */
