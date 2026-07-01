@@ -169,7 +169,7 @@ export async function getManagedUsersAction(): Promise<
 
     const adminClient = getAdminClient();
     const result = await adminClient.listUsers({
-      query: { limit: 100, sortBy: "name", sortDirection: "asc" },
+      query: { limit: 100, sortBy: "createdAt", sortDirection: "desc" },
     });
 
     const normalized = normalizeAdminResult<{
