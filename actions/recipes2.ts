@@ -37,8 +37,8 @@ export async function createRecipe(
         title: valid.title,
         description: valid.description,
         servings: valid.servings,
-        prepTimeMins: valid.prepTimeMins ?? undefined,
-        cookTimeMins: valid.cookTimeMins ?? undefined,
+        prepTimeMins: valid.prepTimeMins || undefined,
+        cookTimeMins: valid.cookTimeMins || undefined,
         imageUrl: valid.imageUrl,
         imagePublicId: data.imagePublicId,
       })
