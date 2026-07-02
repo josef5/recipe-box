@@ -137,7 +137,8 @@ describe("RecipeDetail", () => {
     expect(screen.queryByText(/^Prep time:/)).not.toBeInTheDocument();
     expect(screen.queryByText(/^Cook time:/)).not.toBeInTheDocument();
     expect(screen.getByText("Serves: 4")).toBeVisible();
-    expect(screen.getByLabelText("Servings")).toHaveValue("4");
+    expect(screen.getByText("No ingredients listed.")).toBeVisible();
+    expect(screen.queryByLabelText("Servings")).not.toBeInTheDocument();
     expect(screen.getAllByText("By Unknown cook")).not.toBeNull();
     expect(
       screen.getByRole("img", { name: "Plain Rice photo" }),

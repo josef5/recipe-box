@@ -9,23 +9,44 @@ vi.mock("next/navigation", () => ({
   }),
 }));
 
+vi.mock("@/lib/auth/server", () => ({
+  auth: {
+    getSession: vi.fn().mockResolvedValue({ data: { user: null } }),
+  },
+}));
+
 describe("RecipeForm", () => {
   it("defaults servings to 4 for new recipes", () => {
-    const action = vi.fn();
-
-    render(<RecipeForm action={action} ingredientSuggestions={[]} />);
+    render(
+      <RecipeForm
+        initialValues={{
+          title: "Chocolate Cake",
+          description: "Rich and fudgy",
+          servings: 4,
+          prepTimeMins: 20,
+          cookTimeMins: 35,
+          imageUrl: "https://example.com/cake.jpg",
+          ingredients: [
+            {
+              name: "Flour",
+              amount: "2",
+              unit: "cups",
+              notes: "sifted",
+            },
+          ],
+          steps: [{ instruction: "Mix everything together.", stepNumber: 1 }],
+        }}
+        onSubmittableChange={() => vi.fn()}
+      />,
+    );
 
     expect(screen.getByLabelText("Servings")).toHaveValue(4);
   });
 
   it("resets uncontrolled and controlled fields when remounted with a new key", () => {
-    const action = vi.fn();
-
     const { rerender } = render(
       <RecipeForm
         key="recipe-1"
-        action={action}
-        ingredientSuggestions={[]}
         initialValues={{
           title: "Chocolate Cake",
           description: "Rich and fudgy",
@@ -41,7 +62,7 @@ describe("RecipeForm", () => {
               notes: "sifted",
             },
           ],
-          steps: [{ instruction: "Mix everything together." }],
+          steps: [{ instruction: "Mix everything together.", stepNumber: 1 }],
         }}
       />,
     );
@@ -58,8 +79,6 @@ describe("RecipeForm", () => {
     rerender(
       <RecipeForm
         key="recipe-2"
-        action={action}
-        ingredientSuggestions={[]}
         initialValues={{
           title: "Lemon Bars",
           description: "Bright and tart",
@@ -75,7 +94,7 @@ describe("RecipeForm", () => {
               notes: "juiced",
             },
           ],
-          steps: [{ instruction: "Whisk the filling." }],
+          steps: [{ instruction: "Whisk the filling.", stepNumber: 1 }],
         }}
       />,
     );
