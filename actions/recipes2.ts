@@ -40,7 +40,7 @@ export async function createRecipe(
         prepTimeMins: valid.prepTimeMins ?? undefined,
         cookTimeMins: valid.cookTimeMins ?? undefined,
         imageUrl: valid.imageUrl,
-        // imagePublicId: data.imagePublicId,
+        imagePublicId: data.imagePublicId,
       })
       .returning();
 

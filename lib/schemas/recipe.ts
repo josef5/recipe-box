@@ -22,6 +22,7 @@ export const recipeSchema = z.object({
     .min(0, "Cook time must be 0 or more.")
     .optional(),
   imageUrl: z.url("Invalid URL").or(z.literal("")).optional(),
+  imagePublicId: z.string().optional(),
   ingredients: z
     .array(
       z.object({

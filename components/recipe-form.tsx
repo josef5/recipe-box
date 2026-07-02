@@ -52,8 +52,9 @@ export function RecipeForm({
   const formRef = useRef<HTMLFormElement>(null);
   // TODO: decompose image upload
   const [imageUrl, setImageUrl] = useState(initialValues?.imageUrl ?? "");
+  // TODO: Rename imagePublicId to cloudinaryPublicId
   const [imagePublicId, setImagePublicId] = useState(
-    /* initialValues?.imagePublicId ??  */ "",
+    initialValues?.imagePublicId ?? "",
   );
   const [selectedImageFile, setSelectedImageFile] = useState<File | null>(null);
   const [isUploadingImage, setIsUploadingImage] = useState(false);
@@ -166,22 +167,10 @@ export function RecipeForm({
     prepTimeMins,
     cookTimeMins,
     imageUrl,
-    // imagePublicId,
+    imagePublicId,
     ingredients,
     steps,
   }: RecipeOutput) {
-    console.log("Submitting recipe with data:", {
-      title,
-      description,
-      servings,
-      prepTimeMins,
-      cookTimeMins,
-      imageUrl,
-      // imagePublicId,
-      ingredients,
-      steps,
-    });
-
     try {
       const result = await createRecipe({
         title,
@@ -190,13 +179,12 @@ export function RecipeForm({
         prepTimeMins,
         cookTimeMins,
         imageUrl,
-        // imagePublicId,
+        imagePublicId,
         ingredients,
         steps,
       });
 
       if (!result.ok) {
-        console.log("ERROR", result.error);
         throw new Error(result.error);
       }
 

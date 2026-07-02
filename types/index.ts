@@ -37,6 +37,9 @@ export type Recipe = {
   createdAt?: Date;
   updatedAt?: Date;
   imageUrl?: string | null;
+  /**
+   * Optional Cloudinary public ID for the recipe image. Used for image management and deletion.
+   */
   imagePublicId?: string | null;
   isPublic?: boolean | null;
   authorId?: string | null;
