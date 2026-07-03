@@ -1,5 +1,5 @@
 import { RecipeForm } from "@/components/recipe-form";
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 
 vi.mock("next/navigation", () => ({
@@ -16,6 +16,75 @@ vi.mock("@/lib/auth/server", () => ({
 }));
 
 describe("RecipeForm", () => {
+  it("keeps canSubmit false until create mode form is valid", async () => {
+    const onSubmittableChange = vi.fn();
+
+    render(<RecipeForm onSubmittableChange={onSubmittableChange} />);
+
+    await waitFor(() => {
+      expect(onSubmittableChange).toHaveBeenCalledWith(false);
+    });
+
+    fireEvent.change(screen.getByLabelText("Title"), {
+      target: { value: "Tomato Soup" },
+    });
+    fireEvent.change(screen.getByLabelText("Ingredient"), {
+      target: { value: "Tomato" },
+    });
+    fireEvent.change(screen.getByLabelText("Step 1"), {
+      target: { value: "Simmer for 20 minutes." },
+    });
+
+    await waitFor(() => {
+      expect(onSubmittableChange).toHaveBeenLastCalledWith(true);
+    });
+  });
+
+  it("toggles canSubmit in edit mode when title is changed and undone", async () => {
+    const onSubmittableChange = vi.fn();
+
+    render(
+      <RecipeForm
+        initialValues={{
+          title: "Chocolate Cake",
+          description: "Rich and fudgy",
+          servings: 8,
+          prepTimeMins: 20,
+          cookTimeMins: 35,
+          imageUrl: "https://example.com/cake.jpg",
+          ingredients: [
+            {
+              name: "Flour",
+              amount: "2",
+              unit: "cups",
+              notes: "sifted",
+            },
+          ],
+          steps: [{ instruction: "Mix everything together.", stepNumber: 1 }],
+        }}
+        onSubmittableChange={onSubmittableChange}
+      />,
+    );
+
+    await waitFor(() => {
+      expect(onSubmittableChange).toHaveBeenLastCalledWith(false);
+    });
+
+    const titleInput = screen.getByLabelText("Title");
+
+    fireEvent.change(titleInput, { target: { value: "Chocolate Cake!" } });
+
+    await waitFor(() => {
+      expect(onSubmittableChange).toHaveBeenLastCalledWith(true);
+    });
+
+    fireEvent.change(titleInput, { target: { value: "Chocolate Cake" } });
+
+    await waitFor(() => {
+      expect(onSubmittableChange).toHaveBeenLastCalledWith(false);
+    });
+  });
+
   it("defaults servings to 4 for new recipes", () => {
     render(
       <RecipeForm
