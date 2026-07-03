@@ -1,5 +1,18 @@
 import { z } from "zod";
 
+// Preprocess functions to handle empty string inputs for optional integer fields
+// Better than z.coerce because it allows for empty string inputs to be treated as undefined, which is more user-friendly in forms.
+const optionalIntFromInput = z.preprocess(
+  (value) => (value === "" || value === null ? undefined : value),
+  z.number().int().optional(),
+);
+
+// Preprocess function to handle empty string inputs for optional non-negative integer fields
+const optionalNonNegativeIntFromInput = z.preprocess(
+  (value) => (value === "" || value === null ? undefined : value),
+  z.number().int().min(0).optional(),
+);
+
 export const recipeSchema = z.object({
   title: z.string().trim().min(1, "Title is required."),
   description: z
@@ -7,20 +20,9 @@ export const recipeSchema = z.object({
     .max(100, "Description is too long.")
     .trim()
     .optional(),
-  servings: z.coerce
-    .number()
-    .int("Servings must be a whole number.")
-    .optional(),
-  prepTimeMins: z.coerce
-    .number()
-    .int()
-    .min(0, "Prep time must be 0 or more.")
-    .optional(),
-  cookTimeMins: z.coerce
-    .number()
-    .int()
-    .min(0, "Cook time must be 0 or more.")
-    .optional(),
+  servings: optionalIntFromInput,
+  prepTimeMins: optionalNonNegativeIntFromInput,
+  cookTimeMins: optionalNonNegativeIntFromInput,
   imageUrl: z.url("Invalid URL").or(z.literal("")).optional(),
   imagePublicId: z.string().optional(),
   ingredients: z
