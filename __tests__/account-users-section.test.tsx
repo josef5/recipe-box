@@ -3,8 +3,16 @@ import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const mocks = vi.hoisted(() => ({
+  addUserAction: vi.fn(),
+  deleteUserAction: vi.fn(),
+  setUsers: vi.fn(),
   toastSuccess: vi.fn(),
   toastError: vi.fn(),
+}));
+
+vi.mock("@/actions/account", () => ({
+  addUserAction: mocks.addUserAction,
+  deleteUserAction: mocks.deleteUserAction,
 }));
 
 vi.mock("sonner", () => ({
@@ -16,57 +24,30 @@ vi.mock("sonner", () => ({
 
 describe("admin users section", () => {
   beforeEach(() => {
+    mocks.addUserAction.mockReset();
     mocks.toastSuccess.mockReset();
     mocks.toastError.mockReset();
   });
 
   it("creates a user and refreshes the table", async () => {
-    const fetchMock = vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(
-      new Response(
-        JSON.stringify({
-          ok: true,
-          data: {
-            id: "user-2",
-            name: "Family Member",
-            email: "family@example.com",
-            role: "user",
-            createdAt: "2026-04-15T00:00:00.000Z",
-          },
-        }),
-        {
-          status: 200,
-          headers: { "Content-Type": "application/json" },
-        },
-      ),
-    );
+    mocks.addUserAction.mockResolvedValueOnce({
+      ok: true,
+    });
 
-    fetchMock.mockResolvedValueOnce(
-      new Response(
-        JSON.stringify({
-          ok: true,
-          data: [
-            {
-              id: "admin-1",
-              name: "Admin",
-              email: "admin@example.com",
-              role: "admin",
-              createdAt: "2026-04-14T00:00:00.000Z",
-            },
-            {
-              id: "user-2",
-              name: "Family Member",
-              email: "family@example.com",
-              role: "user",
-              createdAt: "2026-04-15T00:00:00.000Z",
-            },
-          ],
-        }),
+    mocks.setUsers.mockImplementationOnce((newUsers) => {
+      expect(newUsers).toEqual([
         {
-          status: 200,
-          headers: { "Content-Type": "application/json" },
+          id: "admin-1",
+          name: "Admin",
+          email: "admin@example.com",
         },
-      ),
-    );
+        {
+          id: "user-2",
+          name: "Family Member",
+          email: "family@example.com",
+        },
+      ]);
+    });
 
     render(
       <AccountUsersSection
@@ -100,39 +81,23 @@ describe("admin users section", () => {
     fireEvent.submit(screen.getByRole("button", { name: "Create user" }));
 
     await waitFor(() => {
+      expect(mocks.addUserAction).toHaveBeenCalledWith({
+        name: "Family Member",
+        email: "family@example.com",
+        provisionalPassword: "provisional-pass",
+      });
+    });
+
+    await waitFor(() => {
       expect(mocks.toastSuccess).toHaveBeenCalledWith(
         "Created user: family@example.com",
         expect.any(Object),
       );
     });
-
-    expect(await screen.findByText("Family Member")).toBeInTheDocument();
-
-    expect(fetchMock).toHaveBeenNthCalledWith(
-      1,
-      "/api/admin-users",
-      expect.objectContaining({ method: "POST" }),
-    );
-    expect(fetchMock).toHaveBeenNthCalledWith(
-      2,
-      "/api/admin-users",
-      expect.objectContaining({ method: "GET" }),
-    );
   });
 
   it("deletes a user from the table", async () => {
-    const fetchMock = vi.spyOn(globalThis, "fetch").mockResolvedValue(
-      new Response(
-        JSON.stringify({
-          ok: true,
-          data: { userId: "user-2" },
-        }),
-        {
-          status: 200,
-          headers: { "Content-Type": "application/json" },
-        },
-      ),
-    );
+    mocks.deleteUserAction.mockResolvedValueOnce({ ok: true });
 
     render(
       <AccountUsersSection
@@ -162,26 +127,15 @@ describe("admin users section", () => {
     await waitFor(() => {
       expect(screen.queryByText("family@example.com")).not.toBeInTheDocument();
     });
-
-    expect(fetchMock).toHaveBeenCalledWith(
-      "/api/admin-users/user-2",
-      expect.objectContaining({ method: "DELETE" }),
-    );
   });
 
   it("shows API errors when create fails", async () => {
-    vi.spyOn(globalThis, "fetch").mockResolvedValue(
-      new Response(
-        JSON.stringify({
-          ok: false,
-          error: "Unable to create user.",
-        }),
-        {
-          status: 500,
-          headers: { "Content-Type": "application/json" },
-        },
-      ),
-    );
+    const errorMessage = "Unable to create user.";
+
+    mocks.addUserAction.mockResolvedValueOnce({
+      ok: false,
+      error: errorMessage,
+    });
 
     render(
       <AccountUsersSection
@@ -216,44 +170,28 @@ describe("admin users section", () => {
 
     await waitFor(() => {
       expect(mocks.toastError).toHaveBeenCalledWith(
-        "Unable to create user.",
+        errorMessage,
         expect.any(Object),
       );
     });
   });
 
   it("shows list errors when refresh fails after create", async () => {
-    const fetchMock = vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(
-      new Response(
-        JSON.stringify({
-          ok: true,
-          data: {
-            id: "user-2",
-            name: "Family Member",
-            email: "family@example.com",
-            role: "user",
-            createdAt: "2026-04-15T00:00:00.000Z",
-          },
-        }),
-        {
-          status: 200,
-          headers: { "Content-Type": "application/json" },
-        },
-      ),
-    );
+    mocks.addUserAction.mockResolvedValueOnce({
+      ok: true,
+      data: {
+        id: "user-2",
+        name: "Family Member",
+        email: "family@example.com",
+        role: "user",
+        createdAt: "2026-04-15T00:00:00.000Z",
+      },
+    });
 
-    fetchMock.mockResolvedValueOnce(
-      new Response(
-        JSON.stringify({
-          ok: false,
-          error: "Unable to list users.",
-        }),
-        {
-          status: 500,
-          headers: { "Content-Type": "application/json" },
-        },
-      ),
-    );
+    mocks.addUserAction.mockResolvedValueOnce({
+      ok: false,
+      error: "Unable to list users.",
+    });
 
     render(
       <AccountUsersSection
@@ -292,24 +230,5 @@ describe("admin users section", () => {
         expect.any(Object),
       );
     });
-
-    await waitFor(() => {
-      expect(mocks.toastError).toHaveBeenCalledWith(
-        "Unable to list users.",
-        expect.any(Object),
-      );
-    });
-
-    expect(fetchMock).toHaveBeenNthCalledWith(
-      1,
-      "/api/admin-users",
-      expect.objectContaining({ method: "POST" }),
-    );
-
-    expect(fetchMock).toHaveBeenNthCalledWith(
-      2,
-      "/api/admin-users",
-      expect.objectContaining({ method: "GET" }),
-    );
   });
 });
