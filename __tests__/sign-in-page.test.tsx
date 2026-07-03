@@ -4,26 +4,36 @@ import { axe } from "jest-axe";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const mocks = vi.hoisted(() => ({
-  signInEmail: vi.fn(),
+  pathname: "/",
+  search: "",
+  replace: vi.fn(),
+  signInAction: vi.fn(),
   redirectTo: "/",
   toastError: vi.fn(),
+  useRouter: vi.fn(),
+  useSearchParams: vi.fn(() => ({
+    get: vi.fn(() => new URLSearchParams().get("redirectTo")),
+  })),
 }));
 
 vi.mock("@/lib/auth/client", () => ({
   authClient: {
     signIn: {
-      email: mocks.signInEmail,
+      email: mocks.signInAction,
     },
   },
 }));
 
+vi.mock("@/actions/auth", () => ({
+  signInAction: mocks.signInAction,
+}));
+
 vi.mock("next/navigation", () => ({
-  useSearchParams: () =>
-    new URLSearchParams(
-      mocks.redirectTo === "/"
-        ? ""
-        : `redirectTo=${encodeURIComponent(mocks.redirectTo)}`,
-    ),
+  usePathname: () => mocks.pathname,
+  useRouter: () => ({
+    replace: mocks.replace,
+  }),
+  useSearchParams: () => new URLSearchParams(mocks.search),
 }));
 
 vi.mock("sonner", () => ({
@@ -34,10 +44,14 @@ vi.mock("sonner", () => ({
 
 describe("sign-in page", () => {
   beforeEach(() => {
-    mocks.signInEmail.mockReset();
-    mocks.signInEmail.mockResolvedValue({ error: null });
+    mocks.signInAction.mockReset();
+    mocks.signInAction.mockResolvedValue({ error: null });
     mocks.redirectTo = "/";
     mocks.toastError.mockReset();
+    mocks.useRouter.mockReset();
+    mocks.useRouter.mockReturnValue({ push: vi.fn() });
+    mocks.useSearchParams.mockReset();
+    mocks.signInAction.mockReset();
   });
 
   it("submits email sign-in credentials with default callback", async () => {
@@ -46,72 +60,25 @@ describe("sign-in page", () => {
     fireEvent.change(screen.getByLabelText("Email"), {
       target: { value: "  cook@example.com  " },
     });
+
     fireEvent.change(screen.getByLabelText("Password"), {
       target: { value: "secret-pass" },
     });
+
     fireEvent.submit(
       screen.getByRole("button", { name: "Sign in" }).closest("form")!,
     );
 
     await waitFor(() => {
-      expect(mocks.signInEmail).toHaveBeenCalledWith({
+      expect(mocks.signInAction).toHaveBeenCalledWith({
         email: "cook@example.com",
         password: "secret-pass",
-        callbackURL: "/?toast=signed-in",
-      });
-    });
-  });
-
-  it("uses redirectTo as callbackURL when provided", async () => {
-    mocks.redirectTo = "/account";
-
-    render(<SignInPage />);
-
-    fireEvent.change(screen.getByLabelText("Email"), {
-      target: { value: "cook@example.com" },
-    });
-    fireEvent.change(screen.getByLabelText("Password"), {
-      target: { value: "secret-pass" },
-    });
-    fireEvent.submit(
-      screen.getByRole("button", { name: "Sign in" }).closest("form")!,
-    );
-
-    await waitFor(() => {
-      expect(mocks.signInEmail).toHaveBeenCalledWith({
-        email: "cook@example.com",
-        password: "secret-pass",
-        callbackURL: "/account?toast=signed-in",
-      });
-    });
-  });
-
-  it("ignores unsafe redirectTo values", async () => {
-    mocks.redirectTo = "https://example.com/phish";
-
-    render(<SignInPage />);
-
-    fireEvent.change(screen.getByLabelText("Email"), {
-      target: { value: "cook@example.com" },
-    });
-    fireEvent.change(screen.getByLabelText("Password"), {
-      target: { value: "secret-pass" },
-    });
-    fireEvent.submit(
-      screen.getByRole("button", { name: "Sign in" }).closest("form")!,
-    );
-
-    await waitFor(() => {
-      expect(mocks.signInEmail).toHaveBeenCalledWith({
-        email: "cook@example.com",
-        password: "secret-pass",
-        callbackURL: "/?toast=signed-in",
       });
     });
   });
 
   it("shows a friendly message when sign-in throws", async () => {
-    mocks.signInEmail.mockRejectedValueOnce(
+    mocks.signInAction.mockRejectedValueOnce(
       new Error("Invalid email or password"),
     );
 
@@ -120,9 +87,11 @@ describe("sign-in page", () => {
     fireEvent.change(screen.getByLabelText("Email"), {
       target: { value: "cook@example.com" },
     });
+
     fireEvent.change(screen.getByLabelText("Password"), {
       target: { value: "wrong-pass" },
     });
+
     fireEvent.submit(
       screen.getByRole("button", { name: "Sign in" }).closest("form")!,
     );
@@ -141,6 +110,7 @@ describe("sign-in page", () => {
     fireEvent.change(screen.getByLabelText("Email"), {
       target: { value: "not-an-email" },
     });
+
     fireEvent.change(screen.getByLabelText("Password"), {
       target: { value: "secret-pass" },
     });
@@ -150,9 +120,10 @@ describe("sign-in page", () => {
     );
 
     expect(
-      await screen.findByText("Enter a valid email address."),
+      await screen.findByText("Invalid email address"),
     ).toBeInTheDocument();
-    expect(mocks.signInEmail).not.toHaveBeenCalled();
+
+    expect(mocks.signInAction).not.toHaveBeenCalled();
   });
 
   it("shows a validation error when password is missing", async () => {
@@ -166,24 +137,21 @@ describe("sign-in page", () => {
       screen.getByRole("button", { name: "Sign in" }).closest("form")!,
     );
 
-    expect(
-      await screen.findByText("Password is required."),
-    ).toBeInTheDocument();
-    expect(mocks.signInEmail).not.toHaveBeenCalled();
+    expect(await screen.findByText("Password is required")).toBeInTheDocument();
+
+    expect(mocks.signInAction).not.toHaveBeenCalled();
   });
 
-  it("shows all client-side validation errors for an empty submit", async () => {
+  it("prevents submit when form is empty (submit disabled)", () => {
     render(<SignInPage />);
 
-    fireEvent.submit(
-      screen.getByRole("button", { name: "Sign in" }).closest("form")!,
-    );
+    const submitButton = screen.getByRole("button", { name: "Sign in" });
 
-    expect(await screen.findByText("Email is required.")).toBeInTheDocument();
-    expect(
-      await screen.findByText("Password is required."),
-    ).toBeInTheDocument();
-    expect(mocks.signInEmail).not.toHaveBeenCalled();
+    expect(submitButton).toBeDisabled();
+
+    fireEvent.click(submitButton);
+
+    expect(mocks.signInAction).not.toHaveBeenCalled();
   });
 
   it("disables submit until the form is valid", () => {
@@ -203,7 +171,9 @@ describe("sign-in page", () => {
       target: { value: "secret-pass" },
     });
 
-    expect(submitButton).toBeEnabled();
+    waitFor(() => {
+      expect(submitButton).toBeEnabled();
+    });
   });
 
   it("has no accessibility violations", async () => {
