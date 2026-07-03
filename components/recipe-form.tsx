@@ -1,6 +1,6 @@
 "use client";
 
-import { createRecipe } from "@/actions/recipes2";
+import { createRecipe, updateRecipe } from "@/actions/recipes";
 import { TOAST_OPTIONS } from "@/constants/toast-options";
 import { RecipeInput, RecipeOutput, recipeSchema } from "@/lib/schemas/recipe";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -179,24 +179,39 @@ export function RecipeForm({
     ingredients,
     steps,
   }: RecipeOutput) {
+    const payload = {
+      title,
+      description,
+      servings,
+      prepTimeMins,
+      cookTimeMins,
+      imageUrl,
+      imagePublicId,
+      ingredients,
+      steps,
+    };
+
     try {
-      const result = await createRecipe({
-        title,
-        description,
-        servings,
-        prepTimeMins,
-        cookTimeMins,
-        imageUrl,
-        imagePublicId,
-        ingredients,
-        steps,
-      });
+      if (mode === "edit" && !recipeId) {
+        throw new Error("Recipe ID is required for editing.");
+      }
+
+      const result =
+        mode === "edit" && recipeId
+          ? await updateRecipe(recipeId, payload)
+          : await createRecipe(payload);
 
       if (!result.ok) {
         throw new Error(result.error);
       }
 
-      toast.success("Recipe created successfully!", TOAST_OPTIONS);
+      toast.success(
+        mode === "edit"
+          ? "Recipe updated successfully!"
+          : "Recipe created successfully!",
+        TOAST_OPTIONS,
+      );
+
       formRef.current?.reset();
       setImageUrl("");
       setImagePublicId("");
@@ -204,7 +219,11 @@ export function RecipeForm({
       router.replace(`/recipes/${result.slug}`);
     } catch (error) {
       toast.error(
-        error instanceof Error ? error.message : "Unable to create recipe.",
+        error instanceof Error
+          ? error.message
+          : mode === "edit"
+            ? "Unable to update recipe."
+            : "Unable to create recipe.",
         TOAST_OPTIONS,
       );
     }
