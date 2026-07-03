@@ -21,29 +21,35 @@ export function RecipeForm({
   initialValues?: RecipeOutput;
   onSubmittableChange?: (isSubmittable: boolean) => void;
 } & React.ComponentProps<"div">) {
+  const normalizedDefaults: RecipeInput = {
+    title: initialValues?.title ?? "",
+    description: initialValues?.description ?? "",
+    servings: initialValues?.servings ?? undefined,
+    prepTimeMins: initialValues?.prepTimeMins ?? undefined,
+    cookTimeMins: initialValues?.cookTimeMins ?? undefined,
+    imageUrl: initialValues?.imageUrl ?? "",
+    imagePublicId: initialValues?.imagePublicId ?? "",
+    ingredients: initialValues?.ingredients?.length
+      ? initialValues.ingredients
+      : [{ name: "", amount: "", unit: "", notes: "" }],
+    steps: initialValues?.steps?.length
+      ? initialValues.steps
+      : [{ instruction: "", stepNumber: 1 }],
+  };
+
   const {
     register,
     control,
     handleSubmit,
-    formState: { errors, isSubmitting, dirtyFields },
+    formState: { errors, isDirty, isValid, isSubmitting },
   } = useForm<RecipeInput, unknown, RecipeOutput>({
     resolver: zodResolver(recipeSchema),
     mode: "onChange",
-    defaultValues: initialValues,
+    defaultValues: normalizedDefaults,
   });
   const router = useRouter();
-
-  const canSubmit =
-    Boolean(dirtyFields.title) &&
-    Boolean(dirtyFields.ingredients?.length) &&
-    Boolean(dirtyFields.steps?.length) &&
-    !errors.title &&
-    !errors.description &&
-    !errors.servings &&
-    !errors.prepTimeMins &&
-    !errors.cookTimeMins &&
-    !errors.imageUrl &&
-    !isSubmitting;
+  const mode = initialValues ? "edit" : "create";
+  const canSubmit = isValid && (mode === "create" || isDirty) && !isSubmitting;
 
   useEffect(() => {
     onSubmittableChange?.(canSubmit);
@@ -216,7 +222,6 @@ export function RecipeForm({
           <Input
             id="title"
             {...register("title")}
-            defaultValue={initialValues?.title ?? ""}
             aria-describedby={errors.title ? "title-error" : undefined}
             aria-invalid={errors.title ? true : undefined}
           />
@@ -228,7 +233,6 @@ export function RecipeForm({
             id="description"
             {...register("description")}
             rows={4}
-            defaultValue={initialValues?.description ?? ""}
             className="bg-input rounded-md p-3 text-sm"
           />
           <FieldErrorMessage
@@ -241,9 +245,10 @@ export function RecipeForm({
             <Label htmlFor="servings">Servings</Label>
             <Input
               id="servings"
-              {...register("servings")}
+              {...register("servings", {
+                setValueAs: (v) => (v === "" ? undefined : Number(v)),
+              })}
               type="number"
-              defaultValue={initialValues?.servings ?? 4}
               aria-describedby={errors.servings ? "servings-error" : undefined}
               aria-invalid={errors.servings ? true : undefined}
             />
@@ -262,8 +267,9 @@ export function RecipeForm({
             <Input
               id="prepTimeMins"
               type="number"
-              defaultValue={initialValues?.prepTimeMins ?? ""}
-              {...register("prepTimeMins")}
+              {...register("prepTimeMins", {
+                setValueAs: (v) => (v === "" ? undefined : Number(v)),
+              })}
               aria-describedby={
                 errors.prepTimeMins ? "prep-time-error" : undefined
               }
@@ -280,9 +286,10 @@ export function RecipeForm({
             </Label>
             <Input
               id="cookTimeMins"
-              {...register("cookTimeMins")}
+              {...register("cookTimeMins", {
+                setValueAs: (v) => (v === "" ? undefined : Number(v)),
+              })}
               type="number"
-              defaultValue={initialValues?.cookTimeMins ?? ""}
               aria-describedby={
                 errors.cookTimeMins ? "cook-time-error" : undefined
               }
@@ -385,6 +392,7 @@ export function RecipeForm({
             Add ingredient
           </Button>
         </div>
+        {/* TODO: Is this datalist necessary? */}
         {/*  <datalist id="ingredient-suggestions">
           {ingredientSuggestions.map((ingredient) => (
             <option key={ingredient.name} value={ingredient.name} />
