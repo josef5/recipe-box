@@ -29,6 +29,7 @@ export function RecipeFormPageContent({
       <Header title={title} description={description} />
       <div className="space-y-2 sm:col-start-1 sm:row-start-2">
         <RecipeForm
+          recipeId={recipeId}
           initialValues={initialValues}
           onSubmittableChange={(canSubmit) => setFormCanBeSubmitted(canSubmit)}
         />

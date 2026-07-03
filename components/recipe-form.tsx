@@ -15,9 +15,11 @@ import { Label } from "./ui/label";
 import { useRouter } from "next/navigation";
 
 export function RecipeForm({
+  recipeId,
   initialValues,
   onSubmittableChange,
 }: {
+  recipeId?: string;
   initialValues?: RecipeOutput;
   onSubmittableChange?: (isSubmittable: boolean) => void;
 } & React.ComponentProps<"div">) {
