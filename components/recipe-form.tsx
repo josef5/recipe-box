@@ -4,15 +4,15 @@ import { createRecipe, updateRecipe } from "@/actions/recipes";
 import { TOAST_OPTIONS } from "@/constants/toast-options";
 import { RecipeInput, RecipeOutput, recipeSchema } from "@/lib/schemas/recipe";
 import { zodResolver } from "@hookform/resolvers/zod";
-import Image from "next/image";
-import { useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { Button } from "./ui/button";
 import { FieldErrorMessage } from "./ui/field-error-mesage";
+import { ImageUpload } from "./ui/image-upload";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
-import { useRouter } from "next/navigation";
 
 export function RecipeForm({
   recipeId,
@@ -43,6 +43,7 @@ export function RecipeForm({
     register,
     control,
     handleSubmit,
+    reset,
     formState: { errors, isDirty, isValid, isSubmitting },
   } = useForm<RecipeInput, unknown, RecipeOutput>({
     resolver: zodResolver(recipeSchema),
@@ -57,18 +58,6 @@ export function RecipeForm({
     onSubmittableChange?.(canSubmit);
   }, [canSubmit, onSubmittableChange]);
 
-  const formRef = useRef<HTMLFormElement>(null);
-  // TODO: decompose image upload
-  const [imageUrl, setImageUrl] = useState(initialValues?.imageUrl ?? "");
-  // TODO: Rename imagePublicId to cloudinaryPublicId
-  const [imagePublicId, setImagePublicId] = useState(
-    initialValues?.imagePublicId ?? "",
-  );
-  const [selectedImageFile, setSelectedImageFile] = useState<File | null>(null);
-  const [isUploadingImage, setIsUploadingImage] = useState(false);
-  const [imageUploadError, setImageUploadError] = useState<string | null>(null);
-  const imageInputRef = useRef<HTMLInputElement>(null);
-
   const {
     fields: ingredientFields,
     append: appendIngredient,
@@ -80,93 +69,6 @@ export function RecipeForm({
     append: appendStep,
     remove: removeStep,
   } = useFieldArray({ control, name: "steps" });
-
-  async function uploadSelectedImage() {
-    if (!selectedImageFile || isUploadingImage) {
-      return;
-    }
-
-    setIsUploadingImage(true);
-    setImageUploadError(null);
-
-    try {
-      const signatureResponse = await fetch("/api/cloudinary/signature", {
-        method: "POST",
-      });
-
-      const signaturePayload = (await signatureResponse.json()) as
-        | {
-            ok: true;
-            data: {
-              cloudName: string;
-              apiKey: string;
-              folder: string;
-              timestamp: number;
-              signature: string;
-            };
-          }
-        | {
-            ok: false;
-            error: string;
-          };
-
-      if (!signatureResponse.ok || !signaturePayload.ok) {
-        throw new Error(
-          signaturePayload.ok
-            ? "Unable to get upload signature."
-            : signaturePayload.error,
-        );
-      }
-
-      const uploadData = new FormData();
-      uploadData.append("file", selectedImageFile);
-      uploadData.append("folder", signaturePayload.data.folder);
-      uploadData.append(
-        "timestamp",
-        signaturePayload.data.timestamp.toString(),
-      );
-      uploadData.append("signature", signaturePayload.data.signature);
-      uploadData.append("api_key", signaturePayload.data.apiKey);
-
-      const uploadResponse = await fetch(
-        `https://api.cloudinary.com/v1_1/${signaturePayload.data.cloudName}/image/upload`,
-        {
-          method: "POST",
-          body: uploadData,
-        },
-      );
-
-      const uploadPayload = (await uploadResponse.json()) as {
-        secure_url?: string;
-        public_id?: string;
-        error?: { message?: string };
-      };
-
-      if (
-        !uploadResponse.ok ||
-        !uploadPayload.secure_url ||
-        !uploadPayload.public_id
-      ) {
-        throw new Error(
-          uploadPayload.error?.message ?? "Unable to upload image.",
-        );
-      }
-
-      setImageUrl(uploadPayload.secure_url);
-      setImagePublicId(uploadPayload.public_id);
-      setSelectedImageFile(null);
-
-      if (imageInputRef.current) {
-        imageInputRef.current.value = "";
-      }
-    } catch (error) {
-      setImageUploadError(
-        error instanceof Error ? error.message : "Unable to upload image.",
-      );
-    } finally {
-      setIsUploadingImage(false);
-    }
-  }
 
   async function onSubmit({
     title,
@@ -212,9 +114,7 @@ export function RecipeForm({
         TOAST_OPTIONS,
       );
 
-      formRef.current?.reset();
-      setImageUrl("");
-      setImagePublicId("");
+      reset();
 
       router.replace(`/recipes/${result.slug}`);
     } catch (error) {
@@ -231,7 +131,6 @@ export function RecipeForm({
 
   return (
     <form
-      ref={formRef}
       onSubmit={handleSubmit(onSubmit)}
       id="recipe-form"
       noValidate
@@ -322,78 +221,17 @@ export function RecipeForm({
             />
           </div>
         </div>
-        <div className="flex flex-col gap-1.5">
-          <Label htmlFor="imageUrl">Image URL</Label>
-          <Input
-            id="imageUrl"
-            type="url"
-            {...register("imageUrl")}
-            aria-describedby={
-              errors.imageUrl ? "image-url-error" : "image-url-help"
-            }
-            aria-invalid={errors.imageUrl ? true : undefined}
-          />
-          <Input name="imagePublicId" type="hidden" value={imagePublicId} />
-          <p id="image-url-help" className="text-xs">
-            Upload to Cloudinary or paste any external image URL.
-          </p>
-          <div aria-live="polite" className="flex flex-wrap items-center gap-3">
-            {/* TODO: File input doesn't look like clickable element */}
-            <Label htmlFor="recipe-image-file">Upload image file</Label>
-            <Input
-              id="recipe-image-file"
-              ref={imageInputRef}
-              type="file"
-              accept="image/*"
-              onChange={(event) => {
-                setSelectedImageFile(event.target.files?.[0] ?? null);
-                setImageUploadError(null);
-              }}
-              className="w-full"
-            />
-            <Button
-              type="button"
-              variant="secondary"
-              disabled={!selectedImageFile || isUploadingImage}
-              onClick={uploadSelectedImage}
-              aria-busy={isUploadingImage}
-            >
-              {isUploadingImage ? "Uploading..." : "Upload image"}
-            </Button>
-            {imageUrl ? (
-              <Button
-                type="button"
-                variant="destructive-secondary"
-                onClick={() => {
-                  setImageUrl("");
-                  setImagePublicId("");
-                  setImageUploadError(null);
-                }}
-              >
-                Remove image
-              </Button>
-            ) : null}
-          </div>
-          <FieldErrorMessage
-            text={imageUploadError ?? undefined}
-            id="image-url-error"
-          />
-          {imageUrl ? (
-            <Image
-              src={imageUrl}
-              alt="Recipe preview"
-              width={1200}
-              height={800}
-              sizes="(max-width: 768px) 100vw, 768px"
-              unoptimized
-              className="mt-2 max-h-64 w-full rounded-md border object-cover"
-            />
-          ) : null}
-          <FieldErrorMessage
-            text={errors.imageUrl?.message}
-            id="image-url-error"
-          />
-        </div>
+        <ImageUpload
+          control={control}
+          name="imageUrl"
+          publicIdName="imagePublicId"
+          label="Image URL"
+          accept="image/*"
+        />
+        <FieldErrorMessage
+          text={errors.imageUrl?.message}
+          id="image-url-error"
+        />
       </section>
       <section className="flex flex-col gap-4">
         <div className="flex items-center justify-between gap-4">
