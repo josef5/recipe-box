@@ -6,6 +6,13 @@ import { Button } from "./button";
 import { FieldErrorMessage } from "./field-error-mesage";
 import { Input } from "./input";
 import { Label } from "./label";
+import { getCloudinarySignature } from "@/actions/image-upload";
+
+type UploadData = {
+  secure_url?: string;
+  public_id?: string;
+  error?: { message: string };
+};
 
 export function ImageUpload({
   control,
@@ -38,35 +45,41 @@ export function ImageUpload({
 
   async function uploadSelectedImage() {
     if (!selectedFile || isUploading) return;
+
     setIsUploading(true);
     setUploadError(null);
+
     try {
-      const sigRes = await fetch("/api/cloudinary/signature", {
-        method: "POST",
-      });
-      const sigJson = await sigRes.json();
-      if (!sigRes.ok || !sigJson.ok)
-        throw new Error(sigJson.error ?? "Unable to sign");
+      const signature = await getCloudinarySignature();
 
-      const fd = new FormData();
-      fd.append("file", selectedFile);
-      fd.append("folder", sigJson.data.folder);
-      fd.append("timestamp", String(sigJson.data.timestamp));
-      fd.append("signature", sigJson.data.signature);
-      fd.append("api_key", sigJson.data.apiKey);
+      if (!signature.ok) throw new Error(signature.error ?? "Unable to sign");
 
-      const uploadRes = await fetch(
-        `https://api.cloudinary.com/v1_1/${sigJson.data.cloudName}/image/upload`,
-        { method: "POST", body: fd },
+      const formData = new FormData();
+      formData.append("file", selectedFile);
+      formData.append("folder", signature.data.folder);
+      formData.append("timestamp", String(signature.data.timestamp));
+      formData.append("signature", signature.data.signature);
+      formData.append("api_key", signature.data.apiKey);
+
+      const uploadResponse = await fetch(
+        `https://api.cloudinary.com/v1_1/${signature.data.cloudName}/image/upload`,
+        { method: "POST", body: formData },
       );
-      const up = await uploadRes.json();
-      if (!uploadRes.ok || !up.secure_url || !up.public_id) {
-        throw new Error(up.error?.message ?? "Upload failed");
+
+      const uploadData = (await uploadResponse.json()) as UploadData;
+
+      if (
+        !uploadResponse.ok ||
+        !uploadData.secure_url ||
+        !uploadData.public_id
+      ) {
+        throw new Error(uploadData.error?.message ?? "Upload failed");
       }
 
-      field.onChange(up.secure_url);
-      publicIdField.onChange(up.public_id);
+      field.onChange(uploadData.secure_url);
+      publicIdField.onChange(uploadData.public_id);
       setSelectedFile(null);
+
       if (imageInputRef.current) imageInputRef.current.value = "";
     } catch (err) {
       setUploadError(err instanceof Error ? err.message : "Upload failed");
@@ -92,8 +105,7 @@ export function ImageUpload({
         Upload to Cloudinary or paste any external image URL.
       </p>
       <div aria-live="polite" className="flex flex-wrap items-center gap-3">
-        <Label htmlFor="recipe-image-file">Upload image file</Label>
-        <Input
+        <input
           id="recipe-image-file"
           ref={imageInputRef}
           type="file"
@@ -102,8 +114,14 @@ export function ImageUpload({
             setSelectedFile(e.target.files?.[0] ?? null);
             setUploadError(null);
           }}
-          className="w-full"
+          className="text-sm"
         />
+        <Label
+          htmlFor="recipe-image-file"
+          className="text-foreground cursor-pointer items-center justify-center rounded-md border px-4 py-2 text-center text-sm font-normal disabled:cursor-default disabled:opacity-50"
+        >
+          Select image file
+        </Label>
         <Button
           type="button"
           variant="secondary"
@@ -127,9 +145,10 @@ export function ImageUpload({
           </Button>
         ) : null}
       </div>
-      {uploadError ? (
-        <FieldErrorMessage text={uploadError} id="image-upload-error" />
-      ) : null}
+      <FieldErrorMessage
+        text={uploadError ?? undefined}
+        id="image-upload-error"
+      />
       {field.value ? (
         <Image
           src={field.value as string}
@@ -140,7 +159,7 @@ export function ImageUpload({
           unoptimized
         />
       ) : null}
-      <FieldErrorMessage text={undefined} id="image-url-error" />
+      {/* <FieldErrorMessage text={undefined} id="image-url-error" /> */}
     </div>
   );
 }
