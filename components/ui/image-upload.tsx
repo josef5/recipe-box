@@ -106,6 +106,7 @@ export function ImageUpload({
       </p>
       <div aria-live="polite" className="flex flex-wrap items-center gap-3">
         <input
+          // File input for selecting an image file
           id="recipe-image-file"
           ref={imageInputRef}
           type="file"
@@ -117,6 +118,7 @@ export function ImageUpload({
           className="text-sm"
         />
         <Label
+          // Clickable label for the file input, styled as a button
           htmlFor="recipe-image-file"
           className="text-foreground cursor-pointer items-center justify-center rounded-md border px-4 py-2 text-center text-sm font-normal disabled:cursor-default disabled:opacity-50"
         >
