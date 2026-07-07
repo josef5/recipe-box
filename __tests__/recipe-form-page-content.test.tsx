@@ -115,14 +115,24 @@ describe("RecipeFormPageContent", () => {
       />,
     );
 
-    const saveButton = screen.getByRole("button", { name: "Save recipe" });
+    const saveButtons = screen.getAllByRole("button", {
+      name: "Save recipe",
+    }) as HTMLButtonElement[];
 
-    expect(saveButton).toBeDisabled();
+    for (const button of saveButtons) {
+      expect(button.disabled).toBe(true);
+    }
 
     fireEvent.click(screen.getByRole("button", { name: "Mock form valid" }));
-    expect(saveButton).toBeEnabled();
+
+    for (const button of saveButtons) {
+      expect(button.disabled).toBe(false);
+    }
 
     fireEvent.click(screen.getByRole("button", { name: "Mock form invalid" }));
-    expect(saveButton).toBeDisabled();
+
+    for (const button of saveButtons) {
+      expect(button.disabled).toBe(true);
+    }
   });
 });
