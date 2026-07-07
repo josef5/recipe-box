@@ -35,6 +35,19 @@ body {
   font-family: var(--font-geist-mono), monospace;
 }
 
+input:focus,
+textarea:focus,
+select:focus {
+  outline: none !important;
+}
+
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: 2px solid var(--foreground) !important;
+  outline-offset: 0 !important;
+}
+
 .sr-only {
   position: absolute;
   width: 1px;
