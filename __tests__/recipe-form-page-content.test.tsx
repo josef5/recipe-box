@@ -3,6 +3,8 @@ import { fireEvent, render, screen } from "@testing-library/react";
 import type { ReactNode } from "react";
 import { describe, expect, it, vi } from "vitest";
 
+const recipeFormMock = vi.fn();
+
 vi.mock("@/components/header", () => ({
   default: ({
     title,
@@ -43,21 +45,51 @@ vi.mock("@/components/ui/delete-recipe-button", () => ({
 vi.mock("@/components/recipe-form", () => ({
   RecipeForm: ({
     onSubmittableChange,
+    ingredientSuggestions,
   }: {
     onSubmittableChange?: (isSubmittable: boolean) => void;
-  }) => (
-    <div>
-      <button onClick={() => onSubmittableChange?.(true)} type="button">
-        Mock form valid
-      </button>
-      <button onClick={() => onSubmittableChange?.(false)} type="button">
-        Mock form invalid
-      </button>
-    </div>
-  ),
+    ingredientSuggestions?: {
+      id: string;
+      name: string;
+      defaultUnit?: string | null;
+    }[];
+  }) => {
+    recipeFormMock({ ingredientSuggestions });
+
+    return (
+      <div>
+        <button onClick={() => onSubmittableChange?.(true)} type="button">
+          Mock form valid
+        </button>
+        <button onClick={() => onSubmittableChange?.(false)} type="button">
+          Mock form invalid
+        </button>
+      </div>
+    );
+  },
 }));
 
 describe("RecipeFormPageContent", () => {
+  it("forwards ingredient suggestions into the form", () => {
+    render(
+      <RecipeFormPageContent
+        title="Add recipe"
+        description="Create a new recipe"
+        ingredientSuggestions={[
+          { id: "1", name: "Flour", defaultUnit: "g" },
+          { id: "2", name: "Salt", defaultUnit: "tsp" },
+        ]}
+      />,
+    );
+
+    expect(recipeFormMock).toHaveBeenCalledWith({
+      ingredientSuggestions: [
+        { id: "1", name: "Flour", defaultUnit: "g" },
+        { id: "2", name: "Salt", defaultUnit: "tsp" },
+      ],
+    });
+  });
+
   it("disables save until form reports submittable and disables again when it becomes invalid", () => {
     render(
       <RecipeFormPageContent

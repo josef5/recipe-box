@@ -172,4 +172,37 @@ describe("RecipeForm", () => {
     expect(screen.getByDisplayValue("Whisk the filling.")).toBeVisible();
     expect(screen.queryByDisplayValue("Edited first step.")).toBeNull();
   });
+
+  it("shows ingredient suggestions and fills the default unit on selection", async () => {
+    render(
+      <RecipeForm
+        ingredientSuggestions={[
+          { id: "1", name: "Flour", defaultUnit: "g" },
+          { id: "2", name: "Salt", defaultUnit: "tsp" },
+        ]}
+      />,
+    );
+
+    const ingredientInput = screen.getByLabelText("Ingredient");
+
+    fireEvent.focus(ingredientInput);
+
+    expect(screen.getByRole("listbox")).toBeVisible();
+    expect(screen.getByRole("option", { name: /flour/i })).toBeVisible();
+    expect(screen.getByRole("option", { name: /salt/i })).toBeVisible();
+
+    fireEvent.change(ingredientInput, { target: { value: "flo" } });
+
+    await waitFor(() => {
+      expect(screen.getByRole("option", { name: /flour/i })).toBeVisible();
+      expect(screen.getByRole("option", { name: /salt/i })).toBeVisible();
+    });
+
+    fireEvent.click(screen.getByRole("option", { name: /flour/i }));
+
+    await waitFor(() => {
+      expect(screen.getByLabelText("Ingredient")).toHaveValue("Flour");
+      expect(screen.getByLabelText("Unit")).toHaveValue("g");
+    });
+  });
 });
