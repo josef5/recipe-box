@@ -1,6 +1,7 @@
 "use client";
 
 import { RecipeOutput } from "@/lib/schemas/recipe";
+import { Ingredient } from "@/types";
 import React from "react";
 import Header from "./header";
 import { RecipeForm } from "./recipe-form";
@@ -16,11 +17,13 @@ export function RecipeFormPageContent({
   description,
   recipeId,
   initialValues,
+  ingredientSuggestions,
 }: {
   title: string;
   description: string;
   recipeId?: string;
   initialValues?: RecipeOutput;
+  ingredientSuggestions?: Ingredient[];
 }) {
   const [formCanBeSubmitted, setFormCanBeSubmitted] = React.useState(false);
 
@@ -31,6 +34,7 @@ export function RecipeFormPageContent({
         <RecipeForm
           recipeId={recipeId}
           initialValues={initialValues}
+          ingredientSuggestions={ingredientSuggestions}
           onSubmittableChange={(canSubmit) => setFormCanBeSubmitted(canSubmit)}
         />
       </div>

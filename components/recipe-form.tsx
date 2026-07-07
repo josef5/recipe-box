@@ -3,6 +3,7 @@
 import { createRecipe, updateRecipe } from "@/actions/recipes";
 import { TOAST_OPTIONS } from "@/constants/toast-options";
 import { RecipeInput, RecipeOutput, recipeSchema } from "@/lib/schemas/recipe";
+import { Ingredient } from "@/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
@@ -17,12 +18,15 @@ import { Label } from "./ui/label";
 export function RecipeForm({
   recipeId,
   initialValues,
+  ingredientSuggestions,
   onSubmittableChange,
 }: {
   recipeId?: string;
   initialValues?: RecipeOutput;
+  ingredientSuggestions?: Ingredient[];
   onSubmittableChange?: (isSubmittable: boolean) => void;
 } & React.ComponentProps<"div">) {
+  // Normalize initial values to ensure the form has consistent default values
   const normalizedDefaults: RecipeInput = {
     title: initialValues?.title ?? "",
     description: initialValues?.description ?? "",
@@ -50,6 +54,7 @@ export function RecipeForm({
     mode: "onChange",
     defaultValues: normalizedDefaults,
   });
+
   const router = useRouter();
   const mode = initialValues ? "edit" : "create";
   const canSubmit = isValid && (mode === "create" || isDirty) && !isSubmitting;
@@ -251,12 +256,12 @@ export function RecipeForm({
             Add ingredient
           </Button>
         </div>
-        {/* TODO: Is this datalist necessary? */}
-        {/*  <datalist id="ingredient-suggestions">
-          {ingredientSuggestions.map((ingredient) => (
-            <option key={ingredient.name} value={ingredient.name} />
-          ))}
-        </datalist> */}
+        <datalist id="ingredient-suggestions">
+          {ingredientSuggestions &&
+            ingredientSuggestions.map((ingredient) => (
+              <option key={ingredient.name} value={ingredient.name} />
+            ))}
+        </datalist>
         <div className="flex flex-col gap-4">
           {ingredientFields.map((ingredient, index) => (
             <div key={ingredient.id} className="">

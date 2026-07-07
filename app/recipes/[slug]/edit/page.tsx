@@ -1,4 +1,4 @@
-import { getRecipeBySlug } from "@/actions/recipes";
+import { getIngredients, getRecipeBySlug } from "@/actions/recipes";
 import Main from "@/components/main";
 import { RecipeFormPageContent } from "@/components/recipe-form-page-content";
 import { requireCurrentUser, userHasAdminRole } from "@/lib/auth/session";
@@ -16,6 +16,8 @@ export default async function EditRecipePage({
     redirectTo: `/recipes/${slug}/edit`,
   });
   const recipe = await getRecipeBySlug(slug);
+  const ingredientSuggestions = await getIngredients();
+
   const canEditRecipe =
     !!recipe &&
     (recipe.userId === currentUser.id || userHasAdminRole(currentUser));
@@ -48,6 +50,7 @@ export default async function EditRecipePage({
             stepNumber: step.stepNumber,
           })),
         }}
+        ingredientSuggestions={ingredientSuggestions}
       />
     </Main>
   );
