@@ -48,7 +48,5 @@ export const recipeSchema = z.object({
     .min(1, "At least one step is required."),
 });
 
-// TODO: Refine to strictly necessary types
 export type RecipeInput = z.input<typeof recipeSchema>;
 export type RecipeOutput = z.output<typeof recipeSchema>;
-export type RecipeInfer = z.infer<typeof recipeSchema>;
