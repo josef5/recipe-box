@@ -385,7 +385,7 @@ export function RecipeForm({
               >
                 Step {index + 1}
               </Label>
-              <div className="flex items-start gap-3">
+              <div className="mb-2 flex items-start gap-3">
                 <textarea
                   id={`step-instruction-${index}`}
                   rows={3}
@@ -402,17 +402,16 @@ export function RecipeForm({
                   Remove
                 </Button>
               </div>
-              {/* TODO: Fix vertical spacings - field error messages */}
               <FieldErrorMessage
                 text={errors.steps?.[index]?.instruction?.message}
                 id={`step-instruction-${index}-error`}
               />
-              <FieldErrorMessage
-                text={errors.steps?.root?.message}
-                id={`step-instruction-${index}-error`}
-              />
             </div>
           ))}
+          <FieldErrorMessage
+            text={errors.steps?.root?.message}
+            id="steps-error"
+          />
         </div>
       </section>
     </form>
