@@ -157,6 +157,7 @@ export function ImageUpload({
           height={800}
           className="mt-2 max-h-64 w-full rounded-md border object-cover"
           unoptimized
+          loading="eager"
         />
       ) : null}
       {/* <FieldErrorMessage text={undefined} id="image-url-error" /> */}
