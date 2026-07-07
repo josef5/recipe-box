@@ -10,8 +10,6 @@ import { BackButton } from "./ui/back-button";
 import { Button } from "./ui/button";
 import { DeleteRecipeButton } from "./ui/delete-recipe-button";
 
-// TODO: Add a second save button under the form
-
 export function RecipeFormPageContent({
   title,
   description,
@@ -37,30 +35,53 @@ export function RecipeFormPageContent({
           ingredientSuggestions={ingredientSuggestions}
           onSubmittableChange={(canSubmit) => setFormCanBeSubmitted(canSubmit)}
         />
+        <ActionButtons
+          recipeId={recipeId}
+          formCanBeSubmitted={formCanBeSubmitted}
+        />
       </div>
       <Sidebar>
-        <Button
-          type="submit"
-          form="recipe-form"
-          className="w-full"
-          disabled={!formCanBeSubmitted}
-        >
-          Save recipe
-        </Button>
-        {recipeId && (
-          <DeleteRecipeButton recipeId={recipeId}>
-            Delete recipe
-          </DeleteRecipeButton>
-        )}
+        <ActionButtons
+          recipeId={recipeId}
+          formCanBeSubmitted={formCanBeSubmitted}
+        />
+      </Sidebar>
+    </>
+  );
+}
+
+function ActionButtons({
+  recipeId,
+  formCanBeSubmitted,
+}: {
+  recipeId?: string;
+  formCanBeSubmitted: boolean;
+}) {
+  return (
+    <>
+      <Button
+        type="submit"
+        form="recipe-form"
+        className="w-full"
+        disabled={!formCanBeSubmitted}
+      >
+        Save recipe
+      </Button>
+      <div className="flex flex-row gap-2">
         <BackButton
           type="button"
           variant="secondary"
           fallbackHref="/"
-          className="w-full"
+          className="flex-1"
         >
           Cancel
         </BackButton>
-      </Sidebar>
+        {recipeId && (
+          <DeleteRecipeButton recipeId={recipeId} className="flex-1">
+            Delete recipe
+          </DeleteRecipeButton>
+        )}
+      </div>
     </>
   );
 }
