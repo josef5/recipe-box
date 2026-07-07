@@ -47,18 +47,11 @@ function IngredientCombobox({
   const [isOpen, setIsOpen] = useState(false);
   const [highlightedIndex, setHighlightedIndex] = useState(0);
 
-  const normalizedValue = value.trim().toLocaleLowerCase();
-  const filteredSuggestions = suggestions
-    .filter((ingredient) =>
-      ingredient.name.toLocaleLowerCase().includes(normalizedValue),
-    )
-    .slice(0, 8);
-
-  const activeOption = filteredSuggestions[highlightedIndex];
+  const activeOption = suggestions[highlightedIndex];
 
   // Open the popup only when there are suggestions to show.
   function openSuggestions() {
-    if (filteredSuggestions.length === 0) {
+    if (suggestions.length === 0) {
       return;
     }
 
@@ -90,11 +83,11 @@ function IngredientCombobox({
       }
 
       setHighlightedIndex((currentIndex) => {
-        if (filteredSuggestions.length === 0) {
+        if (suggestions.length === 0) {
           return 0;
         }
 
-        return (currentIndex + 1) % filteredSuggestions.length;
+        return (currentIndex + 1) % suggestions.length;
       });
       return;
     }
@@ -108,14 +101,11 @@ function IngredientCombobox({
       }
 
       setHighlightedIndex((currentIndex) => {
-        if (filteredSuggestions.length === 0) {
+        if (suggestions.length === 0) {
           return 0;
         }
 
-        return (
-          (currentIndex - 1 + filteredSuggestions.length) %
-          filteredSuggestions.length
-        );
+        return (currentIndex - 1 + suggestions.length) % suggestions.length;
       });
       return;
     }
@@ -168,13 +158,13 @@ function IngredientCombobox({
         onKeyDown={handleKeyDown}
         className={className}
       />
-      {isOpen && filteredSuggestions.length > 0 ? (
+      {isOpen && suggestions.length > 0 ? (
         <div
           id={listboxId}
           role="listbox"
           className="bg-surface absolute z-20 mt-3 max-h-64 w-full overflow-y-auto rounded-md border p-1 shadow-lg"
         >
-          {filteredSuggestions.map((ingredient, index) => (
+          {suggestions.map((ingredient, index) => (
             <button
               type="button"
               key={ingredient.id}
