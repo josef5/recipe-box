@@ -146,11 +146,13 @@ export async function getOrCreateIngredientId(
   return ingredient.id;
 }
 
+type IngredientRow = typeof ingredients.$inferSelect;
+
 /**
  * Retrieves all ingredients from the database, ordered by name.
  * @returns A Promise that resolves to an array of ingredients.
  */
-export async function getIngredients() {
+export async function getIngredients(): Promise<IngredientRow[]> {
   return db.query.ingredients.findMany({
     orderBy: (ingredients, { asc }) => [asc(ingredients.name)],
   });
