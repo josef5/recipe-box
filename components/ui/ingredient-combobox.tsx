@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-import { Ingredient } from "@/types";
+import type { Ingredient } from "@/types";
 import { useId, useRef, useState } from "react";
 import { Input } from "./input";
 
@@ -143,8 +143,14 @@ export function IngredientCombobox({
           setHighlightedIndex(0);
         }}
         onKeyDown={handleKeyDown}
-        className={className}
+        className={cn("pr-8", className)}
       />
+      <span
+        aria-hidden="true"
+        className="text-muted-foreground pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 text-xs"
+      >
+        {isOpen ? "⏶" : "⏷"}
+      </span>
       {isOpen && suggestions.length > 0 ? (
         <div
           id={listboxId}
