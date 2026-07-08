@@ -53,6 +53,12 @@ Always ensure code is free of linter and type errors before considering a task c
 - Prefer Vitest
 - Test files go in one location in the root e.g. `./__tests__`
 
+## Bug Fixing
+
+When attempting multiple solutions to fix a bug, remove any failed
+attempts before moving on to the next. Never leave redundant, commented-out,
+or superseded code in the codebase as a result of a debugging session.
+
 ## Next.js
 
 Prefer Server Actions over API Routes for UI-initiated mutations
