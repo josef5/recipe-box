@@ -3,9 +3,9 @@
 import { RecipeOutput } from "@/lib/schemas/recipe";
 import { Ingredient } from "@/types";
 import React from "react";
-import Header from "./header";
+import { Header } from "./header";
 import { RecipeForm } from "./recipe-form";
-import Sidebar from "./sidebar";
+import { Sidebar } from "./sidebar";
 import { BackButton } from "./ui/back-button";
 import { Button } from "./ui/button";
 import { DeleteRecipeButton } from "./ui/delete-recipe-button";

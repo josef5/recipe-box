@@ -1,6 +1,6 @@
 import { cn } from "@/lib/utils";
 
-export default function Header({
+export function Header({
   title,
   description,
   className,

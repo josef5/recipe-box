@@ -1,5 +1,5 @@
 import { HomePageContent } from "@/components/home-page-content";
-import Main from "@/components/main";
+import { Main } from "@/components/main";
 import { getPublicRecipes } from "@/lib/recipes";
 import { Suspense } from "react";
 

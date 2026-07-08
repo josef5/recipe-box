@@ -3,10 +3,10 @@ import { Recipe } from "@/types";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import { use } from "react";
+import { Header } from "./header";
 import { ScaledIngredientsList } from "./scaled-ingredients-list";
+import { Sidebar } from "./sidebar";
 import { EditRecipeButton } from "./ui/edit-recipe-button";
-import Sidebar from "./sidebar";
-import Header from "./header";
 
 // TODO: Allow add to favourites
 

@@ -1,7 +1,7 @@
 "use client";
 
 import { signInAction } from "@/actions/auth";
-import Main from "@/components/main";
+import { Main } from "@/components/main";
 import { Button } from "@/components/ui/button";
 import { FieldErrorMessage } from "@/components/ui/field-error-mesage";
 import { Input } from "@/components/ui/input";

@@ -1,4 +1,4 @@
-import Main from "@/components/main";
+import { Main } from "@/components/main";
 import { RecipeDetail } from "@/components/recipe-detail";
 import { getPublicRecipeBySlug, getRecipeSlugs } from "@/lib/recipes";
 import { Suspense } from "react";

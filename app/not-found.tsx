@@ -1,4 +1,4 @@
-import Main from "@/components/main";
+import { Main } from "@/components/main";
 import { BackButton } from "@/components/ui/back-button";
 
 export default function NotFound() {

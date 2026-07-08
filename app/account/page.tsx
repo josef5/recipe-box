@@ -1,9 +1,9 @@
 import { getManagedUsersAction } from "@/actions/account";
 import { AccountProfileSection } from "@/components/account-profile-section";
 import { AccountUsersSection } from "@/components/account-users-section";
-import Header from "@/components/header";
-import Main from "@/components/main";
-import Sidebar from "@/components/sidebar";
+import { Header } from "@/components/header";
+import { Main } from "@/components/main";
+import { Sidebar } from "@/components/sidebar";
 import { requireCurrentUser, userHasAdminRole } from "@/lib/auth/session";
 import { getPublicRecipes } from "@/lib/recipes";
 

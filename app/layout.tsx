@@ -1,12 +1,12 @@
+import { Footer } from "@/components/footer";
+import { FlashToast } from "@/components/ui/flash-toast";
 import { Menu } from "@/components/ui/menu";
+import { TOAST_OPTIONS } from "@/constants/toast-options";
 import type { Metadata } from "next";
 import { Geist_Mono } from "next/font/google";
-import "./globals.css";
-import Footer from "@/components/footer";
-import { FlashToast } from "@/components/ui/flash-toast";
-import { Toaster } from "sonner";
-import { TOAST_OPTIONS } from "@/constants/toast-options";
 import { Suspense } from "react";
+import { Toaster } from "sonner";
+import "./globals.css";
 
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",

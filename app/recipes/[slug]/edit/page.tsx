@@ -1,5 +1,5 @@
 import { getIngredients, getRecipeBySlug } from "@/actions/recipes";
-import Main from "@/components/main";
+import { Main } from "@/components/main";
 import { RecipeFormPageContent } from "@/components/recipe-form-page-content";
 import { requireCurrentUser, userHasAdminRole } from "@/lib/auth/session";
 import { notFound } from "next/navigation";

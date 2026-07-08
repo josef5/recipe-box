@@ -1,5 +1,5 @@
 import { getIngredients } from "@/actions/recipes";
-import Main from "@/components/main";
+import { Main } from "@/components/main";
 import { RecipeFormPageContent } from "@/components/recipe-form-page-content";
 import { requireCurrentUserId } from "@/lib/auth/session";
 

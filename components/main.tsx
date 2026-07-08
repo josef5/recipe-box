@@ -1,6 +1,4 @@
-// TODO: Convert all components to named exports
-
-export default function Main({
+export function Main({
   children,
   ...props
 }: React.PropsWithChildren<React.HTMLAttributes<HTMLElement>>) {
