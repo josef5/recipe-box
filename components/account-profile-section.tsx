@@ -8,8 +8,6 @@ import { EditableAccountName } from "./ui/editable-account-name";
 import { useRef } from "react";
 import Link from "next/link";
 
-// TODO: Filter recipes by user
-
 export function AccountProfileSection({
   user,
   recipes = [],
@@ -21,6 +19,8 @@ export function AccountProfileSection({
     open: () => void;
     close: () => void;
   }>(null);
+
+  const recipesByUser = recipes.filter((recipe) => recipe.userId === user.id);
 
   return (
     <section className="bg-surface space-y-4 rounded-xl px-5 pt-6 pb-8 text-sm drop-shadow-lg">
@@ -45,11 +45,11 @@ export function AccountProfileSection({
           }}
         />
       </Accordion>
-      {recipes.length > 0 ? (
+      {recipesByUser.length > 0 ? (
         <div className="mt-6 space-y-2">
           <h2 className="font-bold">Your Recipes</h2>
           <ul className="list-inside list-disc pl-0.5">
-            {recipes.map((recipe) => (
+            {recipesByUser.map((recipe) => (
               <li key={recipe.id}>
                 <Link href={`/recipes/${recipe.slug}`}>{recipe.title}</Link>
               </li>
