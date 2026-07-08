@@ -17,8 +17,6 @@ import { Accordion } from "./ui/accordion";
 import { Button } from "./ui/button";
 import { Dialog } from "./ui/dialog";
 
-// TODO: Deal with autocompleted input values and canSubmit
-
 export function AccountUsersSection({
   initialUsers,
   currentUserId,

@@ -88,7 +88,6 @@ export async function addUserAction(input: {
       return { ok: false, error: normalized.errorMessage };
     }
 
-    // TODO: Is it necessary to normalize the user object here? The AdminClient should return a consistent shape for the user object.
     const user = normalized.data?.user
       ? normalized.data.user
       : normalized.data &&
