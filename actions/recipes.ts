@@ -14,6 +14,43 @@ import { desc, eq, ilike, or } from "drizzle-orm";
 import { revalidatePath, revalidateTag } from "next/cache";
 import { forbidden } from "next/navigation";
 
+const DUPLICATE_RECIPE_TITLE_ERROR = "A recipe with that title already exists.";
+
+/**
+ * Returns true when the error represents a unique constraint violation for recipe titles.
+ */
+function isRecipeTitleUniqueConstraintError(error: unknown): boolean {
+  if (error == null || typeof error !== "object") {
+    return false;
+  }
+
+  const asRecord = error as {
+    code?: unknown;
+    constraint?: unknown;
+    cause?: unknown;
+  };
+
+  if (
+    asRecord.code === "23505" ||
+    asRecord.constraint === "recipes_title_unique"
+  ) {
+    return true;
+  }
+
+  const cause = asRecord.cause;
+
+  if (cause != null && typeof cause === "object") {
+    const causeRecord = cause as { code?: unknown; constraint?: unknown };
+
+    return (
+      causeRecord.code === "23505" ||
+      causeRecord.constraint === "recipes_title_unique"
+    );
+  }
+
+  return false;
+}
+
 /**
  * Creates a new recipe in the database.
  * @param data The data for the new recipe.
@@ -93,6 +130,10 @@ export async function createRecipe(
 
     return { ok: true, slug: recipe.slug };
   } catch (error) {
+    if (isRecipeTitleUniqueConstraintError(error)) {
+      return { ok: false, error: DUPLICATE_RECIPE_TITLE_ERROR };
+    }
+
     return {
       ok: false,
       error:
@@ -367,6 +408,10 @@ export async function updateRecipe(
 
     return { ok: true, slug: recipe.slug };
   } catch (error) {
+    if (isRecipeTitleUniqueConstraintError(error)) {
+      return { ok: false, error: DUPLICATE_RECIPE_TITLE_ERROR };
+    }
+
     return {
       ok: false,
       error:
