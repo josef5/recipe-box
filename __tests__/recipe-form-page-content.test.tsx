@@ -6,13 +6,7 @@ import { describe, expect, it, vi } from "vitest";
 const recipeFormMock = vi.fn();
 
 vi.mock("@/components/header", () => ({
-  default: ({
-    title,
-    description,
-  }: {
-    title: string;
-    description?: string;
-  }) => (
+  Header: ({ title, description }: { title: string; description?: string }) => (
     <header>
       <h1>{title}</h1>
       <p>{description}</p>
@@ -21,7 +15,7 @@ vi.mock("@/components/header", () => ({
 }));
 
 vi.mock("@/components/sidebar", () => ({
-  default: ({ children }: { children: ReactNode }) => <aside>{children}</aside>,
+  Sidebar: ({ children }: { children: ReactNode }) => <aside>{children}</aside>,
 }));
 
 vi.mock("@/components/ui/back-button", () => ({
