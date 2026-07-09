@@ -43,6 +43,13 @@
       "when": 1781283791810,
       "tag": "0005_square_fat_cobra",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1783598219469,
+      "tag": "0006_early_joseph",
+      "breakpoints": true
     }
   ]
 }
