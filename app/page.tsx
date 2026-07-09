@@ -3,8 +3,6 @@ import { Main } from "@/components/main";
 import { getPublicRecipes } from "@/lib/recipes";
 import { Suspense } from "react";
 
-// TODO: Recipe name should be unique
-
 export default async function Home({
   searchParams,
 }: {
