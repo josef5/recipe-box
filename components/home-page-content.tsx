@@ -11,8 +11,6 @@ import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 import { NewRecipeButton } from "./ui/new-recipe-button";
 
-// TODO: Improve search - live update, filter on query
-
 export function HomePageContent({
   recipesPromise,
   query,
@@ -43,6 +41,7 @@ export function HomePageContent({
       </div>
       <Sidebar>
         <form
+          // Form for searching recipes. As this is a server component, we can't use client-side state for the search query. Instead, we use a form submission to trigger a server-side search.
           action="/"
           method="get"
           noValidate
