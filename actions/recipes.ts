@@ -32,6 +32,11 @@ export async function createRecipe(
     }
 
     const valid = parsed.data;
+
+    if (!(await isRecipeTitleAvailable(valid.title))) {
+      return { ok: false, error: DUPLICATE_RECIPE_TITLE_ERROR };
+    }
+
     const slug = await generateSlug(valid.title);
 
     const [recipe] = await db
@@ -96,6 +101,25 @@ export async function createRecipe(
           : "Unable to create recipe. Please try again.",
     };
   }
+}
+
+/**
+ * Checks if a recipe title is available, optionally excluding a specific recipe ID.
+ * @param title The title of the recipe to check.
+ * @param excludeId The ID of the recipe to exclude from the check (useful for editing).
+ * @returns A promise that resolves to true if the title is available, false otherwise.
+ */
+export async function isRecipeTitleAvailable(
+  title: string,
+  excludeId?: string,
+): Promise<boolean> {
+  const existing = await db.query.recipes.findFirst({
+    where: eq(recipes.title, title.trim()),
+  });
+
+  if (!existing) return true;
+
+  return excludeId != null && existing.id === excludeId;
 }
 
 /**
@@ -263,6 +287,14 @@ export async function updateRecipe(
 
     const valid = parsed.data;
     const { recipe: existingRecipe, user } = await getEditableRecipe(id);
+
+    if (
+      existingRecipe.title !== valid.title &&
+      !(await isRecipeTitleAvailable(valid.title, id))
+    ) {
+      return { ok: false, error: DUPLICATE_RECIPE_TITLE_ERROR };
+    }
+
     const previousSlug = existingRecipe.slug;
     const existingImagePublicId = existingRecipe.imagePublicId?.trim();
     const nextImagePublicId = valid.imagePublicId?.trim();
