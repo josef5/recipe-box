@@ -5,6 +5,7 @@ import {
   integer,
   numeric,
   timestamp,
+  unique,
 } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 
@@ -15,21 +16,25 @@ export const ingredients = pgTable("ingredients", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
-export const recipes = pgTable("recipes", {
-  id: uuid("id").primaryKey().defaultRandom(),
-  userId: text("user_id"),
-  ownerDisplayName: text("owner_display_name"),
-  slug: text("slug").notNull().unique(),
-  title: text("title").notNull(),
-  description: text("description"),
-  servings: integer("servings"),
-  prepTimeMins: integer("prep_time_mins"),
-  cookTimeMins: integer("cook_time_mins"),
-  imageUrl: text("image_url"),
-  imagePublicId: text("image_public_id"),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-  updatedAt: timestamp("updated_at").defaultNow().notNull(),
-});
+export const recipes = pgTable(
+  "recipes",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    userId: text("user_id"),
+    ownerDisplayName: text("owner_display_name"),
+    slug: text("slug").notNull().unique(),
+    title: text("title").notNull(),
+    description: text("description"),
+    servings: integer("servings"),
+    prepTimeMins: integer("prep_time_mins"),
+    cookTimeMins: integer("cook_time_mins"),
+    imageUrl: text("image_url"),
+    imagePublicId: text("image_public_id"),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  },
+  (table) => [unique("recipes_title_unique").on(table.title)],
+);
 
 export const recipeIngredients = pgTable("recipe_ingredients", {
   id: uuid("id").primaryKey().defaultRandom(),
