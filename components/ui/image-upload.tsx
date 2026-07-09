@@ -101,11 +101,13 @@ export function ImageUpload({
         type="hidden"
         value={publicIdField.value as string | undefined}
       />
-      <p className="text-xs">
+      <p className="mb-2 text-xs">
         Upload to Cloudinary or paste any external image URL.
       </p>
+      <Label htmlFor="recipe-image-file">Select image file</Label>
       <input
         // File input for selecting an image file
+        // Styled to look like a button and display the selected file name
         // Displays a file name when a file is selected
         id="recipe-image-file"
         ref={imageInputRef}
@@ -115,16 +117,9 @@ export function ImageUpload({
           setSelectedFile(e.target.files?.[0] ?? null);
           setUploadError(null);
         }}
-        className="text-sm"
+        className="cursor-pointer text-sm file:mr-3 file:cursor-pointer file:rounded-md file:border file:px-4 file:py-2"
       />
-      <div className="flex w-full gap-2">
-        <Label
-          // Clickable label for the file input, styled as a button
-          htmlFor="recipe-image-file"
-          className="text-foreground flex-1 cursor-pointer items-center justify-center rounded-md border px-4 py-2 text-center text-sm font-normal disabled:cursor-default disabled:opacity-50"
-        >
-          Select image file
-        </Label>
+      <div className="flex gap-2">
         <Button
           type="button"
           variant="secondary"
@@ -135,20 +130,21 @@ export function ImageUpload({
         >
           {isUploading ? "Uploading..." : "Upload image"}
         </Button>
+        {field.value ? (
+          <Button
+            type="button"
+            variant="destructive-secondary"
+            onClick={() => {
+              field.onChange("");
+              publicIdField.onChange("");
+              setUploadError(null);
+            }}
+            className="flex-1"
+          >
+            Remove image
+          </Button>
+        ) : null}
       </div>
-      {field.value ? (
-        <Button
-          type="button"
-          variant="destructive-secondary"
-          onClick={() => {
-            field.onChange("");
-            publicIdField.onChange("");
-            setUploadError(null);
-          }}
-        >
-          Remove image
-        </Button>
-      ) : null}
       <FieldErrorMessage
         text={uploadError ?? undefined}
         id="image-upload-error"
