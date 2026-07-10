@@ -3,6 +3,8 @@ import { Main } from "@/components/main";
 import { getPublicRecipes } from "@/lib/recipes";
 import { Suspense } from "react";
 
+// TODO: Printable recipe
+
 export default async function Home({
   searchParams,
 }: {
