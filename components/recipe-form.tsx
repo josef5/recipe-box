@@ -7,12 +7,12 @@ import { Ingredient } from "@/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
-import { Controller, useFieldArray, useForm } from "react-hook-form";
+import { useFieldArray, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { Button } from "./ui/button";
 import { FieldErrorMessage } from "./ui/field-error-mesage";
 import { ImageUpload } from "./ui/image-upload";
-import { IngredientCombobox } from "./ui/ingredient-combobox";
+import { IngredientFieldset } from "./ui/ingredient-fieldset";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 
@@ -264,98 +264,19 @@ export function RecipeForm({
         </div>
         <div className="flex flex-col gap-4">
           {ingredientFields.map((ingredient, index) => (
-            <div key={ingredient.id} className="">
-              <div className="grid grid-cols-2 gap-4">
-                <div className="col-span-full flex flex-col gap-1.5">
-                  <Label htmlFor={`ingredient-name-${index}`}>Ingredient</Label>
-                  <Controller
-                    control={control}
-                    name={`ingredients.${index}.name`}
-                    render={({ field }) => (
-                      <IngredientCombobox
-                        id={`ingredient-name-${index}`}
-                        value={field.value ?? ""}
-                        suggestions={ingredientSuggestions ?? []}
-                        inputRef={field.ref}
-                        onBlur={field.onBlur}
-                        onChange={field.onChange}
-                        ariaDescribedBy={
-                          errors.ingredients?.[index]?.name
-                            ? `ingredient-name-${index}-error`
-                            : undefined
-                        }
-                        ariaInvalid={Boolean(errors.ingredients?.[index]?.name)}
-                        onSelect={(selectedIngredient) => {
-                          const unitField =
-                            `ingredients.${index}.unit` as const;
-                          const currentUnit = getValues(unitField)?.trim();
-
-                          if (currentUnit || !selectedIngredient.defaultUnit) {
-                            return;
-                          }
-
-                          setValue(unitField, selectedIngredient.defaultUnit, {
-                            shouldDirty: true,
-                            shouldValidate: true,
-                          });
-                        }}
-                        className="w-full"
-                      />
-                    )}
-                  />
-                  <FieldErrorMessage
-                    text={errors.ingredients?.[index]?.name?.message}
-                    id={`ingredient-name-${index}-error`}
-                  />
-                </div>
-                <div className="flex flex-col gap-1.5">
-                  <Label htmlFor={`ingredient-amount-${index}`}>Amount</Label>
-                  <Input
-                    id={`ingredient-amount-${index}`}
-                    type="number"
-                    {...register(`ingredients.${index}.amount`)}
-                  />
-                  <FieldErrorMessage
-                    text={errors.ingredients?.[index]?.amount?.message}
-                    id={`ingredient-amount-${index}-error`}
-                  />
-                </div>
-                <div className="flex flex-col gap-1.5">
-                  <Label htmlFor={`ingredient-unit-${index}`}>Unit</Label>
-                  <Input
-                    id={`ingredient-unit-${index}`}
-                    {...register(`ingredients.${index}.unit`)}
-                  />
-                  <FieldErrorMessage
-                    text={errors.ingredients?.[index]?.unit?.message}
-                    id={`ingredient-unit-${index}-error`}
-                  />
-                </div>
-              </div>
-              <div className="mt-4 flex flex-col gap-1.5">
-                <Label htmlFor={`ingredient-notes-${index}`}>Notes</Label>
-                <div className="flex gap-3">
-                  <Input
-                    id={`ingredient-notes-${index}`}
-                    {...register(`ingredients.${index}.notes`)}
-                    className="w-full"
-                  />
-                  <FieldErrorMessage
-                    text={errors.ingredients?.[index]?.notes?.message}
-                    id={`ingredient-notes-${index}-error`}
-                  />
-                  <Button
-                    type="button"
-                    onClick={() => removeIngredient(index)}
-                    disabled={ingredientFields.length === 1}
-                    aria-label={`Remove ingredient ${index + 1}`}
-                    variant="destructive-secondary"
-                  >
-                    Remove
-                  </Button>
-                </div>
-              </div>
-            </div>
+            <IngredientFieldset
+              key={ingredient.id}
+              ingredient={ingredient}
+              index={index}
+              control={control}
+              errors={errors}
+              ingredientSuggestions={ingredientSuggestions ?? []}
+              getValues={getValues}
+              setValue={setValue}
+              register={register}
+              removeIngredient={removeIngredient}
+              ingredientFields={ingredientFields}
+            />
           ))}
         </div>
         <FieldErrorMessage
