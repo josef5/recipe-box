@@ -3,7 +3,6 @@ import type { Ingredient } from "@/types";
 import { useId, useRef, useState } from "react";
 import { Input } from "./input";
 
-// TODO: Pressing return resets the text
 // TODO: Collapse when added to save space
 
 /**
@@ -37,11 +36,19 @@ export function IngredientCombobox({
   const [isOpen, setIsOpen] = useState(false);
   const [highlightedIndex, setHighlightedIndex] = useState(0);
 
-  const activeOption = suggestions[highlightedIndex];
+  // Filter suggestions based on the current input value and limit to 8 results.
+  const normalizedValue = value.trim().toLocaleLowerCase();
+  const filteredSuggestions = suggestions
+    .filter((ingredient) =>
+      ingredient.name.toLocaleLowerCase().includes(normalizedValue),
+    )
+    .slice(0, 8);
+
+  const activeOption = filteredSuggestions[highlightedIndex];
 
   // Open the popup only when there are suggestions to show.
   function openSuggestions() {
-    if (suggestions.length === 0) {
+    if (filteredSuggestions.length === 0) {
       return;
     }
 
@@ -73,11 +80,11 @@ export function IngredientCombobox({
       }
 
       setHighlightedIndex((currentIndex) => {
-        if (suggestions.length === 0) {
+        if (filteredSuggestions.length === 0) {
           return 0;
         }
 
-        return (currentIndex + 1) % suggestions.length;
+        return (currentIndex + 1) % filteredSuggestions.length;
       });
       return;
     }
@@ -91,11 +98,14 @@ export function IngredientCombobox({
       }
 
       setHighlightedIndex((currentIndex) => {
-        if (suggestions.length === 0) {
+        if (filteredSuggestions.length === 0) {
           return 0;
         }
 
-        return (currentIndex - 1 + suggestions.length) % suggestions.length;
+        return (
+          (currentIndex - 1 + filteredSuggestions.length) %
+          filteredSuggestions.length
+        );
       });
       return;
     }
@@ -154,13 +164,13 @@ export function IngredientCombobox({
       >
         {isOpen ? "⏶" : "⏷"}
       </span>
-      {isOpen && suggestions.length > 0 ? (
+      {isOpen && filteredSuggestions.length > 0 ? (
         <div
           id={listboxId}
           role="listbox"
           className="bg-surface absolute z-20 mt-3 max-h-64 w-full overflow-y-auto rounded-md border p-1 shadow-lg"
         >
-          {suggestions.map((ingredient, index) => (
+          {filteredSuggestions.map((ingredient, index) => (
             <button
               type="button"
               key={ingredient.id}
