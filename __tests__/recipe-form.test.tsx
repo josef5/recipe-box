@@ -195,7 +195,7 @@ describe("RecipeForm", () => {
 
     await waitFor(() => {
       expect(screen.getByRole("option", { name: /flour/i })).toBeVisible();
-      expect(screen.getByRole("option", { name: /salt/i })).toBeVisible();
+      expect(screen.queryByRole("option", { name: /salt/i })).toBeNull();
     });
 
     fireEvent.click(screen.getByRole("option", { name: /flour/i }));
