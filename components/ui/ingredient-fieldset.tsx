@@ -18,6 +18,7 @@ import { Input } from "./input";
 import { Label } from "./label";
 
 export function IngredientFieldset({
+  title,
   ingredient,
   ingredientSuggestions,
   index,
@@ -29,6 +30,7 @@ export function IngredientFieldset({
   removeIngredient,
   ingredientFields,
 }: {
+  title?: string;
   ingredient: FieldArrayWithId<Ingredient>;
   ingredientSuggestions: Ingredient[];
   index: number;

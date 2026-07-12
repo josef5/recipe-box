@@ -7,7 +7,7 @@ import { Ingredient } from "@/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
-import { useFieldArray, useForm } from "react-hook-form";
+import { useFieldArray, useForm, useWatch } from "react-hook-form";
 import { toast } from "sonner";
 import { Button } from "./ui/button";
 import { FieldErrorMessage } from "./ui/field-error-mesage";
@@ -63,6 +63,7 @@ export function RecipeForm({
 
   const router = useRouter();
   const mode = initialValues ? "edit" : "create";
+  const ingredientFieldsData = useWatch({ control, name: "ingredients" });
   const canSubmit = isValid && (mode === "create" || isDirty) && !isSubmitting;
 
   useEffect(() => {
@@ -263,21 +264,31 @@ export function RecipeForm({
           </Button>
         </div>
         <div className="flex flex-col gap-4">
-          {ingredientFields.map((ingredient, index) => (
-            <IngredientFieldset
-              key={ingredient.id}
-              ingredient={ingredient}
-              index={index}
-              control={control}
-              errors={errors}
-              ingredientSuggestions={ingredientSuggestions ?? []}
-              getValues={getValues}
-              setValue={setValue}
-              register={register}
-              removeIngredient={removeIngredient}
-              ingredientFields={ingredientFields}
-            />
-          ))}
+          {ingredientFields.map((ingredient, index) => {
+            const ingredientName = ingredientFieldsData?.[index]?.name;
+            const ingredientAmount = ingredientFieldsData?.[index]?.amount;
+            const ingredientUnit = ingredientFieldsData?.[index]?.unit;
+            const ingredientTitle = ingredientName
+              ? `${ingredientName} ${ingredientAmount ?? ""} ${ingredientUnit ?? ""}`
+              : `Ingredient ${index + 1}`;
+
+            return (
+              <IngredientFieldset
+                key={ingredient.id}
+                title={ingredientTitle}
+                ingredient={ingredient}
+                index={index}
+                control={control}
+                errors={errors}
+                ingredientSuggestions={ingredientSuggestions ?? []}
+                getValues={getValues}
+                setValue={setValue}
+                register={register}
+                removeIngredient={removeIngredient}
+                ingredientFields={ingredientFields}
+              />
+            );
+          })}
         </div>
         <FieldErrorMessage
           text={errors.ingredients?.root?.message}
