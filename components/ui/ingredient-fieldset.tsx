@@ -48,14 +48,15 @@ export function IngredientFieldset({
           <Controller
             control={control}
             name={`ingredients.${index}.name`}
-            render={({ field }) => (
+            render={({ field: { ref, onBlur, onChange, value } }) => {
+              return (
               <IngredientCombobox
                 id={`ingredient-name-${index}`}
-                value={field.value ?? ""}
+                  value={value ?? ""}
                 suggestions={ingredientSuggestions ?? []}
-                inputRef={field.ref}
-                onBlur={field.onBlur}
-                onChange={field.onChange}
+                  inputRef={ref}
+                  onBlur={onBlur}
+                  onChange={onChange}
                 ariaDescribedBy={
                   errors.ingredients?.[index]?.name
                     ? `ingredient-name-${index}-error`
