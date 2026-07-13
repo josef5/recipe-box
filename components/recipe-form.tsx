@@ -72,6 +72,7 @@ export function RecipeForm({
 
   const {
     fields: ingredientFields,
+    move: moveIngredient,
     append: appendIngredient,
     remove: removeIngredient,
   } = useFieldArray({ control, name: "ingredients" });
@@ -285,6 +286,7 @@ export function RecipeForm({
                 setValue={setValue}
                 register={register}
                 removeIngredient={removeIngredient}
+                moveIngredient={moveIngredient}
                 ingredientFields={ingredientFields}
               />
             );

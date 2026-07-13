@@ -28,6 +28,7 @@ export function IngredientFieldset({
   getValues,
   setValue,
   register,
+  moveIngredient,
   removeIngredient,
   ingredientFields,
 }: {
@@ -40,6 +41,7 @@ export function IngredientFieldset({
   getValues: UseFormGetValues<RecipeInput>;
   setValue: UseFormSetValue<RecipeInput>;
   register: UseFormRegister<RecipeInput>;
+  moveIngredient: (from: number, to: number) => void;
   removeIngredient: (index: number) => void;
   ingredientFields: FieldArrayWithId<Ingredient>[];
 }) {
@@ -167,6 +169,24 @@ export function IngredientFieldset({
               type="button"
               size="sm"
               variant="secondary"
+              disabled={index === 0}
+              onClick={() => moveIngredient(index, index - 1)}
+            >
+              ↑
+            </Button>
+            <Button
+              type="button"
+              size="sm"
+              variant="secondary"
+              disabled={index === ingredientFields.length - 1}
+              onClick={() => moveIngredient(index, index + 1)}
+            >
+              ↓
+            </Button>
+            <Button
+              type="button"
+              size="sm"
+              variant="secondary"
               onClick={() => setIsOpen(true)}
             >
               Edit
@@ -175,7 +195,7 @@ export function IngredientFieldset({
               type="button"
               size="sm"
               variant="destructive-secondary"
-              onClick={() => setIsOpen(true)}
+              onClick={() => removeIngredient(index)}
             >
               Delete
             </Button>
