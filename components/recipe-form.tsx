@@ -265,11 +265,11 @@ export function RecipeForm({
         </div>
         <div className="flex flex-col gap-4">
           {ingredientFields.map((ingredient, index) => {
-            const ingredientName = ingredientFieldsData?.[index]?.name;
-            const ingredientAmount = ingredientFieldsData?.[index]?.amount;
-            const ingredientUnit = ingredientFieldsData?.[index]?.unit;
-            const ingredientTitle = ingredientName
-              ? `${ingredientName} ${ingredientAmount ?? ""} ${ingredientUnit ?? ""}`
+            const { name, amount, unit } = ingredientFieldsData?.[index] ?? {};
+
+            // Create a title for the ingredient fieldset based on the name, amount, and unit. Only show the amount and unit if they are not empty.If the name is empty, use a default title with the index.
+            const ingredientTitle = name
+              ? `${name}${amount ? `: ${amount ?? ""} ${unit ?? ""}` : ""}`
               : `Ingredient ${index + 1}`;
 
             return (
