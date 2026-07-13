@@ -45,7 +45,11 @@ export function IngredientFieldset({
   removeIngredient: (index: number) => void;
   ingredientFields: FieldArrayWithId<Ingredient>[];
 }) {
-  const [isOpen, setIsOpen] = useState(true);
+  const isNameEmpty =
+    String(getValues(`ingredients.${index}.name`) ?? "").trim().length === 0;
+
+  // Initialize the isOpen state based on whether the ingredient name is empty. If the name is empty, the fieldset will be open by default to prompt the user to fill it in.
+  const [isOpen, setIsOpen] = useState(isNameEmpty);
 
   return (
     <div key={ingredient.id}>
