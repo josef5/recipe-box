@@ -3,8 +3,6 @@ import type { Ingredient } from "@/types";
 import { useId, useRef, useState } from "react";
 import { Input } from "./input";
 
-// TODO: Collapse when added to save space
-
 /**
  * Headless combobox for ingredient name entry with keyboard support.
  */
