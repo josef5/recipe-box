@@ -15,6 +15,7 @@ import { ImageUpload } from "./ui/image-upload";
 import { IngredientFieldset } from "./ui/ingredient-fieldset";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
+import { StepFieldset } from "./ui/step-fieldset";
 
 // TODO: Layout shifts from sidebar button loading text
 // TODO: Add notes for whole recipe
@@ -315,35 +316,15 @@ export function RecipeForm({
         </div>
         <div className="flex flex-col gap-4">
           {stepFields.map((step, index) => (
-            <div key={step.id} className="">
-              <Label
-                htmlFor={`step-instruction-${index}`}
-                className="mb-2 block"
-              >
-                Step {index + 1}
-              </Label>
-              <div className="mb-2 flex items-start gap-3">
-                <textarea
-                  id={`step-instruction-${index}`}
-                  rows={3}
-                  {...register(`steps.${index}.instruction`)}
-                  className="bg-input flex-1 rounded-md px-3 py-2 text-sm"
-                />
-                <Button
-                  type="button"
-                  variant="destructive-secondary"
-                  disabled={stepFields.length === 1}
-                  onClick={() => removeStep(index)}
-                  aria-label={`Remove step ${index + 1}`}
-                >
-                  Remove
-                </Button>
-              </div>
-              <FieldErrorMessage
-                text={errors.steps?.[index]?.instruction?.message}
-                id={`step-instruction-${index}-error`}
-              />
-            </div>
+            <StepFieldset
+              key={step.id}
+              step={step}
+              index={index}
+              register={register}
+              removeStep={removeStep}
+              stepFields={stepFields}
+              errors={errors}
+            />
           ))}
           <FieldErrorMessage
             text={errors.steps?.root?.message}
