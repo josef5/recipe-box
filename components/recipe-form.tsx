@@ -80,6 +80,7 @@ export function RecipeForm({
 
   const {
     fields: stepFields,
+    move: moveStep,
     append: appendStep,
     remove: removeStep,
   } = useFieldArray({ control, name: "steps" });
@@ -322,6 +323,7 @@ export function RecipeForm({
               index={index}
               register={register}
               removeStep={removeStep}
+              moveStep={moveStep}
               stepFields={stepFields}
               errors={errors}
             />

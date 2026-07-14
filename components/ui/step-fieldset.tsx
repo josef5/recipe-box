@@ -13,6 +13,7 @@ export function StepFieldset({
   index,
   register,
   removeStep,
+  moveStep,
   stepFields,
   errors,
 }: {
@@ -20,6 +21,7 @@ export function StepFieldset({
   index: number;
   register: UseFormRegister<RecipeInput>;
   removeStep: (index: number) => void;
+  moveStep: (from: number, to: number) => void;
   stepFields: FieldArrayWithId<RecipeInput["steps"]>[];
   errors: FieldErrors<RecipeInput>;
 }) {
@@ -35,15 +37,40 @@ export function StepFieldset({
           {...register(`steps.${index}.instruction`)}
           className="bg-input flex-1 rounded-md px-3 py-2 text-sm"
         />
-        <Button
-          type="button"
-          variant="destructive-secondary"
-          disabled={stepFields.length === 1}
-          onClick={() => removeStep(index)}
-          aria-label={`Remove step ${index + 1}`}
-        >
-          Remove
-        </Button>
+        <div className="flex flex-col gap-2">
+          <div className="flex gap-2">
+            <Button
+              type="button"
+              size="sm"
+              variant="secondary"
+              disabled={index === 0}
+              onClick={() => moveStep(index, index - 1)}
+              className="flex-1"
+            >
+              ↑
+            </Button>
+            <Button
+              type="button"
+              size="sm"
+              variant="secondary"
+              disabled={index === stepFields.length - 1}
+              onClick={() => moveStep(index, index + 1)}
+              className="flex-1"
+            >
+              ↓
+            </Button>
+          </div>
+          <Button
+            type="button"
+            variant="destructive-secondary"
+            size="sm"
+            disabled={stepFields.length === 1}
+            onClick={() => removeStep(index)}
+            aria-label={`Remove step ${index + 1}`}
+          >
+            Delete
+          </Button>
+        </div>
       </div>
       <FieldErrorMessage
         text={errors.steps?.[index]?.instruction?.message}
