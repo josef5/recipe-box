@@ -128,7 +128,7 @@ export function ImageUpload({
           aria-busy={isUploading}
           className="flex-1"
         >
-          {isUploading ? "Uploading..." : "Upload image"}
+          {isUploading ? "..." : "Upload image"}
         </Button>
         {field.value ? (
           <Button

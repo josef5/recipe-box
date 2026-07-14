@@ -17,7 +17,6 @@ import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 import { StepFieldset } from "./ui/step-fieldset";
 
-// TODO: Layout shifts from sidebar button loading text
 // TODO: Add notes for whole recipe
 
 export function RecipeForm({

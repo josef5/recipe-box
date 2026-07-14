@@ -82,7 +82,7 @@ export function AddUserForm({
         <FieldErrorMessage text={errors.provisionalPassword?.message} />
       </div>
       <Button type="submit" disabled={isCreating || !canSubmit}>
-        {isCreating ? "Creating..." : "Create user"}
+        {isCreating ? "..." : "Create user"}
       </Button>
     </form>
   );

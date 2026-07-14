@@ -29,7 +29,7 @@ export function DeleteRecipeButton({
         variant="destructive-secondary"
         {...props}
       >
-        {isPending ? "Deleting..." : "Delete"}
+        {isPending ? "..." : "Delete"}
       </Button>
       <Dialog
         title="Delete this recipe? This cannot be undone."

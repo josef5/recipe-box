@@ -112,7 +112,7 @@ export function ChangePasswordForm({ onSuccess }: { onSuccess?: () => void }) {
         disabled={isSubmitting || !canSubmit}
         className="mt-2"
       >
-        {isSubmitting ? "Updating..." : "Update password"}
+        {isSubmitting ? "..." : "Update password"}
       </Button>
     </form>
   );

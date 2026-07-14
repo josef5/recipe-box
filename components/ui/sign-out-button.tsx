@@ -24,7 +24,7 @@ export function SignOutButton() {
       disabled={isPending}
       className="cursor-pointer disabled:opacity-70"
     >
-      {isPending ? "Signing out..." : "Sign out"}
+      {isPending ? "..." : "Sign out"}
     </button>
   );
 }

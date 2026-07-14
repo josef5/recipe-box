@@ -113,7 +113,7 @@ export function EditableAccountName({
                     disabled={!canSubmit}
                     className="min-h-full min-w-14"
                   >
-                    {isSubmitting ? "Saving..." : "Save"}
+                    {isSubmitting ? "..." : "Save"}
                   </Button>
                   <Button
                     type="button"
