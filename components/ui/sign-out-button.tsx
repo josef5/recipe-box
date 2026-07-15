@@ -2,6 +2,7 @@
 
 import { authClient } from "@/lib/auth/client";
 import { useState } from "react";
+import { Button } from "./button";
 
 export function SignOutButton() {
   const [isPending, setIsPending] = useState(false);
@@ -18,13 +19,16 @@ export function SignOutButton() {
   }
 
   return (
-    <button
+    <Button
       type="button"
       onClick={handleSignOut}
       disabled={isPending}
-      className="cursor-pointer disabled:opacity-70"
+      showSpinner={isPending}
+      variant="secondary"
+      size="sm"
+      className="cursor-pointer font-bold disabled:opacity-70"
     >
-      {isPending ? "..." : "Sign out"}
-    </button>
+      Sign out
+    </Button>
   );
 }
