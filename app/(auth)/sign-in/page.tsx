@@ -137,9 +137,10 @@ function SignInForm() {
         <Button
           type="submit"
           disabled={isSubmitting || !canSubmit}
+          showSpinner={isSubmitting}
           className="mt-4 min-w-1/2"
         >
-          {isSubmitting ? "Signing in..." : "Sign in"}
+          Sign in
         </Button>
       </form>
     </Main>

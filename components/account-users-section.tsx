@@ -206,13 +206,10 @@ export function AccountUsersSection({
                       setDeletingUserId(user.id);
                       dialogRef.current?.showModal();
                     }}
+                    showSpinner={isBeingDeleted}
                     className="w-full"
                   >
-                    {isCurrentUser
-                      ? "Current user"
-                      : isBeingDeleted
-                        ? "Deleting..."
-                        : "Delete"}
+                    {isCurrentUser ? "Current user" : "Delete"}
                   </Button>
                 </td>
               </tr>
