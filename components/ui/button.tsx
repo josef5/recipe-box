@@ -5,7 +5,7 @@ import { cva, type VariantProps } from "class-variance-authority";
 import Link from "next/link";
 
 const buttonVariants = cva(
-  "rounded-md cursor-pointer items-center justify-center text-center text-sm disabled:cursor-default disabled:opacity-50",
+  "rounded-md cursor-pointer items-center justify-center text-center text-sm disabled:cursor-default disabled:opacity-50 relative",
   {
     variants: {
       variant: {
@@ -36,6 +36,7 @@ type CommonType = {
   size?: "sm" | "md" | "lg";
   className?: string;
   disabled?: boolean;
+  showSpinner?: boolean;
 } & VariantProps<typeof buttonVariants>;
 
 type ButtonType = CommonType &
@@ -61,6 +62,7 @@ export function Button(props: Props) {
       className,
       ref,
       disabled,
+      showSpinner = false,
       href: _href,
       children,
       ...buttonProps
@@ -74,7 +76,11 @@ export function Button(props: Props) {
         disabled={disabled}
         {...buttonProps}
       >
-        {label ?? children}
+        {/* The spinner is absolutely positioned to prevent layout shift */}
+        {showSpinner && <LoadingSpinner />}
+        <div className={cn(showSpinner && "opacity-0")}>
+          {label ?? children}
+        </div>
       </button>
     );
   }
@@ -87,6 +93,7 @@ export function Button(props: Props) {
     className,
     ref,
     disabled,
+    showSpinner = false,
     children,
     ...linkProps
   } = props;
@@ -101,7 +108,27 @@ export function Button(props: Props) {
       onClick={disabled ? (e) => e.preventDefault() : linkProps.onClick}
       {...linkProps}
     >
-      {label ?? children}
+      {showSpinner && <LoadingSpinner />}
+      <div className={cn(showSpinner && "opacity-0")}>{label ?? children}</div>
     </Link>
+  );
+}
+
+function LoadingSpinner() {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="20"
+      height="20"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className="lucide lucide-loader-circle-icon lucide-loader-circle absolute top-1/2 left-1/2 mx-auto -translate-x-1/2 -translate-y-1/2 animate-spin"
+    >
+      <path d="M21 12a9 9 0 1 1-6.219-8.56" />
+    </svg>
   );
 }
