@@ -44,7 +44,12 @@ export function Menu() {
               <SignOutButton />
             </>
           ) : (
-            <Button href="/sign-in" variant="secondary" size="sm">
+            <Button
+              href="/sign-in"
+              variant="secondary"
+              size="sm"
+              className="font-bold"
+            >
               Sign in
             </Button>
           )}
