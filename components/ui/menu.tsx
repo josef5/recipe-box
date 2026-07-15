@@ -4,6 +4,7 @@ import { authClient } from "@/lib/auth/client";
 import Link from "next/link";
 import { SignOutButton } from "@/components/ui/sign-out-button";
 import { usePathname } from "next/navigation";
+import { Button } from "./button";
 
 export function Menu() {
   const { data: session, isPending } = authClient.useSession();
@@ -43,7 +44,9 @@ export function Menu() {
               <SignOutButton />
             </>
           ) : (
-            <Link href="/sign-in">Sign in</Link>
+            <Button href="/sign-in" variant="secondary" size="sm">
+              Sign in
+            </Button>
           )}
         </div>
       )}
