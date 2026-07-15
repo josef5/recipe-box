@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { TOAST_OPTIONS } from "@/constants/toast-options";
 import { SignInInput, signInSchema } from "@/lib/schemas/auth";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { Suspense } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -55,7 +55,6 @@ function SignInForm() {
     getSafeRedirectPath(searchParams.get("redirectTo")),
     "signed-in",
   );
-  const router = useRouter();
 
   async function onSubmit({ email, password }: SignInInput) {
     try {
@@ -78,7 +77,8 @@ function SignInForm() {
       reset();
 
       if (callbackURL) {
-        router.push(callbackURL);
+        // Using window.location.assign instead of router.push to ensure the sign-in state is updated on the sign-in page.
+        window.location.assign(callbackURL);
       }
     } catch (error) {
       toast.error(
