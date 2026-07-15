@@ -81,8 +81,12 @@ export function AddUserForm({
         />
         <FieldErrorMessage text={errors.provisionalPassword?.message} />
       </div>
-      <Button type="submit" disabled={isCreating || !canSubmit}>
-        {isCreating ? "..." : "Create user"}
+      <Button
+        type="submit"
+        disabled={isCreating || !canSubmit}
+        showSpinner={isCreating}
+      >
+        Create user
       </Button>
     </form>
   );

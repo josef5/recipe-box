@@ -111,8 +111,9 @@ export function ChangePasswordForm({ onSuccess }: { onSuccess?: () => void }) {
         type="submit"
         disabled={isSubmitting || !canSubmit}
         className="mt-2"
+        showSpinner={isSubmitting}
       >
-        {isSubmitting ? "..." : "Update password"}
+        Update password
       </Button>
     </form>
   );

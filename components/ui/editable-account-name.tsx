@@ -111,9 +111,10 @@ export function EditableAccountName({
                     variant="primary"
                     size="sm"
                     disabled={!canSubmit}
+                    showSpinner={isSubmitting}
                     className="min-h-full min-w-14"
                   >
-                    {isSubmitting ? "..." : "Save"}
+                    Save
                   </Button>
                   <Button
                     type="button"

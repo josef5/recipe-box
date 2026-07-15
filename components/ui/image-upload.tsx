@@ -124,11 +124,12 @@ export function ImageUpload({
           type="button"
           variant="secondary"
           disabled={!selectedFile || isUploading}
+          showSpinner={isUploading}
           onClick={uploadSelectedImage}
           aria-busy={isUploading}
           className="flex-1"
         >
-          {isUploading ? "..." : "Upload image"}
+          Upload image
         </Button>
         {field.value ? (
           <Button

@@ -27,9 +27,10 @@ export function DeleteRecipeButton({
           dialogRef.current?.showModal();
         }}
         variant="destructive-secondary"
+        showSpinner={isPending}
         {...props}
       >
-        {isPending ? "..." : "Delete"}
+        Delete
       </Button>
       <Dialog
         title="Delete this recipe? This cannot be undone."
