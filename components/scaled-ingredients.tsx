@@ -132,6 +132,12 @@ export function ScaledIngredients({
   );
 }
 
+/**
+ * Renders a list of scaled ingredients based on the selected servings.
+ *
+ * @param param0 - The props for the component.
+ * @returns A React element representing the scaled ingredients list.
+ */
 export function ScaledIngredientsList({
   recipeIngredients,
   baseServings,
