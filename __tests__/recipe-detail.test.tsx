@@ -10,6 +10,18 @@ vi.mock("@/components/menu", () => ({
   ),
 }));
 
+const mocks = vi.hoisted(() => ({
+  useRouter: vi.fn(),
+}));
+
+vi.mock("next/navigation", () => ({
+  useRouter: mocks.useRouter,
+  usePathname: () => "/",
+  useSearchParams: () => new URLSearchParams(),
+}));
+
+mocks.useRouter.mockReturnValue({ replace: () => {} });
+
 describe("RecipeDetail", () => {
   it("renders recipe metadata, ingredients, and steps", () => {
     render(
