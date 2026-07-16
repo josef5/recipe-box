@@ -5,6 +5,7 @@ import { Header } from "./header";
 import { ScaledIngredientsList } from "./scaled-ingredients-list";
 import { Sidebar } from "./sidebar";
 import { EditRecipeButton } from "./ui/edit-recipe-button";
+import { PrintButton } from "./ui/print-button";
 import { RecipeImage } from "./ui/recipe-image";
 
 // TODO: Allow add to favourites
@@ -61,8 +62,9 @@ export function RecipeDetail({
         <EditRecipeButton
           recipeUserId={recipe.userId ?? null}
           editHref={`/recipes/${recipe.slug}/edit`}
-          className="mb-3 w-full"
+          className="w-full"
         />
+        <PrintButton recipeSlug={recipe.slug ?? ""} />
         <div className="flex flex-wrap gap-x-2 gap-y-0 text-sm sm:flex-col">
           <p>Serves: {baseServings}</p>
           {recipe.prepTimeMins && <p>Prep time: {recipe.prepTimeMins}m</p>}
