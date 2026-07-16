@@ -1,7 +1,5 @@
-import { FALLBACK_RECIPE_IMAGE_SRC } from "@/constants";
 import { formatStableDate } from "@/lib/utils";
 import { Recipe } from "@/types";
-import Image from "next/image";
 import Link from "next/link";
 import { use } from "react";
 import { Header } from "./header";
@@ -10,6 +8,7 @@ import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 import { NewRecipeButton } from "./ui/new-recipe-button";
+import { RecipeImage } from "./ui/recipe-image";
 
 export function HomePageContent({
   recipesPromise,
@@ -87,14 +86,14 @@ function RecipeCard({ recipe }: { recipe: Recipe }) {
   return (
     <li key={recipe.id} className="bg-surface rounded-3xl drop-shadow-lg">
       <Link href={`/recipes/${recipe.slug}`} className="block p-4">
-        <Image
-          src={recipe.imageUrl || FALLBACK_RECIPE_IMAGE_SRC}
+        <RecipeImage
+          src={recipe.imageUrl}
           alt={`${recipe.title} photo`}
           width={1200}
           height={800}
           sizes="(max-width: 640px) 100vw, 720px"
           loading="eager"
-          className="mb-3 h-61 w-full rounded-lg border object-cover"
+          className="mb-3 h-61 w-full rounded-lg object-cover"
         />
         <div className="px-1">
           <h2 className="mb-2 font-bold">{recipe.title}</h2>

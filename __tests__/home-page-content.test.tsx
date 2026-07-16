@@ -1,6 +1,6 @@
 import { HomePageContent } from "@/components/home-page-content";
 import { createFulfilledThenable } from "@/test/fulfilled-thenable";
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { axe } from "jest-axe";
 import { describe, expect, it } from "vitest";
 import { FALLBACK_RECIPE_IMAGE_SRC } from "@/constants";
@@ -97,5 +97,31 @@ describe("HomePageContent", () => {
     );
     expect(screen.getByText("By Jamie Oliver")).toBeVisible();
     expect(screen.getByText("By Unknown cook")).toBeVisible();
+  });
+
+  it("falls back to the placeholder when a remote image fails to load", () => {
+    renderHomePageContent(
+      [
+        {
+          id: "recipe-1",
+          slug: "tomato-soup",
+          title: "Tomato Soup",
+          description: "Rich and cozy.",
+          imageUrl: "https://example.com/tomato-soup.jpg",
+          ownerDisplayName: "Jamie Oliver",
+          createdAt: new Date("2026-01-01T00:00:00.000Z"),
+          updatedAt: new Date("2026-01-02T00:00:00.000Z"),
+          userId: "user-1",
+          recipeIngredients: [],
+          steps: [],
+        },
+      ],
+      "",
+    );
+
+    const image = screen.getByRole("img", { name: "Tomato Soup photo" });
+    fireEvent.error(image);
+
+    expect(image).toHaveAttribute("src", FALLBACK_RECIPE_IMAGE_SRC);
   });
 });

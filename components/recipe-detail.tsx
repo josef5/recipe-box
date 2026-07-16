@@ -1,12 +1,11 @@
-import { FALLBACK_RECIPE_IMAGE_SRC } from "@/constants";
 import { Recipe } from "@/types";
-import Image from "next/image";
 import { notFound } from "next/navigation";
 import { use } from "react";
 import { Header } from "./header";
 import { ScaledIngredientsList } from "./scaled-ingredients-list";
 import { Sidebar } from "./sidebar";
 import { EditRecipeButton } from "./ui/edit-recipe-button";
+import { RecipeImage } from "./ui/recipe-image";
 
 // TODO: Allow add to favourites
 
@@ -27,14 +26,14 @@ export function RecipeDetail({
         description={`By ${recipe.ownerDisplayName ?? "Unknown cook"}`}
       />
       <div className="bg-surface flex flex-col items-start gap-3 rounded-3xl p-4 pb-10 text-sm drop-shadow-lg sm:col-start-1 sm:row-start-2">
-        <Image
-          src={recipe.imageUrl || FALLBACK_RECIPE_IMAGE_SRC}
+        <RecipeImage
+          src={recipe.imageUrl}
           alt={`${recipe.title} photo`}
           width={1600}
           height={1066}
           loading="eager"
           sizes="(max-width: 640px) 100vw, 900px"
-          className="mb-2 max-h-112 w-full rounded-md border object-cover"
+          className="mb-2 max-h-112 w-full rounded-md object-cover"
         />
         <div className="flex flex-col gap-3 px-1">
           {recipe.description && (
