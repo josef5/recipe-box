@@ -3,6 +3,7 @@
 import { RecipeIngredient } from "@/types";
 import { useMemo, useState } from "react";
 import { Label } from "./ui/label";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 const DEFAULT_SERVINGS = 4;
 const MIN_DROPDOWN_SERVINGS = 1;
@@ -47,6 +48,14 @@ function scaleIngredientAmount(
   );
 }
 
+/**
+ * Renders a list of recipe ingredients with scaled amounts based on the selected servings and applies the servings adjustment to the parent page's URL query parameters.
+ *
+ * @param param0 - The component props.
+ * @param param0.recipeIngredients - The list of recipe ingredients.
+ * @param param0.baseServings - The base number of servings for the recipe.
+ * @returns A React element displaying the scaled ingredients list.
+ */
 export function ScaledIngredientsList({
   recipeIngredients,
   baseServings,
@@ -55,9 +64,27 @@ export function ScaledIngredientsList({
   baseServings: number | null | undefined;
 }) {
   const normalizedBaseServings = normalizeBaseServings(baseServings);
-  const [selectedServings, setSelectedServings] = useState(
-    normalizedBaseServings,
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
+  const router = useRouter();
+  const initialFromUrl = Number.parseInt(
+    searchParams.get("servings") ?? "",
+    10,
   );
+  const initialServings =
+    Number.isFinite(initialFromUrl) && initialFromUrl > 0
+      ? initialFromUrl
+      : normalizedBaseServings;
+
+  const [selectedServings, setSelectedServings] = useState(initialServings);
+
+  function handleServingsChange(nextServings: number) {
+    setSelectedServings(nextServings);
+
+    const next = new URLSearchParams(searchParams.toString());
+    next.set("servings", String(nextServings));
+    router.replace(`${pathname}?${next.toString()}`, { scroll: false });
+  }
 
   const servingsOptions = useMemo(() => {
     const options = Array.from(
@@ -85,7 +112,7 @@ export function ScaledIngredientsList({
           id="servings-adjust"
           value={selectedServings}
           onChange={(event) => {
-            setSelectedServings(Number(event.target.value));
+            handleServingsChange(Number(event.target.value));
           }}
           className="rounded-md border px-2 py-0.5 text-sm"
         >
