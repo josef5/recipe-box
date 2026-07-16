@@ -1,19 +1,14 @@
 import SignInPage from "@/app/(auth)/sign-in/page";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { axe } from "jest-axe";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 const mocks = vi.hoisted(() => ({
   pathname: "/",
   search: "",
-  replace: vi.fn(),
   signInAction: vi.fn(),
-  redirectTo: "/",
+  locationAssign: vi.fn(),
   toastError: vi.fn(),
-  useRouter: vi.fn(),
-  useSearchParams: vi.fn(() => ({
-    get: vi.fn(() => new URLSearchParams().get("redirectTo")),
-  })),
 }));
 
 vi.mock("@/lib/auth/client", () => ({
@@ -29,10 +24,6 @@ vi.mock("@/actions/auth", () => ({
 }));
 
 vi.mock("next/navigation", () => ({
-  usePathname: () => mocks.pathname,
-  useRouter: () => ({
-    replace: mocks.replace,
-  }),
   useSearchParams: () => new URLSearchParams(mocks.search),
 }));
 
@@ -45,13 +36,18 @@ vi.mock("sonner", () => ({
 describe("sign-in page", () => {
   beforeEach(() => {
     mocks.signInAction.mockReset();
-    mocks.signInAction.mockResolvedValue({ error: null });
-    mocks.redirectTo = "/";
+    mocks.signInAction.mockResolvedValue({ ok: true });
+    mocks.search = "";
+    mocks.locationAssign.mockReset();
     mocks.toastError.mockReset();
-    mocks.useRouter.mockReset();
-    mocks.useRouter.mockReturnValue({ push: vi.fn() });
-    mocks.useSearchParams.mockReset();
-    mocks.signInAction.mockReset();
+    vi.restoreAllMocks();
+    vi.stubGlobal("location", {
+      assign: mocks.locationAssign,
+    });
+  });
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
   });
 
   it("submits email sign-in credentials with default callback", async () => {
@@ -74,6 +70,32 @@ describe("sign-in page", () => {
         email: "cook@example.com",
         password: "secret-pass",
       });
+    });
+
+    expect(mocks.locationAssign).toHaveBeenCalledWith("/?toast=signed-in");
+  });
+
+  it("redirects to safe callback with toast after successful sign-in", async () => {
+    mocks.search = "redirectTo=%2Frecipes%2Fnew%3Ffrom%3Dmenu";
+
+    render(<SignInPage />);
+
+    fireEvent.change(screen.getByLabelText("Email"), {
+      target: { value: "cook@example.com" },
+    });
+
+    fireEvent.change(screen.getByLabelText("Password"), {
+      target: { value: "secret-pass" },
+    });
+
+    fireEvent.submit(
+      screen.getByRole("button", { name: "Sign in" }).closest("form")!,
+    );
+
+    await waitFor(() => {
+      expect(mocks.locationAssign).toHaveBeenCalledWith(
+        "/recipes/new?from=menu&toast=signed-in",
+      );
     });
   });
 
