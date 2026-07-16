@@ -22,6 +22,10 @@ export function Menu() {
             ? "auth"
             : "home";
 
+  if (pathname.endsWith("/print")) {
+    return null;
+  }
+
   return (
     <nav
       aria-label="Primary"
