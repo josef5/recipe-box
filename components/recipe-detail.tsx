@@ -2,7 +2,7 @@ import { Recipe } from "@/types";
 import { notFound } from "next/navigation";
 import { use } from "react";
 import { Header } from "./header";
-import { ScaledIngredientsList } from "./scaled-ingredients-list";
+import { ScaledIngredients } from "./scaled-ingredients";
 import { Sidebar } from "./sidebar";
 import { EditRecipeButton } from "./ui/edit-recipe-button";
 import { PrintButton } from "./ui/print-button";
@@ -42,7 +42,7 @@ export function RecipeDetail({
           )}
           <section>
             <h2 className="mb-2 font-bold">Ingredients</h2>
-            <ScaledIngredientsList
+            <ScaledIngredients
               recipeIngredients={recipe.recipeIngredients}
               baseServings={baseServings}
             />

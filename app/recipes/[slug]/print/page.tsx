@@ -1,5 +1,5 @@
 import { getRecipeBySlug } from "@/actions/recipes";
-import { ScaledIngredientsUnorderedList } from "@/components/scaled-ingredients-list";
+import { ScaledIngredientsList } from "@/components/scaled-ingredients";
 
 export default async function PrintRecipePage({
   params,
@@ -27,7 +27,7 @@ export default async function PrintRecipePage({
         <div className="mb-4">Servings: {effectiveServings}</div>
       )}
       <h2 className="mb-2 font-bold">Ingredients</h2>
-      <ScaledIngredientsUnorderedList
+      <ScaledIngredientsList
         recipeIngredients={recipe?.recipeIngredients ?? []}
         baseServings={baseServings}
         selectedServings={effectiveServings}

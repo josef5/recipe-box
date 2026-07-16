@@ -56,7 +56,7 @@ function scaleIngredientAmount(
  * @param param0.baseServings - The base number of servings for the recipe.
  * @returns A React element displaying the scaled ingredients list.
  */
-export function ScaledIngredientsList({
+export function ScaledIngredients({
   recipeIngredients,
   baseServings,
 }: {
@@ -123,7 +123,7 @@ export function ScaledIngredientsList({
           ))}
         </select>
       </div>
-      <ScaledIngredientsUnorderedList
+      <ScaledIngredientsList
         recipeIngredients={recipeIngredients}
         baseServings={baseServings}
         selectedServings={selectedServings}
@@ -132,7 +132,7 @@ export function ScaledIngredientsList({
   );
 }
 
-export function ScaledIngredientsUnorderedList({
+export function ScaledIngredientsList({
   recipeIngredients,
   baseServings,
   selectedServings,
