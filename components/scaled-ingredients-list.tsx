@@ -49,7 +49,7 @@ function scaleIngredientAmount(
 }
 
 /**
- * Renders a list of recipe ingredients with scaled amounts based on the selected servings and applies the servings adjustment to the parent page's URL query parameters.
+ * Renders an adjustable list of recipe ingredients with scaled amounts based on the selected servings and applies the servings adjustment to the parent page's URL query parameters.
  *
  * @param param0 - The component props.
  * @param param0.recipeIngredients - The list of recipe ingredients.
@@ -123,26 +123,49 @@ export function ScaledIngredientsList({
           ))}
         </select>
       </div>
-      <ul>
-        {recipeIngredients.map((recipeIngredient) => {
-          const scaledAmount = scaleIngredientAmount(
-            recipeIngredient.amount,
-            normalizedBaseServings,
-            selectedServings,
-          );
-
-          return (
-            <li key={recipeIngredient.id}>
-              {scaledAmount && <span>{scaledAmount} </span>}
-              {recipeIngredient.unit && <span>{recipeIngredient.unit} </span>}
-              <span>{recipeIngredient.ingredient.name}</span>
-              {recipeIngredient.notes && (
-                <span> ({recipeIngredient.notes})</span>
-              )}
-            </li>
-          );
-        })}
-      </ul>
+      <ScaledIngredientsUnorderedList
+        recipeIngredients={recipeIngredients}
+        baseServings={baseServings}
+        selectedServings={selectedServings}
+      />
     </>
+  );
+}
+
+export function ScaledIngredientsUnorderedList({
+  recipeIngredients,
+  baseServings,
+  selectedServings,
+  ...props
+}: {
+  recipeIngredients: RecipeIngredient[];
+  baseServings: number | null | undefined;
+  selectedServings?: number;
+} & React.ComponentPropsWithoutRef<"ul">) {
+  const normalizedBaseServings = normalizeBaseServings(baseServings);
+
+  if (!recipeIngredients || recipeIngredients.length === 0) {
+    return <p>No ingredients listed.</p>;
+  }
+
+  return (
+    <ul {...props}>
+      {recipeIngredients.map((recipeIngredient) => {
+        const scaledAmount = scaleIngredientAmount(
+          recipeIngredient.amount,
+          normalizedBaseServings,
+          selectedServings,
+        );
+
+        return (
+          <li key={recipeIngredient.id}>
+            {scaledAmount && <span>{scaledAmount} </span>}
+            {recipeIngredient.unit && <span>{recipeIngredient.unit} </span>}
+            <span>{recipeIngredient.ingredient.name}</span>
+            {recipeIngredient.notes && <span> ({recipeIngredient.notes})</span>}
+          </li>
+        );
+      })}
+    </ul>
   );
 }
