@@ -42,6 +42,7 @@ Always ensure code is free of linter and type errors before considering a task c
 
 - Where possible always store types in a global location such as ./types
 - Avoid using `any` type
+- Where appropriate, use type-only imports
 
 ## Saving Files
 
