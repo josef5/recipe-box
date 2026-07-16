@@ -1,4 +1,5 @@
 import { getRecipeBySlug } from "@/actions/recipes";
+import { ScaledIngredientsUnorderedList } from "@/components/scaled-ingredients-list";
 
 export default async function PrintRecipePage({
   params,
@@ -26,28 +27,12 @@ export default async function PrintRecipePage({
         <div className="mb-4">Servings: {effectiveServings}</div>
       )}
       <h2 className="mb-2 font-bold">Ingredients</h2>
-      <ul className="mb-4 list-disc pl-4">
-        {recipe?.recipeIngredients.map((ingredient) => {
-          const ingredientAmount =
-            ingredient.amount && !isNaN(Number(ingredient.amount))
-              ? (
-                  (Number(ingredient.amount) * effectiveServings) /
-                  baseServings
-                ).toFixed(2)
-              : null;
-
-          return (
-            <li key={ingredient.id}>
-              {ingredientAmount && (
-                <>
-                  {ingredientAmount} {ingredient.unit}{" "}
-                </>
-              )}
-              {ingredient.ingredient.name}
-            </li>
-          );
-        })}
-      </ul>
+      <ScaledIngredientsUnorderedList
+        recipeIngredients={recipe?.recipeIngredients ?? []}
+        baseServings={baseServings}
+        selectedServings={effectiveServings}
+        className="mb-4 list-disc pl-4"
+      />
       <h2 className="mb-2 font-bold">Steps</h2>
       <ol className="list-decimal pl-8">
         {recipe?.steps.map((step) => (
