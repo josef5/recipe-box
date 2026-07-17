@@ -48,6 +48,7 @@ describe("RecipeForm", () => {
         initialValues={{
           title: "Chocolate Cake",
           description: "Rich and fudgy",
+          notes: "Use room-temperature eggs.",
           servings: 8,
           prepTimeMins: 20,
           cookTimeMins: 35,
@@ -91,6 +92,7 @@ describe("RecipeForm", () => {
         initialValues={{
           title: "Chocolate Cake",
           description: "Rich and fudgy",
+          notes: "Use room-temperature eggs.",
           servings: 4,
           prepTimeMins: 20,
           cookTimeMins: 35,
@@ -119,6 +121,7 @@ describe("RecipeForm", () => {
         initialValues={{
           title: "Chocolate Cake",
           description: "Rich and fudgy",
+          notes: "Use room-temperature eggs.",
           servings: 8,
           prepTimeMins: 20,
           cookTimeMins: 35,
@@ -151,6 +154,7 @@ describe("RecipeForm", () => {
         initialValues={{
           title: "Lemon Bars",
           description: "Bright and tart",
+          notes: "Dust with sugar after cooling.",
           servings: 12,
           prepTimeMins: 15,
           cookTimeMins: 30,
@@ -169,6 +173,9 @@ describe("RecipeForm", () => {
     );
 
     expect(screen.getByLabelText("Title")).toHaveValue("Lemon Bars");
+    expect(screen.getByLabelText("Notes")).toHaveValue(
+      "Dust with sugar after cooling.",
+    );
     expect(screen.getByDisplayValue("Whisk the filling.")).toBeVisible();
     expect(screen.queryByDisplayValue("Edited first step.")).toBeNull();
   });

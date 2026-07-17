@@ -32,6 +32,7 @@ describe("RecipeDetail", () => {
           slug: "chocolate-cake",
           userId: "user-1",
           description: "A rich cake for celebrations.",
+          notes: "Cool fully before frosting.",
           imageUrl: "https://example.com/chocolate-cake.jpg",
           ownerDisplayName: "Grandma Rose",
           prepTimeMins: 25,
@@ -84,6 +85,8 @@ describe("RecipeDetail", () => {
       screen.getByRole("img", { name: "Chocolate Cake photo" }),
     ).toBeVisible();
     expect(screen.getByText("A rich cake for celebrations.")).toBeVisible();
+    expect(screen.getByText("Notes")).toBeVisible();
+    expect(screen.getByText("Cool fully before frosting.")).toBeVisible();
     expect(screen.getAllByText("By Grandma Rose")).not.toBeNull();
     expect(screen.getByText("Prep time: 25m")).toBeVisible();
     expect(screen.getByText("Cook time: 35m")).toBeVisible();
@@ -133,6 +136,7 @@ describe("RecipeDetail", () => {
           slug: "plain-rice",
           userId: null,
           description: null,
+          notes: null,
           imageUrl: null,
           ownerDisplayName: null,
           prepTimeMins: null,
