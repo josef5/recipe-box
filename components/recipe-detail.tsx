@@ -40,12 +40,6 @@ export function RecipeDetail({
           {recipe.description && (
             <p className="mb-2 text-base">{recipe.description}</p>
           )}
-          {recipe.notes && (
-            <section>
-              <h2 className="mb-2 font-bold">Notes</h2>
-              <p className="whitespace-pre-wrap">{recipe.notes}</p>
-            </section>
-          )}
           <section>
             <h2 className="mb-2 font-bold">Ingredients</h2>
             <ScaledIngredients
@@ -62,6 +56,12 @@ export function RecipeDetail({
                 ))}
             </ul>
           </section>
+          {recipe.notes && (
+            <section>
+              <h2 className="mb-2 font-bold">Notes</h2>
+              <p className="whitespace-pre-wrap">{recipe.notes}</p>
+            </section>
+          )}
         </div>
       </div>
       <Sidebar className="gap-2">

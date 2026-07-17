@@ -175,16 +175,6 @@ export function RecipeForm({
             id="description-error"
           />
         </div>
-        <div className="flex flex-col gap-1.5">
-          <Label htmlFor="notes">Notes</Label>
-          <textarea
-            id="notes"
-            {...register("notes")}
-            rows={5}
-            className="bg-input rounded-md p-3 text-sm"
-          />
-          <FieldErrorMessage text={errors.notes?.message} id="notes-error" />
-        </div>
         <div className="grid grid-cols-3 gap-4">
           <div className="flex flex-col gap-1.5">
             <Label htmlFor="servings">Servings</Label>
@@ -343,6 +333,16 @@ export function RecipeForm({
             id="steps-error"
           />
         </div>
+      </section>
+      <section className="flex flex-col gap-1.5">
+        <Label htmlFor="notes">Notes</Label>
+        <textarea
+          id="notes"
+          {...register("notes")}
+          rows={5}
+          className="bg-input rounded-md p-3 text-sm"
+        />
+        <FieldErrorMessage text={errors.notes?.message} id="notes-error" />
       </section>
     </form>
   );
