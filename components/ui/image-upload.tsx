@@ -1,12 +1,12 @@
+import { getCloudinarySignature } from "@/actions/image-upload";
 import { RecipeInput } from "@/lib/schemas/recipe";
-import Image from "next/image";
 import { useRef, useState } from "react";
 import { useController, type Control, type Path } from "react-hook-form";
 import { Button } from "./button";
 import { FieldErrorMessage } from "./field-error-mesage";
 import { Input } from "./input";
 import { Label } from "./label";
-import { getCloudinarySignature } from "@/actions/image-upload";
+import { RecipeImage } from "./recipe-image";
 
 type UploadData = {
   secure_url?: string;
@@ -151,12 +151,12 @@ export function ImageUpload({
         id="image-upload-error"
       />
       {field.value ? (
-        <Image
+        <RecipeImage
           src={field.value as string}
           alt="Preview"
           width={1200}
           height={800}
-          className="mt-2 max-h-64 w-full rounded-md border object-cover"
+          className="mt-2 max-h-64 w-full rounded-md object-cover"
           unoptimized
           loading="eager"
         />
