@@ -13,6 +13,7 @@ import {
 export const RecipeRawInputSchema = z.object({
   title: z.string().trim().min(1, "Title is required."),
   description: optionalString,
+  notes: optionalString,
   servings: optionalPositiveInt,
   prepTimeMins: optionalNonNegativeInt,
   cookTimeMins: optionalNonNegativeInt,
@@ -43,6 +44,7 @@ export function validateRecipeFormData(
   const result = RecipeRawInputSchema.safeParse({
     title: formData.get("title"),
     description: formData.get("description"),
+    notes: formData.get("notes"),
     servings: formData.get("servings"),
     prepTimeMins: formData.get("prepTimeMins"),
     cookTimeMins: formData.get("cookTimeMins"),

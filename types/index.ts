@@ -31,6 +31,7 @@ export type Recipe = {
   title: string;
   ownerDisplayName?: string | null;
   description?: string | null;
+  notes?: string | null;
   servings?: number | null;
   prepTimeMins?: number | null;
   cookTimeMins?: number | null;

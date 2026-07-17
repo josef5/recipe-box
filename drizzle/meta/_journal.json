@@ -50,6 +50,13 @@
       "when": 1783598219469,
       "tag": "0006_early_joseph",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1784289629421,
+      "tag": "0007_steady_hemingway",
+      "breakpoints": true
     }
   ]
 }

@@ -20,6 +20,7 @@ export const recipeSchema = z.object({
     .max(100, "Description is too long.")
     .trim()
     .optional(),
+  notes: z.string().trim().optional(),
   servings: optionalIntFromInput,
   prepTimeMins: optionalNonNegativeIntFromInput,
   cookTimeMins: optionalNonNegativeIntFromInput,

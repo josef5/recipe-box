@@ -35,6 +35,7 @@ export default async function EditRecipePage({
         initialValues={{
           title: recipe.title,
           description: recipe.description ?? undefined,
+          notes: recipe.notes ?? undefined,
           servings: recipe.servings ?? undefined,
           prepTimeMins: recipe.prepTimeMins ?? undefined,
           cookTimeMins: recipe.cookTimeMins ?? undefined,

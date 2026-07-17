@@ -17,8 +17,6 @@ import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 import { StepFieldset } from "./ui/step-fieldset";
 
-// TODO: Add notes for whole recipe
-
 export function RecipeForm({
   recipeId,
   initialValues,
@@ -34,6 +32,7 @@ export function RecipeForm({
   const normalizedDefaults: RecipeInput = {
     title: initialValues?.title ?? "",
     description: initialValues?.description ?? "",
+    notes: initialValues?.notes ?? "",
     servings: initialValues?.servings ?? undefined,
     prepTimeMins: initialValues?.prepTimeMins ?? undefined,
     cookTimeMins: initialValues?.cookTimeMins ?? undefined,
@@ -87,6 +86,7 @@ export function RecipeForm({
   async function onSubmit({
     title,
     description,
+    notes,
     servings,
     prepTimeMins,
     cookTimeMins,
@@ -98,6 +98,7 @@ export function RecipeForm({
     const payload = {
       title,
       description,
+      notes,
       servings,
       prepTimeMins,
       cookTimeMins,
@@ -173,6 +174,16 @@ export function RecipeForm({
             text={errors.description?.message}
             id="description-error"
           />
+        </div>
+        <div className="flex flex-col gap-1.5">
+          <Label htmlFor="notes">Notes</Label>
+          <textarea
+            id="notes"
+            {...register("notes")}
+            rows={5}
+            className="bg-input rounded-md p-3 text-sm"
+          />
+          <FieldErrorMessage text={errors.notes?.message} id="notes-error" />
         </div>
         <div className="grid grid-cols-3 gap-4">
           <div className="flex flex-col gap-1.5">

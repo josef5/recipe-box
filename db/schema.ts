@@ -25,6 +25,7 @@ export const recipes = pgTable(
     slug: text("slug").notNull().unique(),
     title: text("title").notNull(),
     description: text("description"),
+    notes: text("notes"),
     servings: integer("servings"),
     prepTimeMins: integer("prep_time_mins"),
     cookTimeMins: integer("cook_time_mins"),
