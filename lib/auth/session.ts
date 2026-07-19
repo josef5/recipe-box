@@ -64,15 +64,21 @@ function normalizeUserRole(role: unknown): string | string[] | undefined {
 }
 
 function toSignInPath(redirectTo?: string) {
+  const params = new URLSearchParams({
+    toast: "reauth-required",
+  });
+
   if (
     !redirectTo ||
     !redirectTo.startsWith("/") ||
     redirectTo.startsWith("//")
   ) {
-    return "/sign-in";
+    return `/sign-in?${params.toString()}`;
   }
 
-  return `/sign-in?redirectTo=${encodeURIComponent(redirectTo)}`;
+  params.set("redirectTo", redirectTo);
+
+  return `/sign-in?${params.toString()}`;
 }
 
 /**

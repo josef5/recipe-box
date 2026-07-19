@@ -46,6 +46,10 @@ export default function RootLayout({
                 message: "Signed out.",
                 variant: "success",
               },
+              "reauth-required": {
+                message: "Your session expired. Please sign in again.",
+                variant: "info",
+              },
             }}
           />
         </Suspense>
