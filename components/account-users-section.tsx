@@ -35,7 +35,14 @@ export function AccountUsersSection({
   }>(null);
 
   useEffect(() => {
-    setUsers(initialUsers);
+    // If the initial users list is empty, we want to keep the current users state as is. This prevents overwriting the current users state with an empty list when the component re-renders.
+    setUsers((currentUsers) => {
+      if (initialUsers.length === 0 && currentUsers.length > 0) {
+        return currentUsers;
+      }
+
+      return initialUsers;
+    });
   }, [initialUsers]);
 
   async function refreshUsers() {
