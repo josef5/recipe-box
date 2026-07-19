@@ -1,4 +1,4 @@
-import { getManagedUsersAction } from "@/actions/account";
+import { getManagedUsersForAccountPage } from "@/actions/admin-users";
 import { AccountProfileSection } from "@/components/account-profile-section";
 import { AccountUsersSection } from "@/components/account-users-section";
 import { Header } from "@/components/header";
@@ -15,15 +15,12 @@ export default async function AccountPage() {
   const recipes = await getPublicRecipes();
 
   async function fetchManagedUsers() {
-    const managedUsersResult = await getManagedUsersAction();
-
-    if (!managedUsersResult.ok) {
-      throw new Error(
-        managedUsersResult.error || "Unable to fetch managed users.",
-      );
+    // If fetching managed users fails, we return an empty array to avoid breaking the page. This ensures that the account page can still render even if there are issues with the managed users data.
+    try {
+      return await getManagedUsersForAccountPage();
+    } catch {
+      return [];
     }
-
-    return managedUsersResult.data;
   }
 
   const managedUsers = isAdmin ? await fetchManagedUsers() : [];
