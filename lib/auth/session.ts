@@ -6,6 +6,51 @@ type RequireUserOptions = {
   redirectTo?: string;
 };
 
+// Utility function to detect if an error is related to unauthorized session access.
+function isUnauthorizedSessionError(error: unknown) {
+  if (!error || typeof error !== "object") {
+    return false;
+  }
+
+  const maybeError = error as {
+    message?: unknown;
+    status?: unknown;
+    statusCode?: unknown;
+  };
+
+  if (maybeError.status === 401 || maybeError.statusCode === 401) {
+    return true;
+  }
+
+  if (typeof maybeError.message === "string") {
+    return maybeError.message.toLowerCase().includes("unauthorized");
+  }
+
+  return false;
+}
+
+// Utility function to detect if an error is related to cookie mutation during render.
+function isCookieMutationRenderError(error: unknown) {
+  if (!error || typeof error !== "object") {
+    return false;
+  }
+
+  const maybeError = error as {
+    message?: unknown;
+  };
+
+  if (typeof maybeError.message !== "string") {
+    return false;
+  }
+
+  const normalizedMessage = maybeError.message.toLowerCase();
+
+  return (
+    normalizedMessage.includes("cookies can only be modified") &&
+    normalizedMessage.includes("server action")
+  );
+}
+
 function normalizeUserRole(role: unknown): string | string[] | undefined {
   if (typeof role === "string") {
     return role;
@@ -35,7 +80,26 @@ function toSignInPath(redirectTo?: string) {
  * @returns The current user or null if no session exists.
  */
 export async function getCurrentUser(): Promise<User | null> {
-  const { data: session } = await auth.getSession();
+  let session: { user?: User | null } | null = null;
+
+  try {
+    const result = await auth.getSession({
+      query: {
+        disableCookieCache: true,
+        disableRefresh: true,
+      },
+    });
+    session = result.data;
+  } catch (error) {
+    if (
+      isUnauthorizedSessionError(error) ||
+      isCookieMutationRenderError(error)
+    ) {
+      return null;
+    }
+
+    throw error;
+  }
 
   if (!session?.user) {
     return null;
